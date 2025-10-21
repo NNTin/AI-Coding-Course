@@ -27,3 +27,7 @@ credentials.json
 
 # Dependencies
 node_modules/
+
+# AI Tools
+.chunkhound/
+.chunkhound.json
