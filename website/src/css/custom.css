@@ -25,25 +25,25 @@
 
 :root {
   /* === BRAND COLORS - Purple AI Theme === */
-  --brand-primary: #7C3AED;           /* Rich violet - main brand color */
-  --brand-primary-dark: #6D28D9;      /* Deeper violet - hover states */
-  --brand-primary-darker: #6020C0;    /* Even deeper - active states */
-  --brand-primary-darkest: #5B21B6;   /* Maximum depth - pressed states */
-  --brand-primary-light: #8B5CF6;     /* Lighter violet - accents */
-  --brand-primary-lighter: #A78BFA;   /* Soft violet - highlights */
-  --brand-primary-lightest: #C4B5FD;  /* Pale violet - subtle backgrounds */
+  --brand-primary: #7c3aed; /* Rich violet - main brand color */
+  --brand-primary-dark: #6d28d9; /* Deeper violet - hover states */
+  --brand-primary-darker: #6020c0; /* Even deeper - active states */
+  --brand-primary-darkest: #5b21b6; /* Maximum depth - pressed states */
+  --brand-primary-light: #8b5cf6; /* Lighter violet - accents */
+  --brand-primary-lighter: #a78bfa; /* Soft violet - highlights */
+  --brand-primary-lightest: #c4b5fd; /* Pale violet - subtle backgrounds */
 
   /* === SEMANTIC COLORS - Fully Harmonized with Purple === */
-  --semantic-success: #06B6D4;        /* Cyan - blue-green harmony with purple */
-  --semantic-warning: #F97316;        /* Rose-orange - purple-tinted warm accent */
-  --semantic-error: #E11D48;          /* Rose-red - magenta with purple undertones */
-  --semantic-info: #3B82F6;           /* Violet-blue - analogous to purple */
-  --semantic-neutral: #64748B;        /* Slate - cool gray with purple tint */
+  --semantic-success: #06b6d4; /* Cyan - blue-green harmony with purple */
+  --semantic-warning: #f97316; /* Rose-orange - purple-tinted warm accent */
+  --semantic-error: #e11d48; /* Rose-red - magenta with purple undertones */
+  --semantic-info: #3b82f6; /* Violet-blue - analogous to purple */
+  --semantic-neutral: #64748b; /* Slate - cool gray with purple tint */
 
   /* === GRADIENT ENDPOINTS - Harmonized Purple-Tinted === */
-  --gradient-warm-end: #EC4899;       /* Fuchsia - purple harmony */
-  --gradient-warning-end: #FB923C;    /* Rose-orange - matches warning */
-  --gradient-critical-end: #FB7185;   /* Rose-pink - matches error */
+  --gradient-warm-end: #ec4899; /* Fuchsia - purple harmony */
+  --gradient-warning-end: #fb923c; /* Rose-orange - matches warning */
+  --gradient-critical-end: #fb7185; /* Rose-pink - matches error */
 
   /* === MAP TO INFIMA (Docusaurus Framework) === */
   --ifm-color-primary: var(--brand-primary);
@@ -55,25 +55,31 @@
   --ifm-color-primary-lightest: var(--brand-primary-lightest);
 
   /* === VISUAL ELEMENT COLORS - For Interactive Components === */
-  --visual-workflow: var(--brand-primary);         /* Purple for AI workflows/agents */
-  --visual-capability: var(--semantic-success);    /* Green for capabilities/success */
-  --visual-limitation: var(--semantic-warning);    /* Amber for limitations/warnings */
-  --visual-decision: var(--brand-primary-light);   /* Light purple for decision points */
-  --visual-error: var(--semantic-error);           /* Red for errors/critical */
-  --visual-neutral: var(--semantic-neutral);       /* Gray for neutral states */
+  --visual-workflow: var(--brand-primary); /* Purple for AI workflows/agents */
+  --visual-capability: var(
+    --semantic-success
+  ); /* Green for capabilities/success */
+  --visual-limitation: var(
+    --semantic-warning
+  ); /* Amber for limitations/warnings */
+  --visual-decision: var(
+    --brand-primary-light
+  ); /* Light purple for decision points */
+  --visual-error: var(--semantic-error); /* Red for errors/critical */
+  --visual-neutral: var(--semantic-neutral); /* Gray for neutral states */
 
   /* === VISUAL ELEMENT BACKGROUNDS - Transparent Variants === */
-  --visual-bg-workflow: rgba(124, 58, 237, 0.1);      /* Purple tint */
-  --visual-bg-capability: rgba(6, 182, 212, 0.1);     /* Cyan tint */
-  --visual-bg-limitation: rgba(249, 115, 22, 0.1);    /* Rose-orange tint */
-  --visual-bg-decision: rgba(139, 92, 246, 0.1);      /* Light purple tint */
+  --visual-bg-workflow: rgba(124, 58, 237, 0.1); /* Purple tint */
+  --visual-bg-capability: rgba(6, 182, 212, 0.1); /* Cyan tint */
+  --visual-bg-limitation: rgba(249, 115, 22, 0.1); /* Rose-orange tint */
+  --visual-bg-decision: rgba(139, 92, 246, 0.1); /* Light purple tint */
 
   /* === TYPOGRAPHY & CODE === */
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 
   /* === CODE BLOCK BACKGROUNDS === */
-  --code-bg-light: #F9FAFB;           /* Subtle gray for code blocks */
+  --code-bg-light: #f9fafb; /* Subtle gray for code blocks */
 }
 
 /* ========================================================================
@@ -85,25 +91,25 @@
 
 [data-theme='dark'] {
   /* === BRAND COLORS - Brighter Purple for Dark Mode === */
-  --brand-primary: #A78BFA;           /* Brighter violet for dark backgrounds */
-  --brand-primary-dark: #8B5CF6;
-  --brand-primary-darker: #7C3AED;
-  --brand-primary-darkest: #6D28D9;
-  --brand-primary-light: #C4B5FD;
-  --brand-primary-lighter: #DDD6FE;
-  --brand-primary-lightest: #EDE9FE;
+  --brand-primary: #a78bfa; /* Brighter violet for dark backgrounds */
+  --brand-primary-dark: #8b5cf6;
+  --brand-primary-darker: #7c3aed;
+  --brand-primary-darkest: #6d28d9;
+  --brand-primary-light: #c4b5fd;
+  --brand-primary-lighter: #ddd6fe;
+  --brand-primary-lightest: #ede9fe;
 
   /* === SEMANTIC COLORS - Harmonized for Dark Mode === */
-  --semantic-success: #22D3EE;        /* Cyan 400 - blue harmony with purple */
-  --semantic-warning: #FB923C;        /* Orange 400 - rose-orange for dark */
-  --semantic-error: #FB7185;          /* Rose 400 - magenta-red for dark */
-  --semantic-info: #60A5FA;           /* Blue 400 - violet-blue for dark */
-  --semantic-neutral: #94A3B8;        /* Slate 400 - purple-tinted gray */
+  --semantic-success: #22d3ee; /* Cyan 400 - blue harmony with purple */
+  --semantic-warning: #fb923c; /* Orange 400 - rose-orange for dark */
+  --semantic-error: #fb7185; /* Rose 400 - magenta-red for dark */
+  --semantic-info: #60a5fa; /* Blue 400 - violet-blue for dark */
+  --semantic-neutral: #94a3b8; /* Slate 400 - purple-tinted gray */
 
   /* === GRADIENT ENDPOINTS - Harmonized for Dark Mode === */
-  --gradient-warm-end: #F472B6;       /* Fuchsia 400 - purple harmony */
-  --gradient-warning-end: #FDBA74;    /* Orange 300 - rose-orange bright */
-  --gradient-critical-end: #FDA4AF;   /* Rose 300 - rose-pink bright */
+  --gradient-warm-end: #f472b6; /* Fuchsia 400 - purple harmony */
+  --gradient-warning-end: #fdba74; /* Orange 300 - rose-orange bright */
+  --gradient-critical-end: #fda4af; /* Rose 300 - rose-pink bright */
 
   /* === MAP TO INFIMA (Docusaurus Framework) === */
   --ifm-color-primary: var(--brand-primary);
@@ -115,45 +121,49 @@
   --ifm-color-primary-lightest: var(--brand-primary-lightest);
 
   /* === VISUAL ELEMENT COLORS - Adjusted for Dark Mode === */
-  --visual-workflow: var(--brand-primary);         /* Brighter purple */
-  --visual-capability: var(--semantic-success);    /* Brighter green */
-  --visual-limitation: var(--semantic-warning);    /* Brighter amber */
-  --visual-decision: var(--brand-primary-light);   /* Lighter purple */
-  --visual-error: var(--semantic-error);           /* Softer red */
-  --visual-neutral: var(--semantic-neutral);       /* Lighter gray */
+  --visual-workflow: var(--brand-primary); /* Brighter purple */
+  --visual-capability: var(--semantic-success); /* Brighter green */
+  --visual-limitation: var(--semantic-warning); /* Brighter amber */
+  --visual-decision: var(--brand-primary-light); /* Lighter purple */
+  --visual-error: var(--semantic-error); /* Softer red */
+  --visual-neutral: var(--semantic-neutral); /* Lighter gray */
 
   /* === VISUAL ELEMENT BACKGROUNDS - Harmonized Transparency === */
-  --visual-bg-workflow: rgba(167, 139, 250, 0.15);    /* Purple tint */
-  --visual-bg-capability: rgba(34, 211, 238, 0.15);   /* Cyan tint */
-  --visual-bg-limitation: rgba(251, 146, 60, 0.15);   /* Rose-orange tint */
-  --visual-bg-decision: rgba(196, 181, 253, 0.15);    /* Light purple tint */
+  --visual-bg-workflow: rgba(167, 139, 250, 0.15); /* Purple tint */
+  --visual-bg-capability: rgba(34, 211, 238, 0.15); /* Cyan tint */
+  --visual-bg-limitation: rgba(251, 146, 60, 0.15); /* Rose-orange tint */
+  --visual-bg-decision: rgba(196, 181, 253, 0.15); /* Light purple tint */
 
   /* === TYPOGRAPHY & CODE === */
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 
   /* === DARK MODE BACKGROUNDS === */
-  --ifm-background-color: #0D1117;              /* GitHub-style dark background */
-  --ifm-background-surface-color: #161B22;      /* Elevated surfaces (cards, etc.) */
-  --code-bg-dark: #1E1E1E;                      /* VS Code dark background */
-  --ifm-font-color-base: #C9D1D9;               /* Soft white (less eye strain) */
-  --ifm-heading-color: #E6EDF3;                 /* Brighter for headings */
+  --ifm-background-color: #0d1117; /* GitHub-style dark background */
+  --ifm-background-surface-color: #161b22; /* Elevated surfaces (cards, etc.) */
+  --code-bg-dark: #1e1e1e; /* VS Code dark background */
+  --ifm-font-color-base: #c9d1d9; /* Soft white (less eye strain) */
+  --ifm-heading-color: #e6edf3; /* Brighter for headings */
 }
 
-/* Mermaid diagram styling */
+/* Mermaid diagram styling - Centered horizontally */
 .mermaid {
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  align-items: center;
+  margin: 2rem auto;
   padding: 1.5rem;
   background: var(--ifm-background-surface-color);
   border-radius: 8px;
   border: 1px solid var(--ifm-color-emphasis-300);
+  text-align: center;
 }
 
 /* Mermaid SVG responsive behavior */
 .mermaid svg {
   max-width: 100%;
   height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 /* Container for visual elements */
@@ -230,20 +240,22 @@
 .ai-gradient-border {
   border-left: 4px solid transparent;
   border-image: linear-gradient(
-    180deg,
-    var(--brand-primary) 0%,
-    var(--gradient-warm-end) 100%
-  ) 1;
+      180deg,
+      var(--brand-primary) 0%,
+      var(--gradient-warm-end) 100%
+    )
+    1;
 }
 
 /* Apply gradient border to live code blocks */
 .theme-live-codeblock {
   border-left: 4px solid transparent;
   border-image: linear-gradient(
-    180deg,
-    var(--brand-primary) 0%,
-    var(--gradient-warm-end) 100%
-  ) 1;
+      180deg,
+      var(--brand-primary) 0%,
+      var(--gradient-warm-end) 100%
+    )
+    1;
   margin: 2rem 0;
 }
 

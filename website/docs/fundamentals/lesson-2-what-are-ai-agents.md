@@ -1,406 +1,736 @@
 ---
 sidebar_position: 2
-sidebar_label: 'Lesson 2: What Are AI Agents?'
+sidebar_label: 'Lesson 2: How AI Coding Agents Work'
 ---
 
-# What Are AI Agents?
+# How AI Coding Agents Work
 
-Now that you understand the First Principles - what LLMs are and the basic machinery - let's explore what AI agents are, how they execute autonomously, and what your role as an operator entails.
+AI coding agents in the CLI can read your entire codebase, plan multi-file changes, run tests, and fix bugs autonomously. But they're not magic—they're LLMs connected to tools, operating in loops with specific constraints. This lesson breaks down how they actually work: the architecture, the execution loop, the tools they use, and the limitations you need to understand to use them effectively.
 
 ## Learning Objectives
 
 By the end of this lesson, you will:
 
-- Understand what AI agents are and how they differ from traditional coding assistants
-- Recognize the engineer-operator mental model for working with agents
-- Learn the four-step agent execution workflow (Perceive → Reason → Act → Verify)
-- Understand how architecture enables reliable autonomous execution
-- Know when agents should ask questions vs. execute autonomously
-- Identify when to intervene during agent operation
+- Understand how autonomous CLI agents work (LLM + Context + Tools)
+- Recognize the agent execution loop: perceive, reason, act, verify, iterate
+- See how tool execution enables agents to interact with codebases
+- Identify architectural constraints that govern agent capabilities
+- Understand how semantic code search extends agent comprehension
+- Know when to use CLI agents versus manual coding
 
-## What Are AI Agents?
+## The Core Architecture: Three Components
 
-AI agents are **autonomous systems** that execute complete workflows with minimal human intervention. Unlike autocomplete tools or chat assistants, agents combine:
+Every CLI agent—Claude Code, Aider, Cursor Composer—is built from the same three pieces:
 
-- **Context gathering** - Read files, search code, analyze documentation using tools (Read, Grep, Glob)
-- **Token prediction** - LLM generates probable next actions based on patterns from training data
-- **Tool execution** - Agent framework translates LLM output into file operations, bash commands, API calls
-- **Feedback loops** - Test failures and compiler errors feed back into context, triggering new predictions
+**LLM + Context Manager + Tools**
 
-**Technical stack:** LLM (brains) + Agent Framework (body) + Tools (hands) = Autonomous execution
+Think of it like this:
 
-### Real Agent Workflows
-
-**Explore → Plan → Code → Commit** (5-20 minute autonomous execution)
-
-```
-Agent receives: "Implement user authentication with JWT"
-
-1. Explore: Searches codebase for existing auth patterns, database schemas
-2. Plan: Determines approach based on discovered patterns
-3. Code: Implements auth middleware, routes, tests
-4. Verify: Runs tests, fixes failures, re-runs until passing
-5. Report: Notifies operator with test results
-```
-
-**Test-Driven Development** (agent-driven iteration)
-
-```
-Agent receives: "Add rate limiting to API endpoints"
-
-1. Writes tests: Creates test suite for rate limiting behavior
-2. Runs tests: All fail (expected - feature doesn't exist)
-3. Implements: Adds rate limiting middleware
-4. Re-runs tests: 2 pass, 1 fails (edge case)
-5. Fixes edge case: Updates implementation
-6. Final verification: All tests pass
-7. Reports: Ready for operator review
-```
-
-**Visual Implementation** (design to code)
-
-```
-Agent receives: Screenshot of desired UI + requirements
-
-1. Analyzes: Identifies components, layout, styling
-2. Implements: Writes React components with CSS
-3. Takes screenshot: Compares against target
-4. Iterates: Adjusts spacing, colors, responsiveness
-5. Converges: Output matches design
-6. Reports: Implementation complete with visual proof
-```
-
-### Key Distinction
-
-**Traditional AI coding assistants:**
-
-- Suggest next line while you type
-- Require constant human direction
-- Complete small code snippets
-- Human remains in the writing loop
-
-**AI agents:**
-
-- Execute complete tasks autonomously
-- Work for 5-20 minutes independently
-- Handle multiple steps (research → implement → test → verify)
-- Human operates as supervisor, not constant reviewer
-
-## The Engineer-Operator Role
-
-_Before diving into specific workflows, you'll need to understand the **Four Operating Principles** that govern how agents work. These fundamental constraints determine success or failure. We'll cover these in detail in [Lesson 3](./lesson-3-operating-principles.md) - for now, know that your role is to learn to operate agents effectively within these principles._
-
-Think of yourself as a **CNC operator** working with precision machinery.
-
-### Your Responsibilities as Operator
-
-**1. Design the part (requirements/architecture)**
-
-- Define what needs to be built
-- Specify acceptance criteria
-- Establish architectural constraints
-
-**2. Program the machine (prompts/context/constraints)**
-
-- Provide relevant codebase context _(see Lesson 3: Principle 1)_
-- Explain patterns and conventions to follow
-- Set boundaries (which files/modules are in scope)
-- Be precise and explicit in task descriptions _(see Lesson 3: Principle 2)_
-
-**3. Monitor execution (5-20 minute autonomous stretches)**
-
-- Watch progress without micromanaging _(see Lesson 3: Principle 3)_
-- Note when agent asks clarifying questions
-- Identify blockers requiring intervention
-- Remember: Tasks should fit this timeframe _(see Lesson 3: Principle 4)_
-
-**4. Verify output (tests/compilation/deployment)**
-
-- Review agent's self-verification (test results)
-- Check against acceptance criteria
-- Deploy or request refinements
-
-### Context Engineering
-
-This concept from Anthropic emphasizes **curating the optimal information** for agent success.
-
-**Think in context:** What state does the agent need to succeed? _(See Lesson 3: Principle 1 - The agent's world is ONLY what's in context)_
-
-- Relevant code files
-- API documentation
-- Coding conventions
-- Similar examples from your codebase
-- Constraints and requirements
-
-Good context = autonomous execution. Poor context = constant questions.
-
-**Key context engineering principles:**
-
-- Agent has no memory between sessions → Re-state critical constraints
-- Context window is finite (~200K tokens) → Curate, don't dump
-- "Lost in the middle" effect → Put most important info at start/end
-- Context rot → More files ≠ better, relevance > volume
-
-### Human "On the Loop" (Not "In the Loop")
-
-Deloitte's research identifies a critical distinction:
-
-**Human in the loop** (traditional):
-
-- Approves every decision before it happens
-- Micromanages every step
-- Bottleneck to progress
-
-**Human on the loop** (agent-driven):
-
-- Reviews decisions **after** execution
-- Trusts within established boundaries
-- Intervenes on anomalies, not routine operations
-
-You're learning to be "on the loop" - monitoring outcomes, not micromanaging actions.
-
-### Operating Multiple Agents Concurrently
-
-As you gain proficiency, you'll orchestrate **3+ agents working in parallel**:
-
-```
-Terminal Tab 1: Agent refactoring legacy authentication
-Terminal Tab 2: Agent implementing new analytics feature
-Terminal Tab 3: Agent updating documentation and examples
-```
-
-**Operator watches all three:**
-
-- Agent 1 hits blocker (missing type definitions) → intervene
-- Agent 2 progressing well → continue monitoring
-- Agent 3 completes → verify outcome → start next task
-
-This is where the bandwidth multiplication happens.
-
-## How Agents Execute
-
-Agents follow a four-step workflow to complete tasks autonomously.
+- **LLM** (the brain): Reasons about what to do
+- **Context Manager** (the memory): Knows what's relevant
+- **Tools** (the hands): Actually does the work
 
 ```mermaid
-graph LR
-    A[Engineer: Define Task] --> B[Agent: Perceive Context]
-    B --> C[Agent: Reason & Plan]
-    C --> D[Agent: Act via Tools]
-    D --> E[Agent: Verify & Report]
-    E --> F{Operator Review}
-    F -->|Pass| G[Complete]
-    F -->|Issues| H[Refine Context]
-    H --> B
+graph TB
+    LLM["LLM<br/>(Brain)"]
+    Context["Context<br/>Manager"]
+    Tools["Tools<br/>(Hands)"]
+
+    Tools -->|"File Ops<br/>Bash<br/>Search<br/>Git"| Context
+    Context -->|"Codebase Info<br/>Docs/Comments<br/>Training Data"| LLM
+    LLM -->|Actions| Context
+
+    style LLM fill:#A78BFA,stroke:#7C3AED,stroke-width:2px,color:#000
+    style Context fill:#22D3EE,stroke:#06B6D4,stroke-width:2px,color:#000
+    style Tools fill:#FB923C,stroke:#F97316,stroke-width:2px,color:#000
 ```
 
-### Step 1: Perceive Context
+### Component 1: The LLM (The Reasoning Engine)
 
-Agent gathers information needed for the task _(perceive = executing search and read tools)_:
+**What it is:** A large language model trained on massive code repositories (GPT-4, Claude 3.5 Sonnet, Gemini, etc.)
 
-- Reads relevant files from your codebase
-- Searches for patterns and examples
-- Reviews documentation (inline comments, README files)
-- Examines test suites to understand expected behavior
+**What it does:**
 
-**Tools used:** `Read`, `Grep`, `Glob` for file search and content analysis
+- Predicts what code should come next based on patterns
+- Plans sequences of actions to accomplish a task
+- Reasons about code structure and architecture
+- Decides which tools to use and when
 
-### Step 2: Reason & Plan
+**Critical reality:** The LLM doesn't "understand" code the way you do. It's a statistical pattern matcher:
 
-Using an LLM (Large Language Model), the agent _(reason = token prediction through transformer layers)_:
+- **It generates valid syntax** because it learned patterns
+- **It hallucinates APIs** when patterns seem familiar but aren't exact
+- **It needs context** to make good predictions
+- **It's probabilistic** - same input can produce different outputs
 
-- Analyzes the task requirements _(pattern-matches against training data)_
-- Considers discovered patterns and constraints
-- Generates a plan of action _(predicts probable sequence of actions)_
-- Identifies potential risks or blockers
+**Key constraint:** Context windows (8K-200K tokens) limit how much code it can "see" at once. You can't dump your entire codebase into memory.
 
-This happens through token prediction - the agent "thinks" by generating potential approaches and evaluating their likelihood of success based on probability distributions from training data.
+### Component 2: Context Management (Finding What Matters)
 
-### Step 3: Act via Tools
+**The problem:** Your codebase has thousands of files. The LLM can only "see" a fraction at once.
 
-Agent executes the plan using available tools:
+**The solution:** Smart context assembly - the agent searches, reads, and assembles just what's needed.
 
-- **File operations:** `Write`, `Edit` to modify code
-- **Bash execution:** Run tests, build, git operations
-- **Code search:** `Grep` to find related code
-- **API calls:** Fetch documentation, external resources
+**What gets loaded into context:**
 
-**Example action sequence:**
+1. **Your prompt** - What you want done
+2. **Relevant code** - Files, functions, classes that matter for this task
+3. **Documentation** - READMEs, architecture docs, comments
+4. **Examples** - Similar patterns from your codebase
+5. **System instructions** - Rules for how the agent should behave
 
-```
-1. Edit src/auth/middleware.ts (add JWT validation)
-2. Edit src/routes/api.ts (apply auth middleware)
-3. Write tests/auth.test.ts (test suite)
-4. Bash: npm test (run tests)
-5. Edit src/auth/middleware.ts (fix failing test)
-6. Bash: npm test (verify fix)
-```
+**How CLI agents build context:**
 
-### Step 4: Verify & Report
+CLI agents have full filesystem access and search tools, so they find what they need iteratively:
 
-Agent performs self-verification:
+1. **File system operations** - Read any file directly
+2. **Search tools** - Grep for patterns, glob for file names, semantic search for concepts
+3. **External resources** - Fetch docs, API specs, web search
+4. **Iterative discovery** - Read → discover references → search for them → read more
 
-- Runs test suites
-- Checks compilation/linting
-- Confirms changes meet requirements
-- Reports results to operator with evidence
-
-**Good agent report:**
+**Example: You ask to "add rate limiting"**
 
 ```
-✓ Implemented JWT authentication middleware
-✓ All 12 tests passing (auth.test.ts)
-✓ No TypeScript errors
-✓ No linting issues
-✓ Ready for review: src/auth/middleware.ts, src/routes/api.ts
+Agent process:
+1. Searches for "middleware" → finds auth middleware pattern
+2. Reads auth middleware → understands your middleware structure
+3. Searches for "rate" → finds nothing (not implemented yet)
+4. Reads app entry point → sees where middleware is registered
+5. Now has enough context to implement rate limiting your way
 ```
 
-### Autonomous Execution Stretch
+**Why this matters:** The agent doesn't just dump random files into context. It explores your codebase like you would—searching, reading, connecting the dots—to build understanding before coding.
 
-During steps 2-4, the agent works **autonomously for 5-20 minutes**:
+### Component 3: Tools (How Agents Take Action)
 
-- Operator monitors but doesn't intervene
-- Agent self-corrects via test failures
-- Agent asks questions only when truly blocked
+**The key insight:** The LLM can't actually _do_ anything. It can only _decide_ what to do. Tools execute the actual work.
 
-**This is where bandwidth amplification happens** - you're not writing code, you're monitoring execution and operating other agents in parallel.
+**Common tools available to CLI agents:**
 
-## Quality Through Architecture
+| Tool Type           | What It Does               | Examples                         |
+| ------------------- | -------------------------- | -------------------------------- |
+| **File Operations** | Read and modify code       | `Read`, `Write`, `Edit`          |
+| **Search**          | Find code in codebase      | `Grep`, `Glob`, semantic search  |
+| **Shell Commands**  | Run anything you could run | `Bash`, `npm test`, `git diff`   |
+| **Version Control** | Git operations             | `git commit`, `git branch`       |
+| **Web Access**      | Fetch external info        | Documentation lookup, web search |
 
-Reliable agent execution doesn't come from constant human review - it comes from **architecture that enables autonomous verification**.
-
-### Reframing: From Fear to Enablement
-
-**Traditional view:** "AI has limitations, so you must review everything"
-
-**Operator view:** "Here's how architecture enables reliable autonomy"
-
-The difference? **Trust within established boundaries.**
-
-### Guardrails That Enable (Not Restrict)
-
-**Type Systems**
-
-- Catch errors at compile-time
-- Agent gets immediate feedback from TypeScript/Rust compiler
-- No human needed to spot type mismatches
-
-**Test Suites**
-
-- Agents verify their own work
-- Red → Green workflow drives self-correction
-- Comprehensive tests = confident autonomous execution
-
-**Linters & Formatters**
-
-- Enforce style and safety rules automatically
-- Agent runs `eslint` or `clippy` to check quality
-- Consistent standards without human enforcement
-
-**CI/CD Pipelines**
-
-- Continuous verification on every change
-- Automated security scanning
-- Performance benchmarks
-- No human bottleneck for quality gates
-
-### Example: Agent Self-Correction
-
-Watch an agent improve through autonomous iteration:
+**How the tool loop works:**
 
 ```
-Agent task: "Implement async retry logic with exponential backoff"
+You: "Add rate limiting to the API"
 
-Iteration 1:
-- Implements retry function
-- Runs tests → 3 failures
-- Error: "Maximum call stack exceeded"
+Agent thinking → Tool use → Feedback → Agent thinking → Tool use → ...
 
-Iteration 2:
-- Reads error, identifies recursion issue
-- Refactors to iterative approach
-- Runs tests → 1 failure
-- Error: "Timeout not respecting backoff"
+1. LLM: "I need to see the middleware structure"
+   → Calls: Read tool on src/middleware/auth.ts
+   → Gets back: [file contents]
 
-Iteration 3:
-- Fixes backoff calculation
-- Runs tests → All pass
-- Reports completion
+2. LLM: "Now I understand the pattern, let me create rate limiting"
+   → Calls: Write tool to create src/middleware/rateLimit.ts
+   → Gets back: File written successfully
 
-Total time: 8 minutes autonomous execution
-Operator interventions: 0
+3. LLM: "Need to register this middleware"
+   → Calls: Edit tool on src/app.ts
+   → Gets back: Edit successful
+
+4. LLM: "Let me verify it works"
+   → Calls: Bash tool to run "npm test"
+   → Gets back: 2 tests failing
+
+5. LLM: "Need to fix the status code"
+   → Calls: Edit tool to fix the middleware
+   → Gets back: Edit successful
+
+6. LLM: "Verify again"
+   → Calls: Bash to run "npm test"
+   → Gets back: All tests passing
+
+Done.
 ```
 
-**No human reviewed code between iterations.** The test suite provided the feedback loop.
+**This is the fundamental loop:** Reason → Act (via tool) → Observe result → Repeat
 
-### LLM as "Probabilistic CPU"
+## The Agent Execution Loop
 
-This concept from ArbiterOS research reframes reliability _(recall: LLMs are token prediction engines, not deterministic computers)_:
+When you give a CLI agent a task, it doesn't just generate code in one shot. It operates in a loop, similar to how you'd tackle a task yourself: explore, plan, code, test, fix, repeat.
 
-**Traditional CPU:** Deterministic, always produces same output for same input
+**The five-phase loop:**
 
-**LLM:** Probabilistic, samples from probability distributions
+```mermaid
+graph TB
+    Start[Task assigned] --> Research[Agent works<br/>autonomously<br/>5-20 minutes]
+    Research --> Report[Report results]
 
-**Implication:** Reliability is a **systems problem**, not a code review problem.
+    Research --> Perceive
+    Perceive --> Reason
+    Reason --> Act
+    Act --> Verify
+    Verify --> Iterate{More work?}
+    Iterate -->|Yes| Perceive
+    Iterate -->|No| Report
 
-**Solution:** Design systems that work with probabilistic components:
+    style Start fill:#A78BFA,stroke:#7C3AED,stroke-width:2px,color:#000
+    style Research fill:#22D3EE,stroke:#06B6D4,stroke-width:2px,color:#000
+    style Report fill:#A78BFA,stroke:#7C3AED,stroke-width:2px,color:#000
+    style Perceive fill:#FB923C,stroke:#F97316,stroke-width:2px,color:#000
+    style Reason fill:#FB923C,stroke:#F97316,stroke-width:2px,color:#000
+    style Act fill:#FB923C,stroke:#F97316,stroke-width:2px,color:#000
+    style Verify fill:#FB923C,stroke:#F97316,stroke-width:2px,color:#000
+    style Iterate fill:#FB923C,stroke:#F97316,stroke-width:2px,color:#000
+```
 
-- Multiple verification layers (tests, types, linters)
-- Automated quality gates
-- Clear acceptance criteria
-- Feedback loops that enable self-correction
+### 1. Perceive (Gather Information)
 
-### When Agents Should Ask vs. Execute
+Agent explores the codebase to understand what's relevant:
 
-**Execute autonomously when:**
+- Searches for related code: `grep "middleware"`, `glob "**/auth*"`
+- Reads discovered files
+- Fetches external docs if needed (via web search or MCP)
+- Builds mental model of architecture
 
-- Requirements are clear
-- Patterns exist in codebase
-- Tests define expected behavior
-- Changes are within established boundaries
+### 2. Reason (Plan Approach)
 
-**Ask operator when:**
+Agent analyzes what it found and plans:
 
-- Requirements are ambiguous ("Should this be async or sync?")
-- Architectural decisions needed ("Which database approach?")
-- Multiple valid approaches exist
-- Constraints conflict ("Performance vs. readability trade-off?")
+- Compares requirements to existing patterns
+- Decides which files need changes
+- Identifies dependencies and risks
+- Plans sequence of actions
 
-**Report blockers when:**
+### 3. Act (Make Changes)
 
-- Missing dependencies or API keys
-- Insufficient permissions
-- Unexpected codebase structure
-- Tests fail repeatedly despite corrections
+Agent executes the plan:
 
-**Key insight:** Good context engineering **reduces questions** and **increases autonomous execution time**.
+- Writes new files or edits existing ones
+- Installs dependencies if needed
+- Updates configs, docs, tests
+
+### 4. Verify (Check If It Works)
+
+Agent validates the changes:
+
+- Runs test suite: `npm test`, `pytest`, etc.
+- Checks compilation: `tsc`, `cargo build`
+- Runs linters if configured
+- Reads error output if something fails
+
+### 5. Iterate (Fix and Improve)
+
+If verification failed:
+
+- Agent reads error messages
+- Reasons about root cause
+- Goes back to Act phase to fix
+- Verifies again
+
+If verification passed:
+
+- Task complete → Report to human
+
+### Concrete Example: "Add rate limiting to API endpoints"
+
+```
+You: "Add rate limiting to our Express API"
+
+Agent starts autonomous execution:
+
+[PERCEIVE]
+→ grep "middleware" → finds auth middleware in src/middleware/auth.ts
+→ Reads auth middleware → sees your pattern: export function, app.use()
+→ glob "**/rate*" → nothing found, needs to be created
+→ Reads src/app.ts → sees middleware registration pattern
+
+[REASON]
+→ "I'll follow the existing middleware pattern"
+→ "Need to install express-rate-limit package"
+→ "Should add tests following existing test structure"
+→ Plan: Install dependency → Create middleware → Register it → Test
+
+[ACT]
+→ Runs: npm install express-rate-limit
+→ Writes: src/middleware/rateLimit.ts (following auth.ts pattern)
+→ Edits: src/app.ts (adds app.use(rateLimit))
+→ Writes: tests/middleware/rateLimit.test.ts
+
+[VERIFY]
+→ Runs: npm test
+→ Output: 2 failures - "Expected status 429, got 500"
+
+[ITERATE - Back to PERCEIVE]
+→ Reads test output - status code is wrong
+→ Reads src/middleware/rateLimit.ts - finds the bug
+
+[ACT again]
+→ Edits: src/middleware/rateLimit.ts (fixes status code)
+
+[VERIFY again]
+→ Runs: npm test
+→ Output: All tests passing ✓
+
+[REPORT]
+"Rate limiting implemented:
+- Added express-rate-limit middleware
+- Configured for 100 requests/15min per IP
+- All tests passing
+- Follows existing middleware patterns"
+```
+
+**This took the agent ~8 minutes. You saved ~45 minutes of implementation time.**
+
+### What Makes This Powerful
+
+**Self-correction:** Tests provide objective feedback. Agent sees failures and fixes them—just like you would.
+
+**Full codebase understanding:** Agent searches and reads across your entire project, not just one file.
+
+**Pattern matching:** Agent finds your existing patterns (middleware structure, test organization) and follows them.
+
+**Multi-file operations:** One task can span creating files, editing configs, updating tests—all coordinated.
+
+### What to Watch For
+
+**Can go off track:** Agent might misunderstand requirements and head the wrong direction. Check in periodically.
+
+**Context limits:** Really large refactorings might exceed the context window. Break into smaller tasks.
+
+**Non-deterministic:** Run the same task twice, might get slightly different implementations. Both could be valid.
+
+**Time investment:** 5-20 minute execution windows. Worth it for complex tasks, overkill for simple ones.
+
+## Model Context Protocol (MCP): Extending Agent Capabilities
+
+Agents are powerful when working with your codebase, but what about everything _outside_ your codebase? That's where MCP comes in.
+
+**The problem:**
+
+- Agent's knowledge is frozen at training time (often 6-12 months old)
+- Can't access your company's internal tools
+- Can't fetch current documentation or API specs
+- Limited to what's in your local codebase
+
+**The solution: MCP (Model Context Protocol)**
+
+A standardized way for agents to connect to external tools and data sources—web search, databases, documentation APIs, company tools, anything you need.
+
+### How MCP Works
+
+Think of MCP as a plugin system for agents:
+
+```mermaid
+graph TB
+    Agent[AI Agent<br/>Claude Code, etc.]
+    Client[MCP Client<br/>built into agent]
+    Servers[MCP Servers<br/>you configure]
+
+    Agent <-->|JSON RPC| Client
+    Client --> Servers
+
+    subgraph servers [" "]
+        Search[Web Search<br/>Brave, Google]
+        DB[Database<br/>Postgres, MongoDB]
+        Docs[Documentation<br/>AWS, Python]
+        Custom[Custom Tools<br/>Your APIs]
+    end
+
+    Servers --> Search
+    Servers --> DB
+    Servers --> Docs
+    Servers --> Custom
+
+    style Agent fill:#A78BFA,stroke:#7C3AED,stroke-width:2px,color:#000
+    style Client fill:#22D3EE,stroke:#06B6D4,stroke-width:2px,color:#000
+    style Servers fill:#FB923C,stroke:#F97316,stroke-width:2px,color:#000
+    style Search fill:#E5E7EB,stroke:#9CA3AF,stroke-width:1px,color:#000
+    style DB fill:#E5E7EB,stroke:#9CA3AF,stroke-width:1px,color:#000
+    style Docs fill:#E5E7EB,stroke:#9CA3AF,stroke-width:1px,color:#000
+    style Custom fill:#E5E7EB,stroke:#9CA3AF,stroke-width:1px,color:#000
+```
+
+**What MCP enables:**
+
+- **Tool discovery** - Agent can see what tools are available
+- **Standardized API** - All MCP tools have the same interface
+- **Resource access** - Databases, APIs, documentation, anything with an MCP server
+- **Custom integration** - Build your own MCP servers for company-specific tools
+
+### Concrete Example: OAuth Implementation
+
+```
+You: "Implement OAuth2 with PKCE flow for our GitHub integration"
+
+WITHOUT MCP:
+  Agent relies on training data (which might be from 2023)
+  Might use outdated OAuth patterns
+  Guesses at current GitHub API structure
+
+WITH MCP:
+  [Agent uses web-search MCP server]
+  → "OAuth2 PKCE flow 2025 best practices"
+  → Gets current security recommendations
+
+  [Agent uses documentation MCP server]
+  → Fetches latest GitHub OAuth2 API docs
+  → Sees current endpoints, parameters, response formats
+
+  [Agent implements using CURRENT information]
+  → Code follows 2025 best practices
+  → Uses correct GitHub API v3 patterns
+  → Includes proper error handling for new edge cases
+```
+
+### Common MCP Servers You Might Use
+
+**Development:**
+
+- **Web search** - Brave Search, DuckDuckGo (find current best practices)
+- **Documentation** - Python docs, AWS docs, MDN (fetch API references)
+- **Code search** - Semantic codebase search (ChunkHound, Sourcegraph)
+
+**Data access:**
+
+- **Databases** - Postgres, MongoDB, Redis (inspect schemas, run queries)
+- **APIs** - REST/GraphQL clients (test endpoints, fetch data)
+
+**Company tools:**
+
+- **GitHub** - Access PRs, issues, discussions
+- **Slack** - Check team conventions documented in channels
+- **Jira** - Look up requirements, acceptance criteria
+- **Internal APIs** - Your custom tools and services
+
+### Why This Matters for CLI Agents
+
+CLI agents already have full filesystem and shell access—powerful but limited to your local environment. MCP extends their reach to:
+
+1. **Current information** - Training data ages, MCP fetches fresh docs
+2. **External context** - Reference designs, similar implementations elsewhere
+3. **Company knowledge** - Internal wikis, design systems, API catalogs
+4. **Validation** - Check implementations against live API schemas
+
+**MCP adoption:** Native in Claude Code, supported by Cursor, growing ecosystem of community servers.
+
+**Bottom line:** MCP turns agents from "smart autocomplete" into "connected research assistants" that can access the same resources you would when solving a problem.
+
+## Architectural Constraints: What Agents Can't Do
+
+CLI agents are powerful, but they have fundamental limitations. Understanding these helps you work _with_ them effectively instead of fighting against their nature.
+
+### Constraint 1: Context Windows Are Finite
+
+**The reality:** LLMs can only process 32K-200K tokens per request. A large codebase can be millions.
+
+**What this means:**
+
+- Agent can't load your entire codebase into memory at once
+- Context "fills up" during long conversations (each message adds tokens)
+- Large refactorings might hit the limit mid-task
+
+**How to work with it:**
+
+- Break big tasks into smaller chunks: "Refactor auth" → "Refactor auth/middleware" + "Refactor auth/validation"
+- Agents use search to find relevant files instead of loading everything
+- Semantic search helps agents find what matters without brute-forcing
+
+### Constraint 2: No Persistent Memory
+
+**The reality:** Each conversation starts fresh. Agent forgets everything from previous sessions.
+
+**What this means:**
+
+- Agent doesn't remember last week's conversation
+- Doesn't learn from past mistakes across sessions
+- You need to re-explain architecture decisions each time
+
+**How to work with it:**
+
+- **Use CLAUDE.md or similar files** - Agent loads these at session start, giving it persistent "memory"
+- Document architectural decisions in your codebase (ADRs, README)
+- Some agents cache prompts to reduce cost, but memory is still stateless
+
+**Example:**
+
+```
+# CLAUDE.md in your repo
+We use Redux for state management, not Context API.
+Database queries go through the Repository pattern.
+All API endpoints require JWT authentication.
+```
+
+Agent reads this every session → follows your conventions automatically.
+
+### Constraint 3: Can't See Everything at Once
+
+**The reality:** Even though CLI agents have filesystem access, they must explicitly search and read files. They don't have a holistic view by default.
+
+**What this means:**
+
+- Might miss relevant code in another module
+- Could duplicate functionality that already exists elsewhere
+- Depends on search quality to find the right files
+
+**How to work with it:**
+
+- Good naming conventions help agents find code via grep/glob
+- Semantic search (covered next) finds code by meaning, not just filenames
+- Tell agent where to look if you know: "Check src/utils for existing validation logic"
+
+### Constraint 4: Probabilistic, Not Deterministic
+
+**The reality:** LLMs sample from probability distributions. Same input can produce different outputs.
+
+**What this means:**
+
+- Run the same task twice → might get two different valid implementations
+- Might hallucinate APIs that sound plausible but don't exist
+- Can't guarantee a specific approach will be chosen
+
+**How to work with it:**
+
+- **Tests are critical** - They provide objective feedback that corrects hallucinations
+- **Type checking helps** - Compiler catches non-existent APIs
+- **Review agent output** - Don't blindly accept, especially for critical code
+- Iteration is normal - agent tries, tests fail, agent fixes. This is the design, not a bug.
+
+## Semantic Code Search: Finding Code by Meaning
+
+Traditional search finds exact text matches. Semantic search finds code by _what it does_.
+
+**The problem with grep:**
+
+```bash
+grep "authentication"
+# Finds: Files with the word "authentication"
+# Misses: login(), auth(), verifyUser(), validateToken()
+# All related, but different words
+```
+
+**Semantic search solves this:**
+
+```bash
+semantic_search "user authentication logic"
+# Finds: login(), authenticateUser(), verifyToken(), JWTMiddleware
+# All conceptually similar, even with different names
+```
+
+### How It Works (Simplified)
+
+**1. Index phase (run once):**
+Your codebase gets converted into a searchable database:
+
+```
+Code files → Parse into functions/classes → Convert to vectors → Store in database
+
+Example:
+function validateEmail(email: string) { ... }
+  ↓
+[0.23, 0.91, -0.15, ..., 0.44]  // 1536-dimensional vector
+  ↓
+Stored with metadata: file path, function name, line number
+```
+
+**2. Search phase (when agent searches):**
+
+```
+Agent query: "email validation"
+  ↓
+Convert to same vector format
+  ↓
+Find vectors with highest similarity (cosine distance)
+  ↓
+Return matching code chunks, ranked by relevance
+```
+
+**The key insight:** Code that does similar things produces similar vectors, even if the words are completely different.
+
+### Why This Matters for CLI Agents
+
+**Scenario: "Add phone validation similar to email"**
+
+**With grep (traditional search):**
+
+```bash
+$ grep -r "email" src/
+# Returns 847 matches:
+# - Variable names: userEmail, emailList, sendEmail
+# - Comments: "// Send email notification"
+# - Validation logic: validateEmail() ← what you actually want
+# Agent drowns in noise, might miss the relevant pattern
+```
+
+**With semantic search:**
+
+```bash
+$ semantic_search "email validation implementation"
+
+Results (ranked by relevance):
+1. validateEmail() function (src/validation/email.ts:12)
+2. Input sanitization docs (docs/validation.md)
+3. Email validation tests (tests/validation.test.ts:45)
+4. Base validation utility (src/utils/sanitize.ts:8)
+
+Agent instantly sees:
+- How you implement validation
+- Your architectural pattern for input sanitization
+- Edge cases you care about (from tests)
+- Shared utilities to reuse
+```
+
+**Agent can now build phone validation that:**
+
+- Follows your existing pattern
+- Reuses shared sanitization logic
+- Handles edge cases consistently
+- Matches your code style
+
+### Multi-Hop Discovery
+
+Agents can chain semantic searches to build architectural understanding:
+
+```
+Task: "Improve auth security"
+
+[Search 1] "user authentication"
+  → Finds: login(), JWTMiddleware, tokenGeneration()
+
+[Agent reads code, sees "refresh token" mentioned]
+
+[Search 2] "refresh token implementation"
+  → Finds: refreshToken(), security docs, Redis cache config
+
+[Agent reads docs, sees "rate limiting" requirement]
+
+[Search 3] "rate limiting authentication"
+  → Finds: rateLimitMiddleware(), existing patterns
+
+Result: Agent now understands your complete auth architecture
+        across multiple modules, without you explaining anything
+```
+
+### Cross-Format Search
+
+Semantic search works across code, docs, tests, and comments:
+
+- **"How does caching work?"** → Finds implementation + architecture docs
+- **"What are our API design principles?"** → Finds READMEs + example implementations
+- **"Error handling patterns"** → Finds try-catch blocks + error middleware + docs
+- **"Database schema for users"** → Finds models + migrations + SQL comments
+
+### Practical Impact
+
+**Without semantic search:**
+
+- Agent relies on guessing filenames or exact keyword matches
+- Might miss relevant code in another module
+- Can't connect code to documentation
+- May duplicate functionality that exists with a different name
+
+**With semantic search:**
+
+- Find code by _what it does_, not what it's called
+- Discover patterns across your entire codebase
+- Connect implementation to design decisions
+- Avoid reinventing wheels
+
+**Tools available:**
+
+- **ChunkHound** - MCP server, runs locally, open-source
+- **Cursor** - Built-in codebase indexing
+- **Sourcegraph Cody** - Enterprise solution
+- **Custom** - Build your own with vector databases
+
+**Bottom line:** Semantic search turns agents from "smart greppers" into "architecture explorers" that understand your codebase holistically.
+
+## When to Use CLI Agents
+
+CLI agents are powerful but not always the right tool. Here's when they shine versus when manual coding is better:
+
+**Use CLI agents for:**
+
+| Task Type                      | Why Agents Excel                           | Example                                                     |
+| ------------------------------ | ------------------------------------------ | ----------------------------------------------------------- |
+| **Multi-file refactoring**     | Agents can coordinate changes across files | "Rename UserService to AccountService across the codebase"  |
+| **Boilerplate implementation** | Following existing patterns at scale       | "Add CRUD endpoints for Product model like we did for User" |
+| **Test generation**            | Writing comprehensive test coverage        | "Generate tests for all auth middleware functions"          |
+| **Bug fixing with context**    | Finding and fixing issues across modules   | "Fix the race condition in order processing"                |
+| **Documentation sync**         | Updating docs to match code changes        | "Update API docs to reflect new authentication flow"        |
+| **Dependency updates**         | Handling breaking changes systematically   | "Upgrade React Router v5 to v6 and fix all usages"          |
+
+**Use manual coding for:**
+
+| Task Type                  | Why Manual is Better                    | Example                                          |
+| -------------------------- | --------------------------------------- | ------------------------------------------------ |
+| **Novel algorithms**       | Agent can't invent truly new approaches | Designing a custom conflict resolution algorithm |
+| **Critical security**      | Too important to delegate               | Implementing cryptographic functions             |
+| **Single-file tweaks**     | Faster to just do it                    | Changing one constant value                      |
+| **Ambiguous requirements** | Needs human judgment                    | "Make the UX better"                             |
+| **Learning new patterns**  | You need to understand it deeply        | Implementing your first GraphQL resolver         |
+
+**The 5-minute rule:**
+
+- If explaining the task to an agent takes longer than doing it yourself: **do it manually**
+- If the task would take you 30+ minutes but agent can do it in 5: **use agent**
+- If you're not sure what "done" looks like: **do it manually first, then teach agent the pattern**
 
 ## Key Takeaways
 
-**Understanding Agents:**
+**The Core Architecture:**
 
-1. **AI agents execute complete workflows autonomously** - Not just code suggestions, but full implement → test → verify cycles
-2. **Agents = autonomous execution through tools** - Context gathering + LLM reasoning + tool execution + feedback loops
-3. **5-20 minute autonomous stretches** - This is the sweet spot where agents work independently while you monitor or operate other agents
+1. **Every CLI agent = LLM + Context Manager + Tools**
+   - LLM reasons and plans
+   - Context manager finds relevant information
+   - Tools execute actual work (file ops, bash, git, etc.)
 
-**Operator Role:**
+2. **LLMs are pattern matchers, not magic**
+   - They predict probable tokens based on training data
+   - They hallucinate when patterns seem familiar but aren't exact
+   - They're probabilistic—same input can produce different outputs
+   - Tests and types catch hallucinations; this is by design
 
-1. **Engineer-operator mental model** - Design → Program → Monitor → Verify (like CNC operation)
-2. **Context engineering is critical** - Good context = autonomous success, poor context = constant questions
-3. **Human "on the loop" not "in the loop"** - Verify outcomes after execution, don't micromanage every action
-4. **Concurrent agent operation** - Bandwidth multiplication happens when orchestrating 3+ agents in parallel
+**The Agent Loop:**
 
-**Agent Execution:**
+1. **Perceive** → Search/read codebase to understand what's relevant
+2. **Reason** → Plan approach based on findings
+3. **Act** → Write/edit code, install dependencies
+4. **Verify** → Run tests, check compilation
+5. **Iterate** → Fix failures and repeat until done
 
-1. **Four-step workflow** - Perceive Context → Reason & Plan → Act via Tools → Verify & Report
-2. **Self-correction through feedback** - Test failures drive autonomous iteration without human intervention
-3. **Agents ask when truly needed** - Ambiguous requirements, architectural decisions, or blockers
+This loop is what makes agents powerful—they self-correct based on objective feedback.
 
-**Quality Through Architecture:**
+**Context Matters:**
 
-1. **Architecture enables autonomy** - Type systems, tests, linters, CI/CD provide verification without human bottleneck
-2. **Probabilistic components need systems thinking** - Reliability comes from multiple verification layers, not code review
+1. **Context windows are finite** (32K-200K tokens)
+   - Can't load entire codebase at once
+   - Break large tasks into smaller chunks
+   - Agents use search to find what matters
 
-**Core insight:** Your effectiveness as an operator (context, task design, monitoring intuition) determines agent success as much as the agent's capabilities. The next lesson covers the Four Operating Principles that govern how to operate agents effectively.
+2. **No persistent memory**
+   - Each session starts fresh
+   - Use CLAUDE.md or similar files for "persistent memory"
+   - Document architectural decisions in your codebase
+
+**Tools That Extend Agents:**
+
+1. **MCP (Model Context Protocol)** - Connect agents to external resources
+   - Web search for current best practices
+   - Documentation APIs for up-to-date references
+   - Company tools (GitHub, Slack, internal APIs)
+   - Turns agents from "codebase explorers" into "connected researchers"
+
+2. **Semantic Search** - Find code by meaning, not exact text
+   - Discover patterns across your codebase
+   - Connect code to docs to tests
+   - Avoid duplicating existing functionality
+   - Agent understands architecture holistically
+
+**When to Use CLI Agents:**
+
+- **Good for:** Multi-file refactoring, boilerplate implementation, test generation, bug fixes requiring context
+- **Bad for:** Novel algorithms, critical security code, single-file tweaks, ambiguous requirements
+- **Rule of thumb:** If explaining takes longer than doing, just code it yourself
+
+**The Bottom Line:**
+CLI agents aren't magic—they're LLMs with access to tools, operating in iterative loops with specific constraints. Understanding how they actually work lets you use them effectively: provide good context, break down large tasks, verify with tests, and work with their probabilistic nature instead of against it.
 
 ---
 
