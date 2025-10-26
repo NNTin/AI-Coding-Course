@@ -42,11 +42,13 @@ This module covers the essential concepts you need to understand before diving i
 
 ## Lessons in This Module
 
-1. **Introduction to AI Coding Assistants** - Understanding what AI can and cannot do
-2. **How LLMs Generate Code** - Technical foundations you need to know
-3. **Mental Models for AI Collaboration** - Thinking effectively with AI
-4. **Setting Up Your Environment** - Tools and configuration
-5. **Your First AI-Assisted Project** - Hands-on practice
+1. **Introduction to AI Agent-Driven Development** - The paradigm shift and First Principles (what LLMs really are)
+2. **What Are AI Agents?** - Understanding agent architecture, execution workflows, and the engineer-operator role
+3. **The Four Operating Principles** - Fundamental constraints that govern successful agent operation
+4. **How LLMs Generate Code** - Technical foundations and behavioral patterns you need to know
+5. **Mental Models for AI Collaboration** - Thinking effectively with AI (coming soon)
+6. **Setting Up Your Environment** - Tools and configuration (coming soon)
+7. **Your First AI-Assisted Project** - Hands-on practice (coming soon)
 
 ## Prerequisites
 

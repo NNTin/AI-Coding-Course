@@ -1,6 +1,6 @@
 ---
-sidebar_position: 2
-sidebar_label: 'Lesson 2: How LLMs Work'
+sidebar_position: 4
+sidebar_label: 'Lesson 4: How LLMs Work'
 ---
 
 # How LLMs Generate Code
@@ -39,6 +39,7 @@ This prediction mechanism creates specific behavioral patterns you'll encounter 
 The model recognizes patterns from training data. It doesn't reason about correctness.
 
 **Example:**
+
 ```typescript
 // Prompt: "Add error handling to this function"
 async function fetchUser(id: string) {
@@ -60,13 +61,14 @@ async function fetchUser(id: string) {
 
 **The pattern looks right** (try-catch), but the logic is wrong (silent failures, incorrect return type).
 
-**Implication:** Review for correctness, not just syntax. The code will *look* professional.
+**Implication:** Review for correctness, not just syntax. The code will _look_ professional.
 
 ### 2. Non-Deterministic Output
 
 Same prompt generates different code on each run (controlled by `temperature` parameter).
 
 **Try it:**
+
 1. Ask: "Write a function to validate email addresses"
 2. Ask again (same prompt)
 3. Compare the two implementations
@@ -78,12 +80,14 @@ You'll get different regex patterns, different validation logic, different funct
 ### 3. Hallucinations Are Inevitable
 
 The model will confidently generate:
+
 - Functions from libraries that don't exist
 - APIs with wrong signatures
 - Deprecated methods as if they're current
 - Plausible documentation for fake features
 
 **Real example:**
+
 ```python
 # Prompt: "Use pandas to remove outliers"
 import pandas as pd
@@ -91,9 +95,10 @@ import pandas as pd
 df = df.remove_outliers(method='iqr', threshold=1.5)  # ❌ No such method
 ```
 
-`remove_outliers()` doesn't exist in pandas. But it *should*, and the AI has seen similar patterns, so it hallucinates it.
+`remove_outliers()` doesn't exist in pandas. But it _should_, and the AI has seen similar patterns, so it hallucinates it.
 
 **Implication:**
+
 - **Always verify imports** - Check the actual library docs
 - **Always verify API signatures** - Don't trust method names or parameters
 - **Higher risk with newer libraries** - Less training data = more hallucinations
@@ -103,11 +108,13 @@ df = df.remove_outliers(method='iqr', threshold=1.5)  # ❌ No such method
 The model only sees recent conversation history (typically ~200K tokens ≈ 150K words of code/text).
 
 **Consequences:**
+
 - Can't see your entire codebase
 - Forgets earlier conversation after many exchanges
 - No memory across sessions
 
 **Example:**
+
 ```
 You (start of session): "We're using React 19 with the new `use` hook"
 [... 50 messages of conversation ...]
@@ -116,6 +123,7 @@ AI: [Generates React 18 pattern, forgot you said React 19]
 ```
 
 **Implication:**
+
 - Re-state critical context when starting new conversations
 - For large refactors, break into smaller, focused sessions
 - Don't assume it remembers constraints from 30 messages ago
@@ -124,9 +132,10 @@ AI: [Generates React 18 pattern, forgot you said React 19]
 
 Base LLMs don't compile or run code. They don't know if their output works.
 
-Modern coding agents (like Cursor, Aider, Claude Code) *do* have execution tools, but the core LLM still doesn't inherently know.
+Modern coding agents (like Cursor, Aider, Claude Code) _do_ have execution tools, but the core LLM still doesn't inherently know.
 
 **Implication:** Close the feedback loop yourself:
+
 1. Generate code
 2. Run/compile/test
 3. Paste errors back
@@ -158,26 +167,28 @@ function TokenPredictionDemo() {
 
   const generateCompletion = () => {
     // Simulating different completions for the same prompt
-    const possibilities = [
-      'total',
-      'sum',
-      'average',
-      'result',
-      'value'
-    ];
-    const choice = possibilities[Math.floor(Math.random() * possibilities.length)];
+    const possibilities = ['total', 'sum', 'average', 'result', 'value'];
+    const choice =
+      possibilities[Math.floor(Math.random() * possibilities.length)];
     setOutputs([...outputs, choice]);
   };
 
   return (
     <div>
-      <p><code>def calculate_</code> → <strong>?</strong></p>
-      <button onClick={generateCompletion} style={{padding: '8px 16px', marginBottom: '10px'}}>
+      <p>
+        <code>def calculate_</code> → <strong>?</strong>
+      </p>
+      <button
+        onClick={generateCompletion}
+        style={{ padding: '8px 16px', marginBottom: '10px' }}
+      >
         Generate Next Token
       </button>
       <div>
         {outputs.map((output, i) => (
-          <div key={i}>Attempt {i + 1}: <code>calculate_{output}</code></div>
+          <div key={i}>
+            Attempt {i + 1}: <code>calculate_{output}</code>
+          </div>
         ))}
       </div>
     </div>
@@ -213,6 +224,7 @@ If you want deeper intuition about how transformers work:
    - Invented convenience methods?
 
 **Expected Findings:** The AI will likely get 70-80% correct, but might:
+
 - Use slightly wrong parameter names (`payment_method` vs `paymentMethod`)
 - Miss required fields like `currency`
 - Use a non-existent helper method
@@ -234,4 +246,4 @@ If you want deeper intuition about how transformers work:
 
 ---
 
-**Next:** Lesson 3: Mental Models for AI Collaboration (coming soon)
+**Next:** Lesson 5: Mental Models for AI Collaboration (coming soon)
