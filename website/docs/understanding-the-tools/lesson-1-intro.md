@@ -108,21 +108,11 @@ Now that we've established the machinery, let's discuss the operating principles
 
 ## Summary
 
-You're learning to **operate precision tools**, not manage teammates. Understanding the machinery is fundamental:
+You're learning to **operate precision tools**, not manage teammates. Understanding what AI agents actually are - LLMs (token prediction engines) wrapped in agent software (execution layer) - is fundamental to using them effectively.
 
-- **LLMs** are token prediction engines (brains) - sophisticated pattern matching through transformer architecture, not sentient beings
-- **Agent frameworks** provide the execution layer (body) - enabling LLMs to perform actions via tools
-- **Your role** shifts from writing every line to orchestrating autonomous task execution
+The three operator errors covered above stem from anthropomorphizing these tools. Avoid assuming they "know" things, "care" about outcomes, or function like teammates. They're sophisticated instruments that execute language-based instructions.
 
-**The three operator errors to avoid:**
-
-1. Assuming the agent "knows" things (it only sees ~200K tokens of context)
-2. Expecting it to "care" about outcomes (it executes literal instructions)
-3. Treating it like a teammate instead of a tool (it's a precision instrument that speaks English)
-
-Like CNC machines transformed manufacturing from manual craftsmanship to programmed operations, AI agents transform software engineering. The result is the same: massive gains in bandwidth, repeatability, and precision.
-
-Now that you understand the machinery and mental model, the next lesson covers **what AI agents actually are** - their architecture, execution workflows, and how your role as an engineer evolves into an operator.
+The next lesson covers agent architecture, execution workflows, and how your role as an engineer evolves into an operator.
 
 ---
 

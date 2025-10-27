@@ -7,15 +7,6 @@ sidebar_label: 'Lesson 2: Understanding Agents'
 
 In Lesson 1, we established that **LLMs are brains** (token prediction engines) and **agent frameworks are bodies** (execution layers). Now let's understand how these components work together to create autonomous coding agents that can complete complex tasks.
 
-## Learning Objectives
-
-By the end of this lesson, you will be able to:
-
-- Explain how agents work as textual systems (system prompts → user tasks → tool calls → results → responses)
-- Distinguish between built-in tools and MCP-based external tools and when to use each
-- Understand why CLI coding agents deliver superior developer experience, especially for concurrent work across projects
-- Recognize context engineering as the fundamental skill for effective AI-assisted coding
-
 ## The Agent Execution Loop
 
 An agent isn't just an LLM responding to prompts. It's a **feedback loop** that combines reasoning with action, allowing the LLM to iteratively work toward a goal.
@@ -95,7 +86,11 @@ sequenceDiagram
     A->>U: Agent Response<br/>"Task complete"
 ```
 
-**Key insight:** The agent doesn't "think" separately from its output. When you see the agent reasoning ("I should check the validation logic..."), that's not internal thought - it's text being generated in the context, visible to both you and the LLM itself.
+:::tip[Reasoning is Just Text]
+The agent doesn't "think" separately from its output. When you see the agent reasoning ("I should check the validation logic..."), that's not internal thought - it's text being generated in the context, visible to both you and the LLM itself.
+
+**Extended thinking modes complicate this further:** Providers like Anthropic and OpenAI now offer "extended thinking" where the model generates hidden reasoning tokens before producing visible output. What you see in the context is a _summary_ of that internal chain-of-thought, not the full reasoning process. You're billed for the complete hidden reasoning tokens, but you only see an abbreviated version. The actual reasoning is opaque - you can't inspect or debug it.
+:::
 
 ### Concrete Example: What the Context Actually Looks Like
 
@@ -284,107 +279,11 @@ Open three tabs, run agents on different projects (refactoring in `project-a`, d
 We'll dive deep into **Planning & Execution** strategies in Lesson 7, including how to structure concurrent work across multiple agents, when to parallelize vs. serialize tasks, and how to coordinate complex multi-project workflows.
 :::
 
-## Context Engineering: Optimizing the Entire Flow
+## Context Engineering and Steering
 
-Now that you understand agents as **textual systems** and LLMs as **stateless**, you can see why effective AI-assisted coding is fundamentally about **context engineering** - deliberately optimizing every piece of text that flows through the agent's context window.
+Now that you understand agents as textual systems and LLMs as stateless, the core truth emerges: **effective AI-assisted coding is about engineering context to steer behavior**. The context window is the agent's entire world - everything it knows comes from the text flowing through it. You control that text: system prompts, your instructions, tool results, conversation history. Vague context produces wandering behavior; precise, scoped context steers the agent exactly where you need it. You can steer upfront with focused prompts, or dynamically mid-conversation when the agent drifts. The stateless nature means you can even steer the agent to objectively review its own code in a fresh conversation.
 
-**Because the LLM is stateless, the context is its entire world.** You have total control over what the agent knows, believes, and can do. This makes context engineering the most powerful skill for AI-assisted coding.
-
-### Everything is Context Engineering
-
-When you work with AI coding agents, you're not just "writing prompts." You're engineering a **complete textual environment** that determines agent behavior:
-
-**1. System Prompts** (set by agent developers)
-
-- Define the agent's role and behavior
-- Specify available tools and their usage patterns
-- Set safety guardrails and operational constraints
-- **You control this** when building custom agents or configuring MCP tools
-
-**2. User Prompts** (your tasks and instructions)
-
-- The goals you give the agent
-- Context you provide about the codebase
-- Constraints and requirements you specify
-- **You control this** every time you interact with the agent
-
-**3. Tool Descriptions** (eat up context tokens)
-
-- Each tool has a description explaining its purpose
-- Parameters and expected inputs
-- Examples of correct usage
-- **Trade-off:** More tools = more capability, but also more context consumed and potential confusion
-
-**4. Tool Results** (returned to context)
-
-- File contents from Read operations
-- Search results from Grep
-- Command output from Bash
-- **Format matters:** Verbose tool output wastes tokens; structured, concise results keep context clean
-
-**5. Agent Responses** (LLM-generated text)
-
-- Reasoning about what to do next
-- Tool calls in structured format
-- Explanations and status updates
-- **Accumulates over time:** Long conversations fill the context window
-
-### Steering: Guiding Behavior Through Context
-
-**Steering** is the practice of guiding LLM behavior by controlling what's in the context. You're not just "asking better" - you're actively directing the agent's attention and approach.
-
-**Vague context = wandering behavior:**
-
-```
-User: "Fix the bug"
-Agent: [Searches entire codebase, loads 20 files, gets confused, makes random changes]
-```
-
-**Specific context = steered behavior:**
-
-```
-User: "Fix the authentication bug in src/auth/middleware.ts - tokens are
-expiring 1 hour early. The issue is likely in the JWT verification logic
-that compares timestamps. Tests are in tests/auth.test.ts"
-
-Agent: [Directly reads the specific file, understands the narrow scope,
-makes targeted fix, runs relevant tests]
-```
-
-**How you steered:**
-
-- File paths → eliminated search, focused attention
-- Precise description → narrowed hypothesis space
-- Root cause hypothesis → directed investigation path
-- Test location → specified verification method
-
-**Steering through statelessness:**
-
-Because the agent has no memory, you can steer it to review its own code objectively:
-
-```
-# Conversation 1: Implementation
-You: "Implement rate limiting middleware for our API"
-Agent: [Writes code using in-memory store]
-
-# Conversation 2: Fresh context, different steering
-You: "Review src/middleware/rateLimit.ts for security and scalability issues"
-Agent: [Finds: in-memory store fails in multi-instance deployments, suggests Redis]
-```
-
-The agent doesn't defend its earlier choice - it critiques the code as if encountering it for the first time. You steered it from "implementer" to "reviewer" by controlling the context.
-
-### The Rest of This Course
-
-Now you understand the foundation: agents are textual systems, LLMs are stateless, and you control behavior by controlling context.
-
-**Context engineering** is the practice of deliberately shaping what flows through the agent's context window - system prompts, user prompts, tool results, everything. It's the fundamental skill for effective AI-assisted coding.
-
-Every lesson from here forward teaches context engineering techniques for different scenarios.
-
-**The mental model shift:** Stop thinking "I'm asking the AI to do something." Start thinking "I'm steering the agent by engineering its textual environment."
-
-Experienced engineers excel at context engineering because you already think in terms of interfaces, contracts, and system design. This is just applying those skills to the LLM's textual interface.
+This is system design thinking applied to text - you're already good at designing interfaces and contracts. The rest of this course teaches how to apply those skills to engineer context and steer agents across real coding scenarios.
 
 ---
 
