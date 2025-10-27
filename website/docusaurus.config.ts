@@ -47,6 +47,13 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          exclude: [
+            '**/_*.{js,jsx,ts,tsx,md,mdx}',
+            '**/_*/**',
+            '**/*.test.{js,jsx,ts,tsx}',
+            '**/__tests__/**',
+            '**/CLAUDE.md', // Exclude AI agent instructions from build
+          ],
           editUrl:
             'https://github.com/ofriw/AI-Coding-Course/tree/main/website/',
           showLastUpdateTime: false,
