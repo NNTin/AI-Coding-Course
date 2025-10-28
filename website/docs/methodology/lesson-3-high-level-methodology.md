@@ -116,65 +116,94 @@ As you plan, you're refining your mental model of the system. You're not memoriz
 
 This mental model is what allows you to validate generated code quickly. When the agent completes, you don't read every line. You check: "Does this fit my mental model of how this system works?" If yes, it's probably correct. If no, either your model is wrong (update it) or the code is wrong (regenerate).
 
-## Phase 3: Execute (Precise Prompting)
+:::tip Plan Mode Across Different Tools
 
-With your plan complete, you craft a prompt. The quality of this prompt determines whether the agent generates correct code on the first try or requires multiple iterations.
+**Claude Code:** Press `Shift+Tab` to enter dedicated plan mode for strategic discussion before execution.
 
-### Anatomy of a High-Quality Prompt
+**Other tools (Copilot CLI, Codex, Cursor, etc.):** Most AI coding assistants lack built-in plan mode. Use this baseline prompt template to simulate it:
 
-A good prompt has four components:
+<details>
+<summary>Click to expand: Generic Plan Mode Prompt Template</summary>
 
-**1. Task Definition** - What specifically needs to be done
+```markdown
+# PLANNING MODE - READ ONLY
 
+You are in planning mode. DO NOT make any code edits or modifications.
+
+## Your Task
+
+Analyze the following request and create a comprehensive execution plan:
+
+[USER REQUEST HERE]
+
+## Instructions
+
+1. **Think deeply** about the problem before responding. Consider:
+   - What is the actual goal vs. stated request?
+   - What are potential edge cases or complications?
+   - What assumptions am I making?
+
+2. **Ask clarifying questions** if ANY of these are unclear:
+   - Requirements or expected behavior
+   - Scope boundaries (what's in/out of scope)
+   - Success criteria
+   - Technical constraints or preferences
+   - Existing architecture or patterns to follow
+
+3. **Draft a structured execution plan** with:
+
+   **SCOPE**
+   - What will be changed
+   - What will NOT be changed
+   - Affected components/files
+
+   **REQUIREMENTS**
+   - Functional requirements
+   - Non-functional requirements (performance, security, etc.)
+   - Dependencies or prerequisites
+
+   **IMPLEMENTATION PLAN**
+   - Step-by-step breakdown
+   - For each step, specify:
+     - File(s) to modify
+     - Type of change (add/modify/delete)
+     - Key logic or patterns to implement
+
+   **VALIDATION**
+   - How to verify success
+   - Test cases or scenarios to cover
+   - Potential risks or rollback plan
+
+## Output Format
+
+- Use clear headers and bullet points
+- Be specific about file paths and function names
+- Flag any uncertainties or assumptions
+
+Ask your clarifying questions first, then provide the plan.
 ```
-Add rate limiting middleware to the Express API for /api/* routes
-```
 
-**2. Context** - Relevant patterns, files, and examples
+</details>
 
-```
-Context:
-- Middleware pattern: src/middleware/auth.ts (structure to follow)
-- Redis client: src/cache/client.ts (connection already configured)
-- Apply in: src/app.ts (before route handlers)
-```
+This template provides a solid baseline for any planning task. In [Lesson 4: Prompting 101](./lesson-4-prompting-101.md), you'll learn the prompt engineering principles behind this structure so you can construct your own custom planning prompts rather than relying on templates.
 
-**3. Constraints** - Requirements, patterns, and boundaries
+:::
 
-```
-Requirements:
-- Authenticated users: 1000 req/hour
-- Anonymous users: 100 req/hour
-- Admin role: no limit
-- Return 429 with { error, retryAfter } and Retry-After header
-- Log rate limit hits (pattern: src/middleware/logging.ts)
-- Allowlist from process.env.RATE_LIMIT_ALLOWLIST
-```
+## Phase 3: Execute (Two Execution Modes)
 
-**4. Edge Cases** - Security, errors, and failure modes
+With your plan complete, you execute—but how you interact with the agent during execution fundamentally changes your productivity. There are two modes: supervised (actively watching and steering) and autonomous (fire-and-forget). Most engineers start with supervised mode to build trust, then gradually shift to autonomous mode as they develop stronger grounding and planning skills. Here's the counterintuitive truth: the real productivity gain isn't about finishing individual tasks faster. It's about working on multiple projects simultaneously and maintaining extremely long work stretches. That's where 10x productivity actually hides.
 
-```
-Edge cases:
-- Redis connection failure: allow request through, log error
-- X-Forwarded-For: use leftmost IP (original client, not proxy)
-- Sliding window algorithm (not fixed window)
-```
+### Supervised Mode ("Babysitting")
 
-### The Execute Checklist
+In supervised mode, you actively monitor the agent as it works. You watch each action, review intermediate outputs, steer when it drifts, and intervene when it makes mistakes. This gives you maximum control and precision—you catch issues immediately and guide the agent toward the right solution in real time. The cost is massive: your throughput tanks because you're blocked while the agent works. You can't context-switch to another task, you can't step away, and you're burning your most valuable resource (attention) on implementation details. Use this mode when you're learning how agents behave, when working on critical security-sensitive code, or when tackling complex problems where you need to build your mental model as the agent explores. This is your training ground for developing the trust and intuition that eventually allows you to let go.
 
-Before you submit the prompt, verify:
+### Autonomous Mode ("Autopilot" / "YOLO")
 
-- [ ] Task is clearly scoped (one feature, one change)
-- [ ] You've provided relevant file paths and patterns
-- [ ] Constraints are explicit (what to do, what not to touch)
-- [ ] Edge cases and security considerations are included
-- [ ] Success criteria are clear
+In autonomous mode, you give the agent a well-defined task from your plan, let it run, and check the results when it's done. You're not watching it work. You're doing other things—working on a different project, attending a meeting, cooking dinner, running errands. You might check your phone occasionally to see if it's blocked or needs clarification, but mostly you're away. This is where the real productivity transformation happens, and it's not what most people think. Yes, sometimes the agent finishes a task faster than you would manually. But that's not the point. The point is **parallel work** and **continuous output**. You can have three agents running simultaneously on different projects. You can maintain 8-hour stretches of productive output while only spending 2 hours at your keyboard. You can genuinely multitask in software development for the first time in history. Even if you could hand-code something in 20 minutes and the agent takes 30, autonomous mode wins if it means you're cooking dinner instead of being blocked. This mode depends entirely on excellent grounding (Phase 1) and planning (Phase 2). If you skip those phases, the agent will drift, hallucinate, and produce garbage. If you do them well, you can trust the agent to execute correctly without supervision. Your goal is to maximize time in autonomous mode—that's where you become genuinely more productive, not just slightly faster.
 
-Then let the agent work. Don't interrupt mid-stream unless it's clearly stuck in a loop. Trust the process.
-
-**Time investment:** 2-5 minutes to craft the prompt.
-
-**Payoff:** Agent completes correctly in 5-15 minutes instead of generating broken code that takes 30 minutes to fix manually.
+:::tip The Real 10x Productivity Gain
+Autonomous mode isn't about speed per task. It's about working on multiple tasks simultaneously while living your life. A senior engineer running three autonomous agents in parallel while attending meetings and cooking dinner ships more code than the same engineer babysitting one agent through a single task. That's the actual game changer.
+:::
 
 ## Phase 4: Validate (Architectural Verification)
 
