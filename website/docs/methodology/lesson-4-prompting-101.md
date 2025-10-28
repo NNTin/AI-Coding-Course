@@ -101,12 +101,12 @@ What authentication? JWT? OAuth? Session tokens? Which endpoints?
 
 ```
 Add JWT authentication to the API:
+- Do NOT modify existing session middleware
 - Use jsonwebtoken library
 - Protect all /api/v1/* endpoints except /api/v1/auth/login
 - Token expiry: 24 hours
 - Store user ID and role in payload
 - Return 401 for missing/invalid tokens
-- Do NOT modify existing session middleware
 ```
 
 Now the completion space is well-defined.
