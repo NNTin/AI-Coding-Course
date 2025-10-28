@@ -17,7 +17,7 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <p className={styles.heroAudience}>
-          For senior engineers with 3+ years professional experience
+          For experienced engineers with 3+ years professional experience
         </p>
         <div className={styles.buttons}>
           <Link className="button button--secondary button--lg" to="/docs">
@@ -231,7 +231,7 @@ export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
-      title="AI Coding for Senior Engineers"
+      title="AI Coding for experienced Engineers"
       description="Master AI-assisted software engineering - production-ready patterns, architecture, and workflows for experienced developers"
     >
       <HomepageHeader />
