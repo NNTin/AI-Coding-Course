@@ -48,20 +48,33 @@
 }
 
 .meterFillNormal {
-  background: linear-gradient(90deg, var(--visual-capability), var(--visual-workflow));
+  background: linear-gradient(
+    90deg,
+    var(--visual-capability),
+    var(--visual-workflow)
+  );
 }
 
 .meterFillWarning {
-  background: linear-gradient(90deg, var(--visual-limitation), var(--gradient-warning-end));
+  background: linear-gradient(
+    90deg,
+    var(--visual-limitation),
+    var(--gradient-warning-end)
+  );
 }
 
 .meterFillCritical {
-  background: linear-gradient(90deg, var(--visual-error), var(--gradient-critical-end));
+  background: linear-gradient(
+    90deg,
+    var(--visual-error),
+    var(--gradient-critical-end)
+  );
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

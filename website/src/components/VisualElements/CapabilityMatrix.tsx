@@ -48,7 +48,11 @@ function getTrustIndicator(level: 'high' | 'medium' | 'low'): {
 } {
   switch (level) {
     case 'high':
-      return { icon: '✅', label: 'Reliable', color: 'var(--visual-capability)' };
+      return {
+        icon: '✅',
+        label: 'Reliable',
+        color: 'var(--visual-capability)',
+      };
     case 'medium':
       return { icon: '⚠️', label: 'Verify', color: 'var(--visual-limitation)' };
     case 'low':
@@ -111,13 +115,15 @@ export default function CapabilityMatrix(): JSX.Element {
         <div className={styles.legendItem}>
           <span className={styles.legendIcon}>⚠️</span>
           <span className={styles.legendText}>
-            <strong>Verify:</strong> Likely 80% correct, thorough review required
+            <strong>Verify:</strong> Likely 80% correct, thorough review
+            required
           </span>
         </div>
         <div className={styles.legendItem}>
           <span className={styles.legendIcon}>❌</span>
           <span className={styles.legendText}>
-            <strong>Check docs:</strong> High hallucination risk, verify against source
+            <strong>Check docs:</strong> High hallucination risk, verify against
+            source
           </span>
         </div>
       </div>

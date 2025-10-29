@@ -158,7 +158,7 @@ export default function WorkflowCircle(): JSX.Element {
         })}
 
         {/* Phase nodes */}
-        {phases.map((phase, index) => (
+        {phases.map((phase) => (
           <g key={phase.name} className={styles.phaseGroup}>
             {/* Phase circle */}
             <circle

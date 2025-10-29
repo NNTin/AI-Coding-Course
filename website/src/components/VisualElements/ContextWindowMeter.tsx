@@ -67,7 +67,10 @@ export default function ContextWindowMeter({
         >
           + Add 50K Context
         </button>
-        <button className={`${styles.button} ${styles.buttonReset}`} onClick={reset}>
+        <button
+          className={`${styles.button} ${styles.buttonReset}`}
+          onClick={reset}
+        >
           Reset
         </button>
       </div>
@@ -75,7 +78,8 @@ export default function ContextWindowMeter({
       <div className={styles.statusMessage}>
         {isCritical && (
           <div className={styles.alertCritical}>
-            ⚠️ Context window nearly full. Model may start dropping early messages.
+            ⚠️ Context window nearly full. Model may start dropping early
+            messages.
           </div>
         )}
         {isWarning && !isCritical && (

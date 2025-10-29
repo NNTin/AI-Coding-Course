@@ -228,7 +228,6 @@ function FinalCTA() {
 }
 
 export default function Home(): ReactNode {
-  const { siteConfig } = useDocusaurusContext();
   return (
     <Layout
       title="AI Coding for experienced Engineers"
