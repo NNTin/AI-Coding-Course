@@ -13,12 +13,12 @@ This lesson covers the techniques and tools that turn agents from creative ficti
 
 ## The Grounding Problem: Context is Everything
 
-LLMs have a fundamental limitation: they only "know" what's in their training data (frozen at a point in time) and what's in their current context window (~200K tokens for Claude Sonnet 4.5). Everything else is educated guessing.
+LLMs have a fundamental limitation: they only "know" what's in their training data (frozen at a point in time) and what's in their current context window (~200K tokens for Claude Sonnet 4.5 or ~400K tokens for GPT-5). Everything else is educated guessing.
 
 **Without grounding:**
 
 ```
-You: "Fix the authentication bug in our API"
+You: "Authentication API has a bug: [bug description]. Find the root cause and plan the fix."
 Agent: *Generates plausible-looking auth code based on generic patterns from training data*
 Agent: *Has no idea what auth library you use, what your existing middleware looks like, or what the actual bug is*
 ```
@@ -26,10 +26,13 @@ Agent: *Has no idea what auth library you use, what your existing middleware loo
 **With grounding:**
 
 ```
-You: "Fix the authentication bug in our API"
-Agent: *Searches codebase for auth-related files*
-Agent: *Reads existing middleware patterns*
-Agent: *Retrieves relevant documentation for your auth library*
+You: "Use ChunkHound's code research, learn how auth works. Use ArguSeek, read the latest docs. Authentication API has a bug: [bug description]. Find the root cause and plan the fix."
+Agent: *code_research("How does authentication work in this codebase?")*
+ChunkHound: *Returns authentication architecture, files, modules, dependencies, contraints, etc*
+Agent: *research_iterative("jsonwebtoken latest docs")*
+ArguSeek: *Searches Google, returns high level gist + links to docs*
+Agent: *fetch_url(url="https://github.com/auth0/node-jsonwebtoken#readme", looking_for="Detailed API")*
+ArguSeek: *Fetches URL, distills and returns just the API*
 Agent: *Analyzes the specific error in context*
 Agent: *Generates fix that matches your architecture and conventions*
 ```
@@ -156,7 +159,7 @@ Similarly, ArguSeek queries pollute context with:
 
 ### Example: Multi-Source Grounding with Specialized Tools
 
-```
+```text
 Task: "Add OAuth2 authentication to our API"
 
 Orchestrator spawns specialized sub-agents in parallel:

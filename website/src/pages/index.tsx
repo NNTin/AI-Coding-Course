@@ -62,7 +62,7 @@ function CourseModules() {
         'Capabilities and limitations',
         'Context windows and grounding',
       ],
-      link: '/docs/understanding-the-tools',
+      link: '/docs/understanding-the-tools/lesson-1-intro',
     },
     {
       number: 2,
@@ -72,7 +72,7 @@ function CourseModules() {
         'Grounding techniques',
         'Workflow design patterns',
       ],
-      link: '/docs/methodology',
+      link: '/docs/methodology/lesson-3-high-level-methodology',
     },
     {
       number: 3,
@@ -82,7 +82,7 @@ function CourseModules() {
         'Code review and testing',
         'Debugging and refactoring',
       ],
-      link: '/docs/practical-techniques',
+      link: '/docs/practical-techniques/lesson-6-project-onboarding',
     },
   ];
 
