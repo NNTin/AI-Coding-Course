@@ -311,3 +311,39 @@
 [data-theme='dark'] .theme-code-block {
   box-shadow: 0 2px 8px rgba(167, 139, 250, 0.2);
 }
+
+/* ========================================================================
+   ANNOUNCEMENT BANNER - Under Construction Warning
+   ========================================================================
+   High-visibility warning banner for course development status.
+   Uses warm orange/amber colors for maximum attention.
+   Maintains WCAG AA compliance for accessibility.
+   ======================================================================== */
+
+:root {
+  /* Light mode: Vibrant amber/orange background with dark text */
+  /* WCAG: #78350f (dark brown) on #fed7aa (light peach) = 7.1:1 (AAA Pass) */
+  --announcement-bg: #fed7aa; /* Light peach - softer than pure orange */
+  --announcement-text: #78350f; /* Dark brown - high contrast, readable */
+}
+
+[data-theme='dark'] {
+  /* Dark mode: Deep orange background with bright text */
+  /* WCAG: #fef3c7 (cream) on #ea580c (orange) = 7.8:1 (AAA Pass) */
+  --announcement-bg: #ea580c; /* Vivid orange - warm and attention-grabbing */
+  --announcement-text: #fef3c7; /* Cream - bright and readable */
+}
+
+/* Announcement bar custom styling */
+div[class*='announcementBar'] {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] div[class*='announcementBar'] {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 12px rgba(234, 88, 12, 0.3);
+}

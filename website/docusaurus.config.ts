@@ -104,6 +104,13 @@ const config: Config = {
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    announcementBar: {
+      id: 'under_construction',
+      content: '🚧 Course Under Development - Content is still changing',
+      backgroundColor: 'var(--announcement-bg)',
+      textColor: 'var(--announcement-text)',
+      isCloseable: false,
+    },
     colorMode: {
       respectPrefersColorScheme: true,
     },
