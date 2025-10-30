@@ -1,9 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: 'Lesson 4: Prompting 101'
+title: 'Prompting 101'
 ---
-
-# Prompting 101
 
 AI coding assistants aren't conversational partners—they're sophisticated pattern completion engines. Understanding this fundamental distinction changes how you prompt.
 

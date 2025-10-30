@@ -1,9 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: 'Lesson 9: Reviewing Code'
+title: 'Reviewing Code with AI'
 ---
-
-# Reviewing Code with AI
 
 Code review is a high-leverage activity. When done well, it catches bugs, maintains architectural consistency, and shares knowledge. When done poorly, it wastes time on trivial issues while missing critical flaws.
 

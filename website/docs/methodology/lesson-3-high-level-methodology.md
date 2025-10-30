@@ -1,11 +1,10 @@
 ---
 sidebar_position: 1
 sidebar_label: 'Lesson 3: Four-Phase Workflow'
+title: 'Four-Phase Workflow'
 ---
 
 import WorkflowCircle from '@site/src/components/VisualElements/WorkflowCircle';
-
-# Four-Phase Workflow
 
 The hardest part of working with AI agents isn't learning new tools or writing better prompts. It's letting go.
 

@@ -1,9 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: 'Lesson 1: Introduction'
+title: 'Introduction to AI Agent-Driven Development'
 ---
-
-# Introduction to AI Agent-Driven Development
 
 Welcome to the future of software engineering. This course teaches you to **operate AI agents** that autonomously execute complex development tasks - from specification to deployment.
 

@@ -1,9 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: 'Lesson 10: Debugging'
+title: 'Lesson 10: Debugging with AI Agents'
 ---
-
-# Lesson 10: Debugging with AI Agents
 
 Debugging with AI agents isn't about asking "what's wrong with my code?" It's about systematically placing agents in diagnostic environments where they can observe, reproduce, and verify fixes with evidence.
 

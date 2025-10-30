@@ -1,9 +1,8 @@
 ---
 sidebar_position: 1
 slug: /
+title: 'AI Coding for Senior Engineers'
 ---
-
-# AI Coding for Senior Engineers
 
 ## The Reality
 

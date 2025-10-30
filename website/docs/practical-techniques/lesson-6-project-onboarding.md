@@ -1,9 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: 'Lesson 6: Project Onboarding'
+title: 'Lesson 6: Project Onboarding'
 ---
-
-# Lesson 6: Project Onboarding
 
 When you join a new project, the first week is brutal. You're swimming in unfamiliar architecture, tech stack decisions, tribal knowledge buried in Slack threads, and that one critical bash script everyone runs but nobody documented.
 

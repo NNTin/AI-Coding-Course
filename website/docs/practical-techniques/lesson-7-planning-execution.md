@@ -1,9 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: 'Lesson 7: Planning & Execution'
+title: 'Planning & Execution'
 ---
-
-# Planning & Execution
 
 Feature development with AI agents shifts your role from line-by-line implementation to task orchestration. This lesson covers the **planning phase** that precedes autonomous execution - how to ground the agent with research, when to ask clarifying questions, and how to decompose complex features into parallel workstreams.
 

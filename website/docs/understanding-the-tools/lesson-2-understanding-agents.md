@@ -1,9 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: 'Lesson 2: Understanding Agents'
+title: 'Understanding Agents'
 ---
-
-# Understanding Agents
 
 In Lesson 1, we established that **LLMs are brains** (token prediction engines) and **agent frameworks are bodies** (execution layers). Now let's understand how these components work together to create autonomous coding agents that can complete complex tasks.
 

@@ -1,9 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: 'Lesson 8: Tests as Guardrails'
+title: 'Lesson 8: Tests as Guardrails'
 ---
-
-# Lesson 8: Tests as Guardrails
 
 Autonomous agent execution requires automated verification. You don't manually review every line a CNC machine cuts - you verify the output against specifications. Same principle applies to AI agents operating on your codebase.
 

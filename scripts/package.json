@@ -1,0 +1,13 @@
+{
+  "name": "ai-coding-course-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Utility scripts for AI Coding Course",
+  "scripts": {
+    "generate-podcast": "node generate-podcast.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1"
+  }
+}
