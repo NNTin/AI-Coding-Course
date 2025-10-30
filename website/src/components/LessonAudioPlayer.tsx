@@ -22,88 +22,34 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Debug: log component mount
-  console.log('[AudioPlayer] Component mounted with metadata:', {
-    source: metadata.source,
-    id: metadata.id,
-    title: metadata.title,
-  });
-
   // Load manifest and find audio for current page
   useEffect(() => {
     async function loadAudio() {
-      console.log('[AudioPlayer BROWSER] useEffect triggered');
-      console.log('[AudioPlayer BROWSER] Metadata source:', metadata.source);
-
       try {
         const manifestUrl = '/AI-Coding-Course/audio/manifest.json';
-        console.log(
-          '[AudioPlayer BROWSER] Fetching manifest from:',
-          manifestUrl
-        );
-
         const response = await fetch(manifestUrl);
-        console.log(
-          '[AudioPlayer BROWSER] Fetch response status:',
-          response.status
-        );
-        console.log('[AudioPlayer BROWSER] Fetch response ok:', response.ok);
 
         if (!response.ok) {
-          console.log(
-            '[AudioPlayer BROWSER] Failed to fetch manifest:',
-            response.status
-          );
           setIsLoading(false);
           return;
         }
 
         const manifest: AudioManifest = await response.json();
-        console.log('[AudioPlayer BROWSER] Manifest loaded successfully');
-        console.log(
-          '[AudioPlayer BROWSER] Manifest keys:',
-          Object.keys(manifest)
-        );
 
         // Get source file path from metadata
         const sourcePath = metadata.source.replace(/@site\/docs\//, '');
-        console.log(
-          '[AudioPlayer BROWSER] Transformed source path:',
-          sourcePath
-        );
-        console.log(
-          '[AudioPlayer BROWSER] Looking for key in manifest:',
-          sourcePath
-        );
 
         // Look for matching audio in manifest
         const audioEntry = manifest[sourcePath];
-        console.log(
-          '[AudioPlayer BROWSER] Manifest lookup result:',
-          audioEntry
-        );
 
         if (audioEntry) {
-          console.log('[AudioPlayer BROWSER] Found audio entry:', audioEntry);
           // Prepend base URL for Docusaurus
           const fullAudioUrl = `/AI-Coding-Course${audioEntry.audioUrl}`;
-          console.log('[AudioPlayer BROWSER] Setting audio URL:', fullAudioUrl);
           setAudioUrl(fullAudioUrl);
-        } else {
-          console.log('[AudioPlayer BROWSER] No audio found for:', sourcePath);
-          console.log(
-            '[AudioPlayer BROWSER] Exact match required. Available keys:',
-            Object.keys(manifest)
-          );
         }
 
         setIsLoading(false);
-        console.log(
-          '[AudioPlayer BROWSER] Finished loading, isLoading set to false'
-        );
       } catch (error) {
-        console.error('[AudioPlayer BROWSER] Error during load:', error);
-        console.error('[AudioPlayer BROWSER] Error stack:', error.stack);
         setIsLoading(false);
       }
     }
@@ -169,17 +115,13 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
 
   // Don't render if still loading
   if (isLoading) {
-    console.log('[AudioPlayer BROWSER] Not rendering - still loading');
     return null;
   }
 
   // Don't render if no audio found
   if (!audioUrl) {
-    console.log('[AudioPlayer BROWSER] Not rendering - no audio URL found');
     return null;
   }
-
-  console.log('[AudioPlayer BROWSER] Rendering player with URL:', audioUrl);
 
   return (
     <div className={styles.audioPlayer}>
