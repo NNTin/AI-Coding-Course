@@ -89,7 +89,7 @@ node generate-podcast.js
 
 ### Speakers
 - **Alex**: "Kore" voice (firm, professional)
-- **Sam**: "Puck" voice (upbeat, curious)
+- **Sam**: "Charon" voice (neutral, professional)
 
 ### Rate Limiting
 - 2-second delay between files to avoid API rate limits

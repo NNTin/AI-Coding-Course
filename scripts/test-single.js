@@ -48,37 +48,87 @@ function createWavHeader(pcmDataLength) {
   return header;
 }
 
+async function retryWithBackoff(fn, maxAttempts = 4) {
+  let lastError;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+
+      const isRetryable =
+        error.message?.includes('fetch failed') ||
+        error.message?.includes('ECONNRESET') ||
+        error.message?.includes('ETIMEDOUT') ||
+        error.message?.includes('ENOTFOUND') ||
+        error.status === 429 ||
+        error.status === 500 ||
+        error.status === 503 ||
+        error.status === 504;
+
+      const isPermanent =
+        error.status === 400 ||
+        error.status === 401 ||
+        error.status === 403 ||
+        error.status === 404;
+
+      if (isPermanent) {
+        throw error;
+      }
+
+      if (!isRetryable || attempt === maxAttempts - 1) {
+        throw lastError;
+      }
+
+      const delay = Math.pow(2, attempt) * 1000;
+      console.log(`⏳ Retry ${attempt + 1}/${maxAttempts} after ${delay}ms (${error.message})`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+
+  throw lastError;
+}
+
 async function generateAudio(dialogue, outputPath) {
   console.log(`🎙️  Synthesizing audio...`);
 
-  const model = genAI.getGenerativeModel({ model: TTS_MODEL });
+  const result = await retryWithBackoff(async () => {
+    const model = genAI.getGenerativeModel({ model: TTS_MODEL });
 
-  const result = await model.generateContent({
-    contents: [{
-      role: 'user',
-      parts: [{ text: dialogue }]
-    }],
-    generationConfig: {
-      responseModalities: ['AUDIO'],
-      speechConfig: {
-        multiSpeakerVoiceConfig: {
-          speakerVoiceConfigs: [
-            {
-              speaker: 'Alex',
-              voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: 'Kore' }
+    const response = await model.generateContent({
+      contents: [{
+        role: 'user',
+        parts: [{ text: dialogue }]
+      }],
+      generationConfig: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          multiSpeakerVoiceConfig: {
+            speakerVoiceConfigs: [
+              {
+                speaker: 'Alex',
+                voiceConfig: {
+                  prebuiltVoiceConfig: { voiceName: 'Kore' }
+                }
+              },
+              {
+                speaker: 'Sam',
+                voiceConfig: {
+                  prebuiltVoiceConfig: { voiceName: 'Charon' }
+                }
               }
-            },
-            {
-              speaker: 'Sam',
-              voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: 'Puck' }
-              }
-            }
-          ]
+            ]
+          }
         }
       }
+    });
+
+    if (!response?.response?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data) {
+      throw new Error('TTS API returned malformed response - missing inlineData.data');
     }
+
+    return response;
   });
 
   const audioData = result.response.candidates[0].content.parts[0].inlineData;
@@ -88,6 +138,8 @@ async function generateAudio(dialogue, outputPath) {
 
   mkdirSync(dirname(outputPath), { recursive: true });
   writeFileSync(outputPath, wavBuffer);
+
+  console.log(`✅ Audio synthesized successfully`);
 
   return { size: wavBuffer.length, pcmSize: pcmBuffer.length };
 }
