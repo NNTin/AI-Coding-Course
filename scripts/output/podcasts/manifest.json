@@ -1,0 +1,62 @@
+{
+  "methodology/lesson-4-prompting-101.md": {
+    "scriptPath": "methodology/lesson-4-prompting-101.md",
+    "size": 10904,
+    "tokenCount": 2654,
+    "generatedAt": "2025-11-02T09:10:06.094Z"
+  },
+  "methodology/lesson-3-high-level-methodology.md": {
+    "scriptPath": "methodology/lesson-3-high-level-methodology.md",
+    "size": 12443,
+    "tokenCount": 3039,
+    "generatedAt": "2025-11-02T09:10:56.282Z"
+  },
+  "practical-techniques/lesson-10-debugging.md": {
+    "scriptPath": "practical-techniques/lesson-10-debugging.md",
+    "size": 12461,
+    "tokenCount": 3043,
+    "generatedAt": "2025-11-02T09:11:35.123Z"
+  },
+  "methodology/lesson-5-grounding.md": {
+    "scriptPath": "methodology/lesson-5-grounding.md",
+    "size": 12235,
+    "tokenCount": 2983,
+    "generatedAt": "2025-11-02T09:11:35.746Z"
+  },
+  "practical-techniques/lesson-6-project-onboarding.md": {
+    "scriptPath": "practical-techniques/lesson-6-project-onboarding.md",
+    "size": 18427,
+    "tokenCount": 4540,
+    "generatedAt": "2025-11-02T09:11:51.248Z"
+  },
+  "practical-techniques/lesson-7-planning-execution.md": {
+    "scriptPath": "practical-techniques/lesson-7-planning-execution.md",
+    "size": 16051,
+    "tokenCount": 3946,
+    "generatedAt": "2025-11-02T09:12:41.791Z"
+  },
+  "practical-techniques/lesson-8-tests-as-guardrails.md": {
+    "scriptPath": "practical-techniques/lesson-8-tests-as-guardrails.md",
+    "size": 19037,
+    "tokenCount": 4678,
+    "generatedAt": "2025-11-02T09:12:53.576Z"
+  },
+  "practical-techniques/lesson-9-reviewing-code.md": {
+    "scriptPath": "practical-techniques/lesson-9-reviewing-code.md",
+    "size": 21592,
+    "tokenCount": 5332,
+    "generatedAt": "2025-11-02T09:12:56.688Z"
+  },
+  "understanding-the-tools/lesson-2-understanding-agents.md": {
+    "scriptPath": "understanding-the-tools/lesson-2-understanding-agents.md",
+    "size": 9433,
+    "tokenCount": 2290,
+    "generatedAt": "2025-11-02T09:13:28.685Z"
+  },
+  "understanding-the-tools/lesson-1-intro.md": {
+    "scriptPath": "understanding-the-tools/lesson-1-intro.md",
+    "size": 11221,
+    "tokenCount": 2741,
+    "generatedAt": "2025-11-02T09:13:33.058Z"
+  }
+}

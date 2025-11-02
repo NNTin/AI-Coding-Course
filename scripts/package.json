@@ -5,7 +5,10 @@
   "private": true,
   "description": "Utility scripts for AI Coding Course",
   "scripts": {
-    "generate-podcast": "node generate-podcast.js"
+    "generate-podcast-scripts": "node generate-podcast-script.js",
+    "generate-podcast-audio": "node generate-podcast-audio.js",
+    "generate-podcast": "npm run generate-podcast-scripts && npm run generate-podcast-audio",
+    "generate-podcast-legacy": "node generate-podcast.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1"
