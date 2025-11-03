@@ -11,16 +11,6 @@ This is an **AI Coding Course designed for Senior Software Engineers**. The cour
 **Target Audience:** Senior engineers with 3+ years of professional experience
 **Estimated Course Duration:** 24-33 hours of hands-on training
 
-## Course Structure
-
-5 progressive modules, each building on the previous:
-
-1. **Fundamentals** (2-3 hours) - Understanding AI coding assistants
-2. **Prompting Techniques** (4-5 hours) - Effective communication patterns
-3. **Tools & Workflows** (5-6 hours) - Integration and collaboration
-4. **Architecture & Design** (6-7 hours) - System design with AI
-5. **Advanced Topics** (6-8 hours) - Security, performance, production
-
 ## Technology Stack
 
 **Platform:** Docusaurus 3.9.2 (Static site generator)
@@ -42,19 +32,6 @@ npm run serve                        # Preview production build locally
 
 # Deployment
 npm run deploy                       # Deploy to GitHub Pages
-```
-
-## Directory Structure
-
-```
-/
-├── website/                         # Docusaurus application
-│   ├── docs/                        # Course content (MDX files)
-│   ├── blog/                        # Blog posts and case studies
-│   ├── src/                         # Custom React components
-│   └── static/                      # Static assets (images, etc)
-├── CLAUDE.md                        # This file - project context
-└── README.md                        # Project documentation
 ```
 
 ## Tone & Communication Style
