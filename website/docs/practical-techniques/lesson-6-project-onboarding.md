@@ -4,564 +4,227 @@ sidebar_label: 'Lesson 6: Project Onboarding'
 title: 'Lesson 6: Project Onboarding'
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 When you join a new project, the first week is brutal. You're swimming in unfamiliar architecture, tech stack decisions, tribal knowledge buried in Slack threads, and that one critical bash script everyone runs but nobody documented.
 
-AI agents face the same problem - except they don't have the luxury of osmosis. They see exactly what's in their context window (~200K tokens) and nothing more. No memory of yesterday's conversation. No understanding of "how we do things around here."
+AI agents face the same problem—except they can't grab coffee with a senior engineer to fill in the gaps. They see exactly what's in their context window (~200K tokens) and nothing more. No memory of yesterday's conversation. No understanding of "how we do things around here."
 
-**The solution: Codify your project context in machine-readable files.**
+**The solution: Codify your project context in hierarchical, machine-readable files.**
 
-This lesson covers context files (CLAUDE.md, AGENTS.md, .cursorrules, etc.) - the onboarding docs that transform your AI agent from a generic code generator into a project-aware operator.
+This lesson covers context files and how to structure them across user, project, and module levels to transform your AI agent from a generic code generator into a project-aware operator.
 
-## Learning Objectives
+## The Context File Ecosystem
 
-By the end of this lesson, you'll be able to:
+Context files are markdown documents that inject project-specific knowledge between the system prompt and your input, giving AI agents "project memory" without requiring repeated explanations of your tech stack, conventions, and architecture. The industry has converged on two approaches: `AGENTS.md` (vendor-neutral standard working across all AI tools) and tool-specific extensions like `CLAUDE.md` (for advanced features like hierarchical context).
 
-- **Design context files** that encode project-specific knowledge for AI agents
-- **Structure documentation** across hierarchy levels (global, repo, directory-specific)
-- **Automate context creation** using agents to bootstrap their own configuration
-- **Evaluate trade-offs** between comprehensive docs and minimal AI-specific configs
+<Tabs groupId="ai-tool">
+<TabItem value="agents" label="AGENTS.md (Standard)" default>
 
-## The Context Problem
+`AGENTS.md` is the vendor-neutral standard adopted by 20,000+ open-source projects, working across OpenAI Codex, GitHub Copilot, Cursor, and other AI coding tools. Keep it minimal—your README should contain 90% of what AI needs; AGENTS.md adds only AI-specific operational context like MCP server configurations, environment variables, modified test commands for non-interactive execution, and warnings about non-obvious dependencies. Place it in your repository root for maximum compatibility.
 
-Consider what a senior engineer needs when joining a codebase:
+</TabItem>
+<TabItem value="claude" label="Claude Code (CLAUDE.md)">
 
-**Architecture Understanding:**
+Claude Code's `CLAUDE.md` uses hierarchical context where multiple files from different directories (global `~/.claude/CLAUDE.md`, project root, subdirectories) are automatically loaded and merged based on your working directory, with more specific instructions overriding general ones while non-conflicting rules from all levels remain active. This layered system lets you define universal preferences globally, project standards at the root, and module-specific overrides in subdirectories—without duplicating rules. Reference `AGENTS.md` from `CLAUDE.md` to maintain cross-tool compatibility (see Cross-Referencing section below).
 
-- What's the system topology? (Microservices? Monolith? Event-driven?)
-- Which services own which domains?
-- How do components communicate?
+</TabItem>
+</Tabs>
 
-**Tech Stack Context:**
+**Quick Comparison:**
 
-- Languages, frameworks, major dependencies
-- Build system, package manager, deployment tools
-- Testing infrastructure (unit, integration, e2e)
+| Feature               | AGENTS.md                      | CLAUDE.md                     |
+| --------------------- | ------------------------------ | ----------------------------- |
+| **File location**     | Single file at repository root | Multiple files at any level   |
+| **Context loading**   | One file only                  | All applicable files merged   |
+| **Hierarchy**         | No                             | Yes (global → root → subdirs) |
+| **Override behavior** | N/A (single file)              | Specific overrides general    |
+| **Merge behavior**    | N/A (single file)              | All files injected together   |
+| **Tool support**      | Universal (all AI tools)       | Claude Code only              |
 
-**Development Workflow:**
+**Key takeaway:** AGENTS.md is one universal file. CLAUDE.md is a hierarchical system where multiple files are loaded and merged based on your working directory.
 
-- How to run the app locally
-- How to run tests (and which ones to run when)
-- Branch naming, commit conventions, PR process
-- CI/CD pipeline behavior
+:::warning Security Consideration
+Context files are injected directly into system prompts. Security researchers have identified "Rules File Backdoor" attacks where malicious instructions are injected using Unicode characters or evasion techniques. Keep context files minimal, version-controlled, and code-reviewed like any other code.
+:::
 
-**Tribal Knowledge:**
+## Hierarchical Context: User, Project, and Module Levels
 
-- "Always run migrations before tests in local dev"
-- "The staging DB is flaky, retry failed connections"
-- "Use ES modules, not CommonJS"
-- "Never commit .env files (yes, even .env.example)"
+Context files operate at different levels of specificity. **Global context** contains personal preferences that apply across all your projects—coding style, mindset, operational rules. **Project-level context** captures tech stack, architecture, and conventions specific to one codebase. Both can be implemented using `AGENTS.md` (vendor-neutral standard) or `CLAUDE.md` (Claude Code's hierarchical system that merges multiple files).
 
-**An AI agent needs the exact same context.** But unlike humans who can ask clarifying questions, scroll through Slack history, or read between the lines, agents need **explicit, structured documentation**.
+### Global-Level Example
 
-## Context File Ecosystem
-
-Different AI tools use different file conventions. Here's the landscape:
-
-### Claude Code: CLAUDE.md
-
-Claude Code reads `CLAUDE.md` files in a hierarchical system:
-
-1. **Global**: `~/.claude/CLAUDE.md` - Personal preferences across all projects
-2. **Repository root**: `/path/to/project/CLAUDE.md` - Project-wide context
-3. **Subdirectories**: `/path/to/project/backend/CLAUDE.md` - Component-specific rules
-
-**Precedence:** More specific files override general ones. Subdirectory rules augment (not replace) repository rules.
-
-**Example hierarchy:**
-
-```
-~/.claude/CLAUDE.md              # "I prefer minimalist code, run tests after changes"
-/work/ecommerce/CLAUDE.md        # "This is a TypeScript monorepo using pnpm"
-/work/ecommerce/api/CLAUDE.md    # "API uses Fastify, not Express - match patterns"
-```
-
-When working in `/work/ecommerce/api`, Claude Code merges all three contexts.
-
-### Cursor: .cursorrules and .mdc Files
-
-Cursor uses `.cursorrules` (legacy) and `.mdc` files with frontmatter:
+Global context lives in your home directory and applies universally. Here's the course author's actual `~/.claude/CLAUDE.md`—a production example you can adapt for your own use:
 
 ```markdown
----
-description: 'Rules for React components'
-globs: ['src/components/**/*.tsx', 'src/components/**/*.jsx']
-alwaysApply: false
----
+# Mindset
 
-# React Component Rules
+You are a senior architect with 20 years of experience across all software domains.
 
-- Use functional components with hooks
-- Prefer composition over inheritance
-- Extract custom hooks when logic is reused 3+ times
+- Gather thorough information with tools before solving
+- Work in explicit steps - ask clarifying questions when uncertain
+- BE CRITICAL - validate assumptions, don't trust code blindly
+- MINIMALISM ABOVE ALL - less code is better code
+
+# Search Protocol
+
+- Use ChunkHound's Code Research tool to learn the surrounding code style, architecture and module responsibilities
+- PREFER THE CODE RESEARCH TOOL OVER ALL SUB AGENTS
+- Use ArguSeek to read documentation and research relevant background for the task
+- Search for best practices, prior art, and technical context with research_iteratively
+- Use `search_semantic` and `search_regex` with small, focused queries
+- Multiple targeted searches > one broad search
+
+# Architecture First
+
+LEARN THE SURROUNDING ARCHITECTURE BEFORE CODING.
+
+- Understand the big picture and how components fit
+- Find and reuse existing code - never duplicate
+- When finding duplicate responsibilities, refactor to shared core
+- Match surrounding patterns and style
+
+# Coding Standards
+
+KISS - Keep It Simple:
+
+- Write minimal code that compiles and lints cleanly
+- Fix bugs by deleting code when possible
+- Optimize for readability and maintenance
+- No over-engineering, no temporary compatibility layers
+- No silent errors - failures must be explicit and visible
+- Run tests after major changes
+- Document inline when necessary
+
+# Operational Rules
+
+- Time-box operations that could hang
+- Use `uuidgen` for unique strings
+- Use `date +"%Y-%m-%dT%H:%M:%S%z" | sed -E 's/([+-][0-9]{2})([0-9]{2})$/\1:\2/'` for ISO-8601
+- Use flat directories with grep-friendly naming
+- Point out unproductive paths directly
+
+# Critical Constraints
+
+- NEVER Commit without explicit request
+- NEVER Leave temporary/backup files (we have version control)
+- NEVER Hardcode keys or credentials
+- NEVER Assume your code works - always verify
+- ALWAYS Clean up after completing tasks
+- ALWAYS Produce clean code first time - no temporary backwards compatibility
+- ALWAYS Use sleep for waiting, not polling
 ```
 
-**Rule application logic:**
+### Project-Level Example
 
-- `alwaysApply: true` - Always injected into context
-- `alwaysApply: false` - Added if file matches glob OR agent chooses based on description
-
-Cursor also has `.cursor/rules/` directory for monorepo organization.
-
-### Proposed Standard: AGENTS.md
-
-Some engineers advocate for vendor-neutral `AGENTS.md` as a unified standard across tools (Copilot, Claude, Cursor, Continue, etc.).
-
-**Philosophy:** Keep AI-specific configs minimal. Put 90% of context in your README and project docs. Use AGENTS.md only for operational details:
-
-- CI/CD tool integration (environment variables, test commands)
-- Non-interactive execution warnings ("tests require Docker daemon")
-- MCP (Model Context Protocol) server configurations
-- Tool-specific overrides
-
-**Why minimal?** Security. The more comprehensive your AI config, the larger the attack surface for "Rules File Backdoor" attacks (malicious instructions injected into context files).
-
-## Anatomy of a Good CLAUDE.md
-
-Let's dissect a production-quality context file for a fictional e-commerce backend.
-
-### Example: E-Commerce API CLAUDE.md
+Project-level context captures what a new team member needs to be productive in the first hour: tech stack specifics, common commands, tribal knowledge, and coding conventions. Here's the actual `CLAUDE.md` from this AI Coding Course repository:
 
 ````markdown
-# E-Commerce API - Project Context
+# AI Coding Course - Project Context
+
+## Mindeset
+
+You are an expert technical writer specializing in explaining complex complex to experienced software engineers.
 
 ## Project Overview
 
-**Purpose:** RESTful API for e-commerce platform with 500K daily active users
+This is an **AI Coding Course designed for Senior Software Engineers**. The course teaches experienced developers how to effectively leverage AI coding assistants in production environments.
 
-**Architecture:** Microservices (API Gateway → 6 backend services)
+**Target Audience:** Senior engineers with 3+ years of professional experience
+**Estimated Course Duration:** 24-33 hours of hands-on training
 
-- User Service (auth, profiles)
-- Product Catalog (search, inventory)
-- Cart Service (session management)
-- Order Service (checkout, fulfillment)
-- Payment Service (Stripe integration)
-- Notification Service (email, SMS via SNS)
+## Technology Stack
 
-**Tech Stack:**
+**Platform:** Docusaurus 3.9.2 (Static site generator)
+**Languages:** TypeScript 5.6.2, React 19.0
+**Key Features:**
 
-- Runtime: Node.js 20 LTS
-- Framework: Fastify 4.x (NOT Express)
-- Database: PostgreSQL 15 (primary), Redis (caching/sessions)
-- Message Queue: AWS SQS for async workflows
-- Testing: Vitest (unit), Playwright (e2e)
-- Deployment: ECS Fargate, deployed via CDK
+- Live code blocks with `@docusaurus/theme-live-codeblock`
+- MDX support for interactive components
+- Full-text search with `@easyops-cn/docusaurus-search-local`
+- Versioning system for content snapshots
 
 ## Development Commands
 
 ```bash
-# Setup
-pnpm install                     # Install dependencies (NOT npm)
-pnpm run db:migrate              # Run Postgres migrations
-pnpm run db:seed                 # Seed test data
-
 # Development
-pnpm dev                         # Start all services (uses Docker Compose)
-pnpm dev --service=user          # Start single service
+cd website && npm start              # Start dev server (localhost:3000)
+npm run build                        # Production build
+npm run serve                        # Preview production build locally
 
-# Testing
-pnpm test                        # Unit tests (Vitest)
-pnpm test:e2e                    # E2E tests (requires Docker)
-pnpm test:coverage               # Generate coverage report (must be >80%)
-
-# Code Quality
-pnpm lint                        # ESLint + Prettier
-pnpm typecheck                   # TypeScript validation
-```
-````
-
-## Coding Conventions
-
-**Module System:** ES Modules only
-
-```typescript
-// YES
-import { getUserById } from './users.js';
-
-// NO
-const { getUserById } = require('./users');
+# Deployment
+npm run deploy                       # Deploy to GitHub Pages
 ```
 
-**Error Handling:** Always use structured error classes
+## Tone & Communication Style
 
-```typescript
-// YES
-throw new BadRequestError('Invalid email format', { field: 'email' });
+**Coworker-level communication** - Professional, direct, no hand-holding
 
-// NO
-throw new Error('Invalid email');
-```
+- Assume strong fundamentals (data structures, design patterns, system design)
+- Skip basic explanations - link to external docs if needed
+- Focus on practical application and production considerations
+- Use industry-standard terminology without over-explaining
 
-**Async Patterns:** async/await, never raw Promises
+## Content Philosophy
 
-```typescript
-// YES
-const user = await db.users.findById(id)
+**Production-Ready Architecture Focus**
 
-// NO
-db.users.findById(id).then(user => ...)
-```
+- Real-world examples over toy demos
+- Scalability and maintainability considerations
+- Security and performance implications
+- Trade-offs and decision-making criteria
 
-**Testing Philosophy:**
+**Minimalism & Clarity**
 
-- Unit tests: Mock external dependencies (DB, APIs)
-- Integration tests: Use testcontainers for real Postgres/Redis
-- E2E tests: Full Docker Compose environment
+- Concise explanations
+- Code examples that compile and run
+- Clear learning objectives per lesson
+- Hands-on exercises with real scenarios
 
-## Common Pitfalls
+## Key Configuration Files
 
-**Database Connections:**
-
-- Always use connection pooling (configured in `db/pool.ts`)
-- Never create ad-hoc connections with raw `pg.Client`
-- Transactions MUST be wrapped in try/catch with explicit rollback
-
-**Stripe Integration:**
-
-- Use idempotency keys for all payment operations
-- Webhook signatures MUST be verified (see `payment-service/webhooks.ts`)
-- Test with Stripe CLI, not production API
-
-**Redis Sessions:**
-
-- TTL is 24 hours - refresh on activity
-- Session keys follow pattern: `session:{userId}:{deviceId}`
-
-## Repository Structure
-
-```
-/
-├── services/                    # Microservices
-│   ├── user-service/
-│   ├── product-catalog/
-│   ├── cart-service/
-│   ├── order-service/
-│   ├── payment-service/
-│   └── notification-service/
-├── packages/                    # Shared libraries
-│   ├── core/                    # Common utilities
-│   ├── db/                      # Database client
-│   └── types/                   # Shared TypeScript types
-├── infrastructure/              # CDK stacks
-└── tests/                       # E2E tests
-```
-
-## Critical Constraints
-
-- NEVER commit API keys or secrets (use AWS Secrets Manager)
-- NEVER deploy to production without passing E2E tests
-- NEVER modify database schema without a migration file
-- ALWAYS run `pnpm typecheck` before committing
-- ALWAYS use feature branches (naming: `feature/description` or `fix/description`)
+- `website/docusaurus.config.ts` - Site configuration
+- `website/sidebars.ts` - Auto-generated from docs structure
+- `website/package.json` - Dependencies and scripts
+- `.github/workflows/deploy.yml` - GitHub Pages deployment
 
 ## Deployment
 
-- **Staging:** Auto-deploy on merge to `develop`
-- **Production:** Manual approval required after staging validation
-- **Rollback:** `pnpm run deploy:rollback` (reverts to previous ECS task definition)
-
-## Key Files
-
-- `packages/core/errors.ts` - Structured error classes
-- `packages/db/pool.ts` - Database connection pooling
-- `services/*/routes.ts` - API route definitions
-- `infrastructure/lib/*-stack.ts` - CDK infrastructure as code
-
-```
-
-### What Makes This Good?
-
-**Specificity:**
-- Mentions Fastify explicitly (NOT Express) - prevents agent from using Express patterns
-- Shows exact import style (ES Modules with `.js` extension)
-- Lists actual commands engineers run
-
-**Project Context:**
-- Architecture overview (microservices, which services exist)
-- Tech stack with versions
-- Purpose and scale (500K DAU - implies performance matters)
-
-**Actionable Information:**
-- Common commands with explanations
-- Code patterns with YES/NO examples
-- Critical constraints in imperative form ("NEVER commit...")
-
-**Key Files Reference:**
-- Points to canonical implementations
-- Helps agent find relevant code when making changes
-
-## Hierarchical Organization
-
-For monorepos or large projects, use directory-specific context files:
-
-```
-
-/ecommerce
-├── CLAUDE.md # Project-wide: tech stack, architecture
-├── services/
-│ ├── CLAUDE.md # Services-specific: testing, deployment
-│ ├── user-service/
-│ │ └── CLAUDE.md # User service: auth patterns, DB schema
-│ └── payment-service/
-│ └── CLAUDE.md # Payment service: Stripe, PCI compliance
-└── infrastructure/
-└── CLAUDE.md # CDK patterns, AWS resource conventions
-
+- **Platform:** GitHub Pages
+- **URL:** https://ofriw.github.io/AI-Coding-Course/
+- **Trigger:** Automatic on push to main branch
+- **Base URL:** `/AI-Coding-Course/`
 ````
 
-**When to split:**
-- Different components use different languages/frameworks
-- Subdirectories have unique conventions (e.g., strict PCI compliance in payment service)
-- Team boundaries (different teams own different services)
+## Automated Generation: Bootstrap with AI
 
-**When to keep unified:**
-- Consistent tech stack across codebase
-- Shared conventions (everyone uses same testing patterns)
-- Small projects (<10k LOC)
+**The meta-move: Apply lessons 3-5 to generate context files automatically.** Instead of manually drafting `AGENTS.md` or `CLAUDE.md`, use the four-phase workflow ([Lesson 3](/docs/methodology/lesson-3-high-level-methodology)) to let agents bootstrap their own context. **Research phase:** Use ChunkHound's `code_research()` tool to understand your project's architecture, patterns, and conventions—query for architecture, coding styles, module responsibilities, and testing conventions, etc to build a comprehensive architectural understanding. Use ArguSeek's `research_iteratively()` and `fetch_url()` to retrieve framework documentation, best practices, and security guidelines relevant to your tech stack. **Plan phase:** The agent synthesizes codebase insights (from ChunkHound) and domain knowledge (from ArguSeek) into a structured context file plan. **Execute phase:** Generate the context file using prompt optimization techniques specific to your model. **Validate phase:** Test the generated context with a typical task, iterate based on gaps.
 
-## Template: Minimal CLAUDE.md
-
-For smaller projects, start minimal and expand as needed:
-
-```markdown
-# [Project Name] - Context
-
-## Overview
-[2-3 sentence description: purpose, architecture type, scale]
-
-## Tech Stack
-- Runtime/Language: [e.g., Python 3.11, Node.js 20]
-- Framework: [e.g., FastAPI, React, Django]
-- Database: [e.g., PostgreSQL, MongoDB]
-- Key Libraries: [List 3-5 critical dependencies]
-
-## Development Commands
-```bash
-# Setup
-[install command]
-
-# Run
-[dev server command]
-
-# Test
-[test command]
-````
-
-## Coding Conventions
-
-- [Convention 1]
-- [Convention 2]
-- [Convention 3]
-
-## Key Files
-
-- `[file path]` - [description]
-- `[file path]` - [description]
+**Concrete example prompt:**
 
 ```
+Generate AGENTS.md for this project.
+Use the code research tool to to learn the project architecture, tech stack,
+how auth works, testing conventions, coding style, and deployment process.
+Use ArguSeek to fetch current best practices for the tech stack used and the
+latest security guidelines.
 
-**Expand with:**
-- Common pitfalls (after onboarding 2-3 engineers)
-- Architecture diagrams (as project grows)
-- Deployment procedures (once CI/CD is set up)
+Create a concise file (≤500 lines) with sections:
+- Tech Stack
+- Development Commands (modified for non-interactive execution)
+- Architecture (high-level structure)
+- Coding Conventions and Style
+- Critical Constraints
+- Common Pitfalls (if found).
 
-## Automating Context File Creation
-
-Here's the meta-move: **Use AI agents to bootstrap their own context files.**
-
-### Workflow: Agent-Generated CLAUDE.md
-
-**Step 1: Gather Information**
-
-Prompt:
+Do NOT duplicate information already in README or code comments—instead, focus
+exclusively on AI-specific operations: environment variables, non-obvious
+dependencies, and commands requiring modification for agents.
 ```
 
-Analyze this codebase and extract key information for a CLAUDE.md context file:
-
-1. Read package.json (or equivalent) to identify tech stack
-2. Scan README.md for project overview and setup instructions
-3. Search for test commands (package.json scripts, Makefile, justfile)
-4. Identify code conventions (ES modules vs CommonJS, async patterns)
-5. Locate key configuration files
-
-Provide a structured summary.
-
-```
-
-**Step 2: Draft CLAUDE.md**
-
-Prompt:
-```
-
-Using the analysis above, generate a CLAUDE.md file following this structure:
-
-- Project Overview (2-3 sentences)
-- Tech Stack (runtime, framework, database)
-- Development Commands (setup, run, test)
-- Key Files (3-5 most important files with descriptions)
-
-Use concise, imperative language. Focus on what an engineer needs to be productive in the first hour.
-
-```
-
-**Step 3: Human Review and Augmentation**
-
-The agent can extract objective facts (dependencies, commands, file structure). You add:
-- **Tribal knowledge** ("The staging DB is flaky")
-- **Critical constraints** ("NEVER commit .env files")
-- **Common pitfalls** ("Always run migrations before tests")
-
-**Step 4: Iterate**
-
-Update CLAUDE.md after:
-- Onboarding a new engineer (capture questions they asked)
-- Architectural changes (new services, major refactors)
-- Agent makes repeated mistakes (encode the correction in context)
-
-### Example Agent Prompt for Bootstrapping
-
-```
-
-Create a CLAUDE.md file for this project by:
-
-1. Reading package.json, README.md, and top-level config files
-2. Identifying the tech stack, development commands, and testing setup
-3. Analyzing code patterns in src/ (or equivalent) to detect conventions
-4. Locating critical files (entry points, configuration, shared utilities)
-
-Generate a CLAUDE.md following the template in /docs/templates/CLAUDE.md.template.
-
-Focus on objective facts. I'll add tribal knowledge afterward.
-
-````
-
-This prompt works because it:
-- Gives explicit search instructions (package.json, README, src/)
-- References a template (ensures consistent structure)
-- Sets expectations (objective facts only, human will augment)
-
-## CLAUDE.md vs README: Division of Labor
-
-**README.md** (for humans and AI):
-- Project purpose and goals
-- Architecture overview
-- Setup instructions
-- Contribution guidelines
-- Links to documentation
-
-**CLAUDE.md** (AI-specific operational details):
-- Explicit code conventions with examples
-- Common commands with explanations
-- Critical constraints in imperative form
-- Key files with descriptions
-- Warnings about non-obvious behavior
-
-**Overlap is fine.** If your README already covers dev commands, reference it:
-
-```markdown
-## Development Commands
-
-See [README.md](./README.md#development) for setup and dev commands.
-
-**AI-specific notes:**
-- When running tests, add `--no-interactive` flag (CI environment)
-- Database seeds expect Docker daemon running
-- E2E tests take ~5 minutes, run only after significant changes
-````
-
-## Security Considerations
-
-Context files are code. Treat them with the same rigor:
-
-**Never include secrets:**
-
-```markdown
-# BAD
-
-AWS_SECRET_ACCESS_KEY=abc123...
-
-# GOOD
-
-Use AWS SSO for authentication (see wiki/aws-setup.md)
-```
-
-**Avoid oversharing:**
-
-- Don't document internal IPs or infrastructure details
-- Don't list all environment variables (just critical ones)
-- Don't include customer data or PII in examples
-
-**Version control:**
-
-- Commit CLAUDE.md to the repository
-- Include in code review (changes to context are changes to project knowledge)
-- Use `.gitignore` for personal global configs (`~/.claude/CLAUDE.md`)
-
-**Attack surface:**
-
-- More comprehensive configs = more injection attack risk
-- Keep AI-specific files minimal
-- Primary documentation lives in README/docs/, not CLAUDE.md
-
-## Hands-On Exercise: Create CLAUDE.md for Your Project
-
-**Scenario:** You're adding AI agent support to an existing codebase your team maintains.
-
-**Your Task:**
-
-1. **Inventory the project:**
-   - What's the tech stack? (Language, framework, database)
-   - What commands do you run daily? (setup, dev server, tests)
-   - What conventions does your team follow? (code style, branching, testing)
-   - What mistakes have new hires made? (missed migrations, wrong module system, etc.)
-
-2. **Bootstrap with an agent:**
-
-   ```
-   Analyze this codebase and draft a CLAUDE.md file including:
-   - Project overview and architecture
-   - Tech stack and key dependencies
-   - Development commands (setup, run, test)
-   - Code conventions (module system, async patterns, error handling)
-   - Key files and their purposes
-
-   Use the template from this lesson as reference.
-   ```
-
-3. **Augment with tribal knowledge:**
-   - Add critical constraints ("NEVER commit .env")
-   - Document common pitfalls ("Redis sessions expire after 24h")
-   - Include non-obvious dependencies ("E2E tests require Docker daemon")
-
-4. **Test with the agent:**
-   - Start a new chat (fresh context)
-   - Give the agent a typical task: "Add input validation to the login endpoint"
-   - Observe: Does it use the right patterns? Right module system? Run the right tests?
-
-5. **Iterate:**
-   - Note what the agent got wrong
-   - Update CLAUDE.md to encode the correction
-   - Re-test with the same task
-
-**Expected Outcome:** A production-ready CLAUDE.md that reduces onboarding time for both human engineers and AI agents.
-
-**Bonus Challenge:** Create a hierarchy:
-
-- Repository-root CLAUDE.md (project-wide context)
-- Subdirectory CLAUDE.md for a specific module (component-specific rules)
-
-Test that the subdirectory rules correctly augment the root context.
-
-## Key Takeaways
-
-- **Context files are onboarding docs for AI agents** - They encode project-specific knowledge that doesn't fit in a 200K token context window
-- **Hierarchical organization scales** - Global → Repository → Directory-specific rules allow granular control for monorepos
-- **Automate the tedious parts** - Use agents to bootstrap CLAUDE.md from existing docs, then augment with tribal knowledge
-- **Minimal is better** - Keep AI-specific configs lean. Put comprehensive documentation in README and project docs
-- **Treat context files as code** - Version control, code review, security scanning apply
-
-**The Meta-Pattern:**
-You're teaching the agent how to operate in your environment. Good context files are the difference between a generic code generator and a project-aware operator that follows your team's conventions, avoids known pitfalls, and produces production-ready code on the first attempt.
+This prompt demonstrates grounding ([Lesson 5](/docs/methodology/lesson-5-grounding)): ChunkHound provides codebase-specific context, ArguSeek provides current ecosystem knowledge, and structured Chain-of-Thought ensures the agent follows a methodical path. The result: production-ready context files generated in one iteration, not manually curated over weeks. Add tribal knowledge manually afterward—production incidents, team conventions, non-obvious gotchas that only humans know.
 
 ---
 
-**Next:** [Lesson 7: Planning Lesson 8: Planning & Execution Execution](./lesson-7-planning-execution.md)
+**Next:** [Lesson 7: Planning & Execution](./lesson-7-planning-execution.md)
