@@ -4,702 +4,248 @@ sidebar_label: 'Lesson 7: Planning & Execution'
 title: 'Planning & Execution'
 ---
 
-Feature development with AI agents shifts your role from line-by-line implementation to task orchestration. This lesson covers the **planning phase** that precedes autonomous execution - how to ground the agent with research, when to ask clarifying questions, and how to decompose complex features into parallel workstreams.
+[Lesson 5: Grounding](../methodology/lesson-5-grounding.md) covered how RAG and semantic search enable agents to retrieve context from your codebase and the web. This lesson focuses on what happens during planning and execution—how to actively ground the agent as you work, how to review its planning before autonomous execution, and how to set up workflows that support parallel development across multiple agent instances.
 
-## Learning Objectives
+The shift from gathering context to using context is critical. Grounding isn't a one-time upfront activity—it's continuous. You load context, review the agent's plan, let it execute, then validate. When something doesn't fit your mental model, you stop and clarify. When the agent proposes duplication, you enforce DRY. This lesson covers the tactical techniques that turn agents from code generators into reliable code producing machines.
 
-- **Apply grounding techniques** to research codebases, documentation, and architecture before execution
-- **Evaluate when to ask clarifying questions** versus making informed assumptions based on evidence
-- **Decompose complex features** into independent, parallelizable tasks using systematic breakdown methods
-- **Orchestrate autonomous execution** by managing multiple concurrent workstreams effectively
+## Grounding Tips: Active Context Engineering
 
-## The Planning Phase: Ground Before You Execute
+Effective execution requires deliberate context management. These techniques keep the agent grounded in your actual codebase, not statistical patterns from training data.
 
-Junior developers jump straight into implementation. Senior engineers spend time understanding the problem space first. AI agents amplify this pattern - investing 10 minutes in grounding prevents hours of rework.
+### Always Ground in Code
 
-**Grounding** means loading the agent's context with everything it needs to make good decisions:
+Show agents actual patterns from your codebase, not generic documentation. Abstract descriptions lead to generic solutions that don't fit your specific codebase.
 
-1. **Codebase context** - Existing patterns, architectural boundaries, naming conventions
-2. **Technical context** - Library docs, API references, framework idioms
-3. **Business context** - Requirements, constraints, edge cases
+**Example:** You need to add rate limiting to your API. Don't prompt "Add rate limiting middleware." Instead: "Search for existing middleware patterns, especially authentication. Check our Redis configuration. Then propose rate limiting that follows the same error handling, export structure, and Redis client usage you found."
 
-### Why Grounding Matters
+The agent will grep for middleware files, read your Redis config, analyze your patterns, and propose an implementation that matches your established conventions. Concrete beats abstract.
 
-Without proper grounding, agents make probabilistic guesses based on training data:
+### Prompt to Explain: Loading Context Into the Window
 
-- **With grounding:** "I see you use Zod for validation in `src/validation/`, follow the pattern in `userSchema.ts`"
-- **Without grounding:** "Here's a generic validation approach using a library you don't have installed"
+When you ask "How does X work?", you're not testing the agent's knowledge—you're triggering a sequence that loads context into the window for subsequent steps.
 
-The agent has zero memory of your last conversation. Every task starts from a blank context window. **Grounding is not optional.**
+**The mechanism:** "Explain how our authentication middleware works" causes the agent to:
 
-### Practical Grounding Workflow
+1. Search the codebase for auth-related files
+2. Read middleware implementations
+3. Analyze patterns and structure
+4. Synthesize findings
 
-**Before asking the agent to implement a feature:**
+That synthesis now lives in the context window. When you follow up with "Add rate limiting following the same pattern," the agent already has middleware structure, error handling conventions, export patterns, and dependency usage loaded in context. It doesn't need to search again—the relevant knowledge is already present.
 
-```markdown
-1. Research the codebase architecture
-   - Where does this feature fit?
-   - What existing modules handle similar concerns?
-   - What patterns should I follow?
+**Questions are a context engineering tool.** You're deliberately priming the agent's working memory before asking for implementation. This is more efficient than packing everything into one massive prompt and more reliable than hoping the agent will search for the right things autonomously.
 
-2. Research external dependencies
-   - What libraries/APIs will I use?
-   - What are the recommended patterns?
-   - Are there known gotchas?
+:::tip Safe Autonomous Execution
+Questions are safe to execute autonomously—they're read-only operations with minimal risk. Set your agent to required approval mode to enforce this (it will ask before making any changes). If the agent's explanation is wrong or incomplete, simply ignore it, refine your prompt, and try again. A well-crafted sequence of exploratory questions makes subsequent autonomous coding tasks much more reliable because the context window is already loaded with grounded information about your actual codebase.
+:::
 
-3. Identify constraints
-   - Performance requirements?
-   - Security considerations?
-   - Backwards compatibility?
-```
+### Require Evidence to Force Grounding
 
-**Example grounding prompt for adding rate limiting:**
+Explicitly requiring evidence forces agents to read your actual code instead of generating plausible-sounding guesses based on training data patterns.
+
+**The mechanism:** When you require "evidence (file paths, line numbers, actual values)" in your prompt, the agent cannot provide that evidence without retrieving it. This converts what might be a hallucinated response into a grounded one anchored in your codebase.
+
+**Without evidence requirement:**
 
 ```
-I need to add rate limiting to our Express API. Before we start:
-
-1. Search the codebase for existing middleware patterns (especially auth)
-2. Research our Redis setup - how are we currently using it?
-3. Fetch the express-rate-limit documentation
-4. Check if we have any existing rate limiting anywhere
-
-Once you've gathered this context, propose an approach that matches
-our existing patterns and uses our current infrastructure.
+Debug the login endpoint - it's returning 500 errors
 ```
 
-**The agent will:**
+Agent might respond: "Probably a database timeout or null pointer exception in the authentication logic."
 
-- Grep for middleware files
-- Read Redis config
-- Fetch external docs
-- Propose an implementation that fits your architecture
+This is pattern completion from training data, not analysis of your actual code.
 
-**Without grounding, the agent will:**
-
-- Generate generic middleware that doesn't match your style
-- Assume Redis config that doesn't exist
-- Miss security requirements
-- Ignore your existing error handling patterns
-
-## Questions vs Assumptions: When to Clarify
-
-Every task has ambiguity. The art is knowing when to resolve it **before** execution versus during.
-
-### The Clarifying Questions Heuristic
-
-**Ask when:**
-
-- **Business logic is ambiguous** - "Should expired premium users retain read access?"
-- **Security/compliance implications** - "Can we log PII for debugging?"
-- **Multiple valid approaches with different trade-offs** - "Optimize for write throughput or read latency?"
-- **Breaking changes to public APIs** - "This will break existing clients - intentional?"
-
-**Don't ask when:**
-
-- **Technical patterns are established** - Follow existing conventions
-- **Standard engineering practices apply** - Use proper error handling, logging, validation
-- **Documentation exists** - Check CLAUDE.md, README, or linked resources
-- **You can verify cheaply** - Run tests, check logs, experiment locally
-
-### The Evidence-Based Decision Framework
-
-Before asking, gather evidence:
-
-**Scenario:** You need to add pagination to an API endpoint.
-
-**Bad approach:**
+**With evidence requirement:**
 
 ```
-"How should I implement pagination? Offset-based or cursor-based?"
+Debug the login endpoint - it's returning 500 errors.
+Explain the root cause with evidence: file paths, line numbers, actual error messages.
 ```
 
-**Good approach:**
+Now the agent must read the endpoint implementation, trace execution, and cite specifics:
+
+"The error occurs in `src/api/auth.ts:67` where `user.profile.email` is accessed. The `profile` object is null for OAuth users (see `src/services/oauth.ts:134` - profile creation is skipped for federated auth). Stack trace shows: `TypeError: Cannot read property 'email' of null`."
+
+**What constitutes good evidence:**
+
+- **File paths with line numbers** - `src/auth/jwt.ts:45-67` (not "the auth file")
+- **Actual values from configs/logs** - `port: 8080` (not "a port number")
+- **Specific identifiers** - `validateJWT()` function (not "the validation function")
+- **Exact error messages** - Full stack traces or log entries (not "an error occurred")
+
+**Combining with Chain-of-Thought:**
+
+Evidence requirements work independently or combined with step-by-step instructions. For complex debugging, use both—[Chain-of-Thought](../methodology/lesson-4-prompting-101.md#chain-of-thought-paving-a-clear-path) controls the execution path while evidence requirements ensure each step is grounded:
 
 ```
-1. Grep for existing pagination in the codebase
-2. Check API documentation for established patterns
-3. Read CLAUDE.md for architectural decisions
-4. If still ambiguous, ask with context:
-   "I see we use offset pagination in /users but this endpoint
-   could have 100K+ records. Cursor-based would be more efficient
-   but breaks consistency. Which do you prefer?"
+Debug the failing test in UserService.test.ts:
+
+1. Read the test file, identify which test is failing
+2. Analyze test assertion: expected vs actual values
+3. Trace code path through UserService to find the bug
+4. Explain root cause with evidence (file paths, line numbers)
+5. Propose a fix
+
+Provide evidence for each step.
 ```
 
-**The principle:** Make informed recommendations backed by evidence, not open-ended questions.
+This gives you execution control (CoT) while forcing grounding (evidence) at every stage.
 
-### Inferring Requirements from Context
+### Ask Clarifying Questions to Challenge Logic
 
-Senior engineers make reasonable assumptions based on:
+LLMs are bad at logic—they complete patterns based on statistical likelihood, not sound reasoning. Your engineering skills are still required to catch inconsistencies.
 
-- **Existing patterns** - "Auth middleware uses JWTs, so this new protected route should too"
-- **Industry standards** - "APIs should return 400 for validation errors, 500 for server errors"
-- **Common sense** - "Don't store passwords in plaintext, even if requirements don't explicitly forbid it"
+When something doesn't fit your mental model, point it out: "If X is true, how can Y happen?"
 
-**Your agent should operate the same way** - if you've grounded it with codebase context, it will make reasonable inferences.
+**Example:** Agent says "The config uses port 3000" but your logs show connections on 8080. Challenge it: "You said port 3000, but logs show 8080. Explain this discrepancy with evidence from the config files and environment setup."
 
-**Example of good inference:**
+This forces the agent to re-examine its assumptions, search more carefully, and ground its response in actual data rather than pattern completion. Use your mental model to validate the agent's reasoning. When logic doesn't hold, make the agent justify with evidence.
 
-```
-Task: "Add email validation to the signup endpoint"
+## Detailed Planning: Review Before Execution
 
-Agent's approach (properly grounded):
-- Finds existing Zod schemas in src/validation/
-- Follows the pattern in userSchema.ts
-- Uses the same email regex pattern
-- Returns errors in the established format
-- Adds tests matching the existing test structure
+Before letting the agent execute autonomously, review its plan. This is where you catch architectural mismatches, missing considerations, and logic errors—before they become code.
 
-No questions needed - the codebase provides the answers.
-```
+### Pay Attention to Strategy and Reasoning
 
-## Feature Decomposition: Breaking Down Complex Work
+**Key questions:**
 
-Complex features require systematic breakdown. The goal is to identify **independent, parallelizable units of work** that can be executed concurrently.
+- How did the agent derive this plan?
+- Was grounding thorough? (Did it read relevant files, check documentation, understand constraints?)
+- Did it miss important considerations? (Security, performance, backwards compatibility, edge cases?)
 
-### The SPIDR Method
+Review the "why" behind the plan, not just the "what." If the agent says "Implement feature X using approach Y," ask yourself: Did it ground this decision in your codebase? Did it consider alternatives? Does the reasoning hold up?
 
-**SPIDR** is a proven technique for splitting features into smaller deliverable increments:
+**Example:** Agent proposes caching user sessions in Redis with 24-hour TTL. Good plan—but did it check your existing session implementation? Did it consider GDPR compliance for session data? Did it account for cache invalidation when users change passwords?
 
-**S - Spike (Research):** Separate exploration from implementation
+If grounding was shallow, stop and add context before execution. "Before implementing, research our existing session management, check for compliance requirements in COMPLIANCE.md, and propose cache invalidation strategy for security-critical events. Use ArguSeek, validate the approach against current security best practices."
 
-- "Evaluate Stripe vs. Braintree for payment processing" → One task
-- "Implement the chosen payment provider" → Separate task after spike
+### Glance Over Suggested Changes
 
-**P - Path (User Workflows):** Different ways to achieve the same goal
+Before autonomous execution, review the plan to catch architectural mismatches and scope issues. This applies [Lesson 4's constraint principles](../methodology/lesson-4-prompting-101.md#constraints-as-guardrails) during plan review—you're validating that the agent's proposed approach is sufficiently constrained and grounded before it executes.
 
-- "Login with email/password" → One story
-- "Login with OAuth (Google, GitHub)" → Separate story
-- "Login with magic link" → Separate story
+**What you're checking:**
 
-**I - Interfaces (UI/Platform Variations):** Deliver per platform or UI complexity
+This is high-level architectural fit, not line-by-line code review (validation comes later). You're ensuring the agent is grounded in your actual architecture:
 
-- "Support Chrome and Firefox" → Initial story
-- "Add Safari support" → Follow-up story
-- "Basic share button (URL only)" → Initial story
-- "Rich share modal (social preview cards)" → Enhancement story
+- **Pattern adherence** - Does this fit our established patterns? (If not, the agent wasn't grounded in existing code)
+- **Module boundaries** - Are changes in the right modules? (If not, the agent didn't understand architecture)
+- **Appropriate scope** - Is the agent trying to refactor half the codebase when you asked for a targeted fix?
 
-**D - Data (Supported Data Types):** Start simple, add complexity iteratively
+**Example:** Agent plans to add email validation by creating a new validation library in `src/lib/validators/`. But you already have Zod schemas in `src/validation/`. This is a grounding failure—the agent generated a plausible solution from training patterns instead of discovering your existing validation approach.
 
-- "Upload MP4 videos" → Initial story
-- "Support WebM, AVI formats" → Follow-up story
-- "Handle employees with one manager" → Initial story
-- "Support matrix reporting (multiple managers)" → Enhancement
+Stop and correct: "We use Zod for validation—check `src/validation/userSchema.ts` and follow that pattern instead of creating a new library."
 
-**R - Rules (Business Logic):** Deliver core functionality, add rules incrementally
+**Why this matters:** Catching grounding failures at the planning stage is faster than rewriting generated code. If the plan reveals shallow grounding, add constraints and force deeper research before execution.
 
-- "Upload videos (basic validation only)" → Initial story
-- "Enforce copyright detection" → Follow-up story
-- "Block offensive content in comments" → Follow-up story
+### Watch For: Agents Invent Instead of Reusing
 
-### Decomposition in Practice
+**The Problem:** When agents plan implementations, they default to generating plausible code from training patterns rather than discovering what already exists in your codebase. This is pattern completion, not codebase discovery—the agent synthesizes something that "looks right" based on millions of training examples instead of searching for your existing utilities, helpers, and abstractions.
 
-**Example: Adding Multi-Factor Authentication (MFA)**
+Research confirms this bias: AI-generated code contains **8x more duplicated blocks** than human-written code, with declining code consolidation metrics across the industry[^1]. Agents reinvent the wheel because invention is statistically easier than discovery.
 
-**Without decomposition:**
+**Red Flags in Plans:**
 
-```
-"Add MFA to the application"
-(Too large, many dependencies, unclear scope)
-```
+Watch for these phrases during plan review—they signal the agent is inventing rather than discovering:
 
-**With SPIDR decomposition:**
+- "Create a new utility function for..." (Did it search for existing utilities?)
+- "Implement a helper to handle..." (Does this helper already exist?)
+- "Build error handling logic..." (What about existing error patterns?)
+- "Add validation for..." (Check for existing validation schemas first)
 
-```markdown
-## Spike
+## Autonomous Execution: Parallel Workflows and Tool Setup
 
-1. Research TOTP libraries (otplib vs speakeasy)
-2. Review existing auth flow architecture
-3. Fetch best practices for MFA UX
+Once the plan is reviewed and grounding is solid, you can let the agent execute autonomously. For complex features, parallel execution across multiple agent instances dramatically accelerates development.
 
-## Phase 1: Core TOTP Infrastructure (Path: TOTP)
+### Git Worktree: Enable True Parallelization
 
-4. Add MFA schema to user model (DB migration)
-5. Implement TOTP secret generation and storage
-6. Create verification endpoint (/auth/mfa/verify)
-7. Add tests for TOTP generation/verification
+Git worktrees allow multiple working directories from a single repository, each with a different branch checked out. This enables running multiple agent instances on different tasks simultaneously without conflicts.
 
-## Phase 2: Enrollment Flow (Path: Enrollment)
-
-8. Build enrollment API endpoints
-9. Add QR code generation for secret sharing
-10. Create backup codes functionality
-11. Add tests for enrollment edge cases
-
-## Phase 3: Login Flow Integration (Interface: Web)
-
-12. Update login endpoint to check MFA status
-13. Add MFA challenge step to login flow
-14. Handle "remember this device" functionality
-15. Add comprehensive E2E tests
-
-## Phase 4: Recovery & Admin (Rules: Edge Cases)
-
-16. Implement backup code redemption
-17. Add admin MFA reset capability
-18. Handle account lockout after failed attempts
-19. Add security event logging
-```
-
-**Benefits of this breakdown:**
-
-- Tasks 4-7 can be implemented and tested independently
-- Task 8-11 can start once task 4 (schema) is complete
-- Tasks 12-15 depend on 4-7 but can be developed by a different agent instance
-- Tasks 16-19 are enhancements that don't block core functionality
-
-### Identifying Dependencies
-
-**Critical skill:** Recognizing true dependencies versus perceived ones.
-
-**True dependency:**
-
-```
-Task A: Add `mfaEnabled` column to users table
-Task B: Query users.mfaEnabled in login endpoint
-→ B depends on A (database schema must exist)
-```
-
-**False dependency (can parallelize):**
-
-```
-Task A: Implement TOTP verification logic
-Task B: Build QR code generation for enrollment
-→ No dependency (both use the same secret, but can develop independently)
-```
-
-**Dependency analysis checklist:**
-
-- Does Task B read data written by Task A?
-- Does Task B call functions defined in Task A?
-- Does Task B import modules created in Task A?
-- Does Task B require Task A's tests to pass first?
-
-If all answers are "no," the tasks are parallelizable.
-
-## Autonomous Execution: Orchestrating Multiple Workstreams
-
-Once you've decomposed a feature, you can execute tasks autonomously - either sequentially by one agent or in parallel across multiple agent instances.
-
-### Sequential Execution Pattern
-
-**Best for:**
-
-- Tasks with tight dependencies
-- Single-agent workflows
-- Learning new codebases (observe before parallelizing)
-
-**Example workflow:**
+**How it works:**
 
 ```bash
-# Agent conversation 1: Schema changes
-"Implement task 4: Add MFA schema to user model"
-[Agent reads migrations/, creates new migration, runs tests]
+# Main repo in ~/project (on main branch)
+git worktree add ../project-feature-auth feature/auth
+git worktree add ../project-feature-api feature/api
+git worktree add ../project-bugfix bugfix/login-error
 
-# Agent conversation 2: Core logic (depends on schema)
-"Implement tasks 5-7: TOTP generation, storage, verification"
-[Agent builds on completed schema, adds business logic]
-
-# Agent conversation 3: API endpoints (depends on core logic)
-"Implement tasks 8-11: Enrollment API and backup codes"
-[Agent uses completed TOTP functions, adds HTTP layer]
+# Now you have 4 separate directories:
+# ~/project (main)
+# ~/project-feature-auth (feature/auth branch)
+# ~/project-feature-api (feature/api branch)
+# ~/project-bugfix (bugfix/login-error branch)
 ```
 
-### Parallel Execution Pattern
+### Terminal Customization for Multi-Agent Workflows
 
-**Best for:**
+**Invest in customizing and tailoring your terminal environment just like you would with your IDE.** Multi-agent workflows mean managing multiple concurrent sessions, context-switching between agent instances, and monitoring long-running processes. Your terminal becomes mission-critical infrastructure, not just a command prompt. Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, notification systems, and extensive customization. Taking time to configure your terminal pays dividends across every development session.
 
-- Independent workstreams
-- Time-sensitive deadlines
-- Well-understood architectures
+Modern terminal options worth exploring: [**Ghostty**](https://ghostty.org) (fast, GPU-accelerated, native), [**Kitty**](https://sw.kovidgoyal.net/kitty/) (GPU-based, extensive graphics support), [**WezTerm**](https://wezterm.org) (Lua-configured, cross-platform), and [**Alacritty**](https://alacritty.org) (minimalist, OpenGL-accelerated). Each offers different customization approaches—compare based on your workflow needs.
 
-**Example workflow (3 parallel agent instances):**
+**Use ArguSeek to learn terminal customization.** Research best practices for your chosen terminal, especially around session management, keybindings for rapid context switching, notification configuration, and visual indicators for different agent contexts. Example prompt: "Use ArguSeek to research Kitty terminal customization for managing multiple development sessions with different contexts and long-running processes."
 
-```bash
-# Terminal 1: Database layer
-claude start
-> "Implement task 4: Add MFA schema and migration.
-   Run all existing tests to ensure no regressions."
+### Modern CLI Tools for Efficient Workflows
 
-# Terminal 2: TOTP core (can start immediately)
-claude start
-> "Implement tasks 5-7: TOTP secret generation, storage, verification.
-   Mock the database for now, we'll integrate the schema later.
-   Include comprehensive unit tests."
+Complement agent workflows with modern CLI tools that improve navigation, editing, and git operations:
 
-# Terminal 3: QR code generation (independent)
-claude start
-> "Implement task 10: QR code generation for TOTP secrets.
-   Use the qrcode library, follow patterns in src/utils/.
-   Write tests with sample secrets."
+- **[`micro`](https://micro-editor.github.io/)** - Terminal text editor with intuitive keybindings (Ctrl+S to save, Ctrl+Q to quit), ideal for quick edits without switching to your IDE.
+- **[`eza`](https://eza.rocks/)** - Modern `ls` replacement with better formatting, file type colors, and git integration—easier to scan directories across multiple worktrees.
+- **[`fzf`](https://junegunn.github.io/fzf/)** - Fuzzy finder for files, command history, and git branches; quickly locate files in large codebases or recall commands from previous sessions.
+- **[`lazygit`](https://github.com/jesseduffield/lazygit)** - Terminal UI for git with visual branch management, interactive staging, and commit navigation—especially useful when managing multiple worktrees.
+
+These tools reduce friction when working across multiple worktrees and agent sessions. Install and configure them once, benefit throughout your workflow.
+
+### Ask Your Agent to Help with CLI Execution
+
+Agents can assist with CLI operations, especially when you're unfamiliar with a tool or workflow. Ground with ArguSeek first for external tools, then ask the agent to generate commands or explain usage.
+
+**Example:**
+
+```
+Use ArguSeek to research git worktree best practices for parallel development.
+
+Create 3 worktrees with the following specifications:
+1. Authentication refactor (branch: feat/auth-refactor)
+2. New analytics API (branch: feat/analytics-api)
+3. Dashboard performance improvements (branch: perf/dashboard)
+
+Output:
+- Exact `git worktree add` commands for each worktree
+- Recommended directory structure following best practices
 ```
 
-**After all complete, integrate:**
+The agent will research worktree workflows, propose a clean directory layout, and generate the exact `git worktree add` commands. This is faster than reading documentation manually and ensures commands match your specific context.
 
-```bash
-# Terminal 4: Integration
-claude start
-> "The following tasks are complete:
-   - Task 4: MFA schema (branch: feat/mfa-schema)
-   - Tasks 5-7: TOTP core logic (branch: feat/mfa-totp)
-   - Task 10: QR generation (branch: feat/mfa-qr)
+### Mix CLI and UI Tools: Use What Works
 
-   Merge these branches and resolve any conflicts.
-   Run the full test suite and fix any integration issues."
-```
+Don't be dogmatic about terminal-only or GUI-only workflows. IDEs remain the best tools for code navigation, symbol search, and refactoring. CLI excels at quick edits, git operations, and managing parallel sessions.
 
-### Managing Parallel Work: The Integration Tax
+**Use the best tool for each task:**
 
-Parallelization adds integration overhead. Budget for it.
+- **Code navigation and exploration:** IDE (VS Code, IntelliJ, etc.) - superior symbol search, go-to-definition, call hierarchies
+- **Quick edits in agent context:** CLI ([`micro`](https://micro-editor.github.io/), [`vim`](https://www.vim.org/)) - faster than switching to IDE for one-line changes
+- **Git operations across worktrees:** CLI ([`lazygit`](https://github.com/jesseduffield/lazygit), raw git commands) - better visibility into multiple branches
+- **Reading large files or complex logic:** IDE - better syntax highlighting, folding, and navigation
 
-**Integration challenges:**
-
-- **Merge conflicts** - Multiple branches touch the same files
-- **API mismatches** - Agent A expects interface X, Agent B built interface Y
-- **Test interactions** - Unit tests pass independently, integration tests fail
-- **Timing dependencies** - Async operations with different completion times
-
-**Mitigation strategies:**
-
-1. **Clear interface contracts** - Define APIs before parallel implementation
-
-   ```typescript
-   // Define this first, share with all agents:
-   interface MFAService {
-     generateSecret(): Promise<string>;
-     verifyToken(secret: string, token: string): Promise<boolean>;
-     generateQRCode(secret: string, accountName: string): Promise<string>;
-   }
-   ```
-
-2. **Isolated feature branches** - Each workstream in its own branch
-
-   ```bash
-   git checkout -b feat/mfa-schema
-   git checkout -b feat/mfa-totp
-   git checkout -b feat/mfa-qr
-   ```
-
-3. **Explicit integration task** - Don't assume parallel work will merge cleanly
-
-   ```markdown
-   Task N: Integration & Testing
-
-   - Merge all feature branches
-   - Resolve conflicts (prioritize schema over mocks)
-   - Run full test suite
-   - Fix any integration failures
-   - Update documentation
-   ```
-
-4. **Communication boundaries** - Share completed interfaces, not work-in-progress
-
-   ```markdown
-   # Don't:
-
-   "Agent 1 is working on X, Agent 2 will use it when ready"
-
-   # Do:
-
-   "Task 4 (schema) must complete first. Once merged to main,
-   Tasks 5-7 and 8-11 can proceed in parallel."
-   ```
-
-### When to Parallelize vs Stay Sequential
-
-**Parallelize when:**
-
-- Tasks are clearly independent (no shared files)
-- You have well-defined interface contracts
-- Integration cost is low (< 30% of parallel time savings)
-- You've validated the approach with a spike first
-
-**Stay sequential when:**
-
-- You're learning an unfamiliar codebase
-- Tasks touch core infrastructure
-- Integration cost is high (lots of shared state)
-- Debugging parallel failures would be complex
-
-**Rule of thumb:** If you can't clearly explain how two tasks will integrate, don't parallelize yet.
-
-## Planning Artifacts: Making the Invisible Visible
-
-Effective planning produces artifacts that guide execution and enable verification.
-
-### Task Lists
-
-**Good task lists are:**
-
-- **Specific** - "Add email validation to signup endpoint" (not "improve validation")
-- **Testable** - Clear completion criteria
-- **Ordered** - Dependencies explicit
-- **Scoped** - Achievable in 30-90 minutes
-
-**Example for "Add user profile photos":**
-
-```markdown
-## Phase 1: Storage Infrastructure
-
-- [ ] Research image storage options (S3 vs Cloudinary)
-- [ ] Set up S3 bucket with proper CORS config
-- [ ] Create upload helper function with size/type validation
-- [ ] Add tests for upload edge cases (too large, wrong format)
-
-## Phase 2: Database Schema
-
-- [ ] Add profilePhotoUrl column to users table
-- [ ] Create migration (up and down)
-- [ ] Update User model with new field
-- [ ] Run migration in dev environment
-
-## Phase 3: API Endpoints
-
-- [ ] POST /users/:id/photo (upload)
-- [ ] DELETE /users/:id/photo (remove)
-- [ ] Update GET /users/:id to include photoUrl
-- [ ] Add integration tests for all endpoints
-
-## Phase 4: Frontend Integration
-
-- [ ] Add photo upload component to settings page
-- [ ] Handle upload progress and errors
-- [ ] Add photo to user profile display
-- [ ] Write E2E tests for upload flow
-```
-
-**Use the task list to:**
-
-- Track progress during execution
-- Identify blockers early
-- Communicate status to stakeholders
-- Resume work after context switches
-
-### Architecture Decision Records (ADRs)
-
-For non-trivial technical decisions, document the reasoning:
-
-```markdown
-## ADR: Image Storage for Profile Photos
-
-**Context:** Users need profile photos. Options: S3, Cloudinary, local filesystem.
-
-**Decision:** Use AWS S3 with CloudFront CDN.
-
-**Rationale:**
-
-- Already using AWS (lower operational complexity)
-- S3 pricing competitive with Cloudinary for our scale
-- CloudFront provides global edge caching
-- Ownership of data and control over access policies
-
-**Consequences:**
-
-- Need to manage image resizing ourselves (or add Lambda)
-- CORS configuration required for direct browser uploads
-- S3 lifecycle policies for orphaned images
-
-**Alternatives considered:**
-
-- Cloudinary: Higher cost, but includes transformations
-- Local filesystem: Doesn't scale, complicates deployment
-```
-
-**When to write an ADR:**
-
-- Choosing between libraries/frameworks
-- Significant architectural changes
-- Security or compliance decisions
-- Anything future-you will question
-
-### Interface Contracts
-
-For parallel work, define contracts before implementation:
-
-```typescript
-/**
- * MFA Service - Interface contract for parallel development
- *
- * Implementation: Task 5-7 (Agent 1)
- * Consumers: Task 8-11 (Agent 2), Task 12-15 (Agent 3)
- */
-
-interface MFAService {
-  /**
-   * Generate a new TOTP secret for a user
-   * @returns Base32-encoded secret (32 chars)
-   * @throws Error if user already has MFA enabled
-   */
-  generateSecret(userId: string): Promise<string>;
-
-  /**
-   * Verify a TOTP token against a secret
-   * @param token 6-digit code from authenticator app
-   * @param window Time window for verification (default: ±1 period)
-   * @returns true if valid, false otherwise
-   */
-  verifyToken(secret: string, token: string, window?: number): Promise<boolean>;
-
-  /**
-   * Generate QR code for secret enrollment
-   * @returns Data URL for QR code image
-   */
-  generateQRCode(secret: string, accountName: string): Promise<string>;
-
-  /**
-   * Generate backup codes for account recovery
-   * @returns Array of 10 one-time-use codes
-   */
-  generateBackupCodes(userId: string): Promise<string[]>;
-}
-```
-
-**Benefits:**
-
-- Agent 2 and 3 can build against this interface immediately
-- Agent 1 must implement exactly this contract
-- Integration is type-safe (TypeScript enforces the contract)
-- Tests can mock the interface for isolation
-
-## Hands-On Exercise: Plan and Execute a Complex Feature
-
-**Scenario:** You're adding **audit logging** to a SaaS application. Every sensitive operation (login, data export, permission change) must be logged for compliance. Logs must include: timestamp, user ID, IP address, action type, and affected resource.
-
-**Your Task:**
-
-### Step 1: Grounding (15 minutes)
-
-Before asking the agent to implement anything:
-
-1. **Research the codebase:**
-   - Where are sensitive operations currently handled?
-   - Is there any existing logging infrastructure?
-   - What database are you using? (Postgres, MongoDB, etc.)
-   - What's the established error handling pattern?
-
-2. **Research external requirements:**
-   - Look up compliance logging best practices (GDPR, SOC2)
-   - Research structured logging libraries for your stack
-   - Understand log retention requirements
-
-3. **Identify constraints:**
-   - Performance impact (logging is synchronous or async?)
-   - Storage costs (where do logs go? How long to retain?)
-   - Privacy concerns (what can/can't be logged?)
-
-### Step 2: Decompose the Feature (15 minutes)
-
-Using SPIDR or another method, break down audit logging into tasks:
-
-```markdown
-Example starting point (you refine this):
-
-## Spike
-
-- [ ] Research structured logging libraries (Winston, Pino, Bunyan)
-- [ ] Review compliance requirements for our industry
-- [ ] Estimate storage costs for 100K logs/day
-
-## Phase 1: Infrastructure
-
-- [ ] Design audit log schema
-- [ ] Create audit_logs table with indexes
-- [ ] Set up log rotation/retention policy
-
-## Phase 2: Core Logging
-
-- [ ] ...
-```
-
-**Your decomposition should:**
-
-- Identify at least 10 specific tasks
-- Highlight dependencies (which tasks block others?)
-- Mark which tasks can be parallelized
-- Include testing tasks
-
-### Step 3: Define Interfaces (10 minutes)
-
-Write the contract for the audit logging service:
-
-```typescript
-interface AuditLogger {
-  log(event: AuditEvent): Promise<void>;
-  query(filters: AuditFilters): Promise<AuditEvent[]>;
-  // ... what else?
-}
-
-type AuditEvent = {
-  // Define the shape
-};
-```
-
-### Step 4: Execute (Autonomous)
-
-Pick one task from your decomposition and prompt an agent to implement it:
-
-```markdown
-Example prompt:
-
-"Implement Phase 1, Task 2: Create audit_logs table with indexes.
-
-Context:
-
-- We use PostgreSQL 14
-- Our migrations are in db/migrations/ using node-pg-migrate
-- Follow the pattern in 1648392847123_create-users-table.js
-
-Requirements:
-
-- Columns: id, userId, action, resourceType, resourceId, ipAddress, timestamp, metadata (JSONB)
-- Indexes: userId, action, timestamp (for common queries)
-- Set up automatic partitioning by month (for performance)
-
-Run the migration in dev and verify it works."
-```
-
-**Observe how the agent:**
-
-- Uses grounding (reads existing migrations)
-- Follows established patterns
-- Adds tests automatically (if your project has test conventions)
-- Verifies the work (runs migration, checks schema)
-
-### Step 5: Integration Planning (10 minutes)
-
-If you parallelized tasks, document your integration strategy:
-
-```markdown
-## Integration Plan
-
-### Merge order:
-
-1. Merge feat/audit-schema (database)
-2. Merge feat/audit-service (core logic) - depends on schema
-3. Merge feat/audit-middleware (HTTP layer) - depends on service
-4. Merge feat/audit-ui (admin dashboard) - depends on middleware
-
-### Conflict resolution:
-
-- If both branches modify src/types.ts, prioritize the schema branch
-
-### Integration tests:
-
-- E2E test: User login → audit log created → visible in admin UI
-- Performance test: 1000 concurrent logs → all persisted correctly
-```
+Pragmatism beats purism. These are all just tools—choose based on efficiency, not ideology.
 
 ## Key Takeaways
 
-**Planning accelerates execution** - 10 minutes of grounding prevents hours of rework. Load the agent's context with codebase patterns, documentation, and constraints before asking it to implement features.
+- **Questions load context, they don't verify knowledge** - "How does X work?" triggers search/read sequences that populate the context window with relevant information for subsequent execution steps. Questions are a context engineering tool.
 
-**Ask with evidence, not guesses** - Clarifying questions should include context from your research. "I see pattern X in the codebase, but this scenario seems different because Y - which approach do you prefer?" beats "How should I do this?"
+- **Require evidence to force grounding** - Explicitly requiring evidence (file paths, line numbers, actual values) forces agents to retrieve information rather than guess. The agent cannot provide evidence without reading your actual code, converting hallucinated responses into grounded ones. Works independently or combined with Chain-of-Thought for complex tasks.
 
-**Decompose for parallelization** - Use SPIDR or similar methods to break features into independent tasks. Identify true dependencies (data/control flow) versus false ones (perceived coupling). Parallelize aggressively when tasks are truly independent.
+- **LLMs complete patterns, not logic** - Your engineering judgment validates architectural fit and catches logic errors. Agents handle syntax and boilerplate; you handle reasoning and correctness.
 
-**Integration is a first-class task** - Budget 20-30% of parallel execution time for merging, conflict resolution, and integration testing. Define interface contracts upfront to minimize integration pain.
+- **Review the plan's strategy and reasoning, not just the output** - Before autonomous execution, check: How was this plan derived? Was grounding thorough? Did it miss security, performance, or architectural considerations?
 
-**Artifacts make plans verifiable** - Task lists, ADRs, and interface contracts turn invisible planning into tangible deliverables. They enable progress tracking, stakeholder communication, and context recovery after interruptions.
+- **Watch for invention over reuse during plan review** - Agents default to generating plausible code from training patterns instead of discovering existing code. Red flags: "create new utility," "implement helper." Intervention: Force discovery first with evidence requirements before allowing implementation.
+
+- **Git worktrees enable true parallel agent workflows** - Multiple working directories, separate branches, isolated agent contexts. Run 3 agent instances on different features simultaneously with zero interference.
+
+- **Mix CLI and UI tools pragmatically** - IDEs for navigation and complex refactoring, CLI for quick edits and parallel session management. Use the best tool for each task, not ideology.
 
 ---
 
 **Next:** [Lesson 8: Tests as Guardrails](./lesson-8-tests-as-guardrails.md)
+
+[^1]: GitClear (2025) - Analysis of 211 million lines of code (2020-2024) showing 8-fold increase in duplicated code blocks (5+ duplicated lines) in AI-generated code. Source: [LeadDev: How AI-generated code accelerates technical debt](https://leaddev.com/technical-direction/how-ai-generated-code-accelerates-technical-debt)

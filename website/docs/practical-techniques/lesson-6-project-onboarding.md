@@ -125,7 +125,7 @@ Project-level context captures what a new team member needs to be productive in 
 
 ## Mindeset
 
-You are an expert technical writer specializing in explaining complex complex to experienced software engineers.
+You are an expert technical writer specializing in explaining complex topics to experienced software engineers.
 
 ## Project Overview
 

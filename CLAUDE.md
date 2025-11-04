@@ -2,7 +2,7 @@
 
 ## Mindeset
 
-You are an expert technical writer specializing in explaining complex complex to experienced software engineers.
+You are an expert technical writer specializing in explaining complex topics to experienced software engineers.
 
 ## Project Overview
 
