@@ -3,18 +3,22 @@
 /**
  * Podcast Audio Synthesis Script
  *
- * Converts saved podcast scripts (markdown files) to audio using Gemini TTS:
- * 1. Scans scripts/output/podcasts/ for markdown script files
- * 2. Parses script dialog and metadata
- * 3. Synthesizes audio using Gemini 2.5 Flash TTS with multi-speaker config
- * 4. Saves WAV files to website/static/audio/
- * 5. Updates manifest mapping docs to audio URLs
+ * Converts a single podcast script (markdown file) to audio using Gemini TTS:
+ * 1. Displays available podcast scripts from scripts/output/podcasts/
+ * 2. Prompts user to select a specific podcast
+ * 3. Parses script dialog and metadata
+ * 4. Synthesizes audio using Gemini 2.5 Flash TTS with multi-speaker config
+ * 5. Saves WAV file to website/static/audio/
+ * 6. Updates manifest mapping docs to audio URLs
+ *
+ * Usage: node generate-podcast-audio.js
  */
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'fs';
 import { join, relative, dirname, basename, extname } from 'path';
 import { fileURLToPath } from 'url';
+import * as readline from 'readline';
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -432,37 +436,42 @@ async function processScript(scriptPath, manifest) {
 
   } catch (error) {
     console.error(`  ❌ Error: ${error.message}`);
-    console.error(`  Skipping this file and continuing...`);
+    throw error;
   }
 }
 
 /**
- * Process files with concurrency limit
+ * Interactive prompt to select a podcast script from available options
  */
-async function processFilesWithConcurrency(files, manifest, concurrency = 3) {
-  const results = { processed: 0, failed: 0 };
+async function promptSelectPodcast(files) {
+  return new Promise((resolve, reject) => {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
 
-  // Process files in batches
-  for (let i = 0; i < files.length; i += concurrency) {
-    const batch = files.slice(i, i + concurrency);
+    console.log('\n📚 Available podcast scripts:\n');
 
-    console.log(`\n🔄 Processing batch ${Math.floor(i / concurrency) + 1}/${Math.ceil(files.length / concurrency)} (${batch.length} files concurrently)...`);
+    files.forEach((file, index) => {
+      const relativePath = relative(SCRIPT_INPUT_DIR, file);
+      console.log(`  ${index + 1}. ${relativePath}`);
+    });
 
-    // Process batch concurrently
-    await Promise.all(
-      batch.map(async (file) => {
-        try {
-          await processScript(file, manifest);
-          results.processed++;
-        } catch (error) {
-          console.error(`\n❌ Failed to process ${file}:`, error.message);
-          results.failed++;
-        }
-      })
-    );
-  }
+    console.log('\n');
 
-  return results;
+    rl.question('Select a podcast by number (or press Ctrl+C to exit): ', (answer) => {
+      rl.close();
+
+      const selection = parseInt(answer, 10);
+
+      if (isNaN(selection) || selection < 1 || selection > files.length) {
+        reject(new Error(`Invalid selection: ${answer}. Please enter a number between 1 and ${files.length}.`));
+        return;
+      }
+
+      resolve(files[selection - 1]);
+    });
+  });
 }
 
 /**
@@ -482,30 +491,45 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\n📚 Found ${files.length} script files\n`);
+  console.log(`\n📚 Found ${files.length} script file${files.length !== 1 ? 's' : ''}`);
 
   // Load existing manifest or create new
   let manifest = {};
   if (existsSync(AUDIO_MANIFEST_PATH)) {
     manifest = JSON.parse(readFileSync(AUDIO_MANIFEST_PATH, 'utf-8'));
-    console.log(`📋 Loaded existing manifest with ${Object.keys(manifest).length} entries\n`);
+    console.log(`📋 Loaded existing manifest with ${Object.keys(manifest).length} entries`);
   }
 
-  // Process files with concurrency limit of 3
-  const results = await processFilesWithConcurrency(files, manifest, 3);
+  // Prompt user to select a podcast
+  let selectedFile;
+  try {
+    selectedFile = await promptSelectPodcast(files);
+  } catch (error) {
+    console.error(`\n❌ ${error.message}`);
+    process.exit(1);
+  }
 
-  // Save manifest
-  mkdirSync(dirname(AUDIO_MANIFEST_PATH), { recursive: true });
-  writeFileSync(AUDIO_MANIFEST_PATH, JSON.stringify(manifest, null, 2));
-
-  console.log('\n' + '='.repeat(60));
-  console.log('✨ Audio generation complete!\n');
-  console.log(`📊 Summary:`);
-  console.log(`   ✅ Processed: ${results.processed}`);
-  console.log(`   ❌ Failed: ${results.failed}`);
-  console.log(`   📁 Total files: ${files.length}`);
-  console.log(`\n📋 Manifest saved to: ${AUDIO_MANIFEST_PATH}`);
+  const relativePath = relative(SCRIPT_INPUT_DIR, selectedFile);
+  console.log(`\n✅ Selected: ${relativePath}\n`);
   console.log('='.repeat(60));
+
+  // Process the selected script
+  try {
+    await processScript(selectedFile, manifest);
+
+    // Save manifest
+    mkdirSync(dirname(AUDIO_MANIFEST_PATH), { recursive: true });
+    writeFileSync(AUDIO_MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
+
+    console.log('\n' + '='.repeat(60));
+    console.log('✨ Audio generation complete!');
+    console.log(`📋 Manifest updated: ${AUDIO_MANIFEST_PATH}`);
+    console.log('='.repeat(60));
+
+  } catch (error) {
+    console.error(`\n❌ Failed to process podcast: ${error.message}`);
+    process.exit(1);
+  }
 }
 
 // Run
