@@ -17,33 +17,47 @@ This lesson covers context files and how to structure them across user, project,
 
 ## The Context File Ecosystem
 
-Context files are markdown documents that inject project-specific knowledge between the system prompt and your input, giving AI agents "project memory" without requiring repeated explanations of your tech stack, conventions, and architecture. The industry has converged on two approaches: `AGENTS.md` (vendor-neutral standard working across all AI tools) and tool-specific extensions like `CLAUDE.md` (for advanced features like hierarchical context).
+Context files are markdown documents that inject project-specific knowledge between the system prompt and your input, giving AI agents "project memory" without requiring repeated explanations of your tech stack, conventions, and architecture. The industry has converged on two approaches: `AGENTS.md` (vendor-neutral standard working across most major AI tools like Cursor, Windsurf, and GitHub Copilot) and tool-specific extensions like `CLAUDE.md` (for advanced features like hierarchical context in Claude Code).
 
 <Tabs groupId="ai-tool">
 <TabItem value="agents" label="AGENTS.md (Standard)" default>
 
-`AGENTS.md` is the vendor-neutral standard adopted by 20,000+ open-source projects, working across OpenAI Codex, GitHub Copilot, Cursor, and other AI coding tools. Keep it minimal—your README should contain 90% of what AI needs; AGENTS.md adds only AI-specific operational context like MCP server configurations, environment variables, modified test commands for non-interactive execution, and warnings about non-obvious dependencies. Place it in your repository root for maximum compatibility.
+`AGENTS.md` is the vendor-neutral standard adopted by 20,000+ open-source projects, working across GitHub Copilot, Cursor, Windsurf, and most other AI coding tools (note: Claude Code does not support AGENTS.md—use CLAUDE.md instead). Keep it minimal—your README should contain 90% of what AI needs; AGENTS.md adds only AI-specific operational context like MCP server configurations, environment variables, modified test commands for non-interactive execution, and warnings about non-obvious dependencies. Place it in your repository root for maximum compatibility.
 
 </TabItem>
 <TabItem value="claude" label="Claude Code (CLAUDE.md)">
 
-Claude Code's `CLAUDE.md` uses hierarchical context where multiple files from different directories (global `~/.claude/CLAUDE.md`, project root, subdirectories) are automatically loaded and merged based on your working directory, with more specific instructions overriding general ones while non-conflicting rules from all levels remain active. This layered system lets you define universal preferences globally, project standards at the root, and module-specific overrides in subdirectories—without duplicating rules. Reference `AGENTS.md` from `CLAUDE.md` to maintain cross-tool compatibility (see Cross-Referencing section below).
+Claude Code's `CLAUDE.md` uses hierarchical context where multiple files from different directories (global `~/.claude/CLAUDE.md`, project root, subdirectories) are automatically loaded and merged based on your working directory, with more specific instructions overriding general ones while non-conflicting rules from all levels remain active. This layered system lets you define universal preferences globally, project standards at the root, and module-specific overrides in subdirectories—without duplicating rules.
 
 </TabItem>
 </Tabs>
 
 **Quick Comparison:**
 
-| Feature               | AGENTS.md                      | CLAUDE.md                     |
-| --------------------- | ------------------------------ | ----------------------------- |
-| **File location**     | Single file at repository root | Multiple files at any level   |
-| **Context loading**   | One file only                  | All applicable files merged   |
-| **Hierarchy**         | No                             | Yes (global → root → subdirs) |
-| **Override behavior** | N/A (single file)              | Specific overrides general    |
-| **Merge behavior**    | N/A (single file)              | All files injected together   |
-| **Tool support**      | Universal (all AI tools)       | Claude Code only              |
+| Feature               | AGENTS.md                                                | CLAUDE.md                     |
+| --------------------- | -------------------------------------------------------- | ----------------------------- |
+| **File location**     | Single file at repository root                           | Multiple files at any level   |
+| **Context loading**   | One file only                                            | All applicable files merged   |
+| **Hierarchy**         | No                                                       | Yes (global → root → subdirs) |
+| **Override behavior** | N/A (single file)                                        | Specific overrides general    |
+| **Merge behavior**    | N/A (single file)                                        | All files injected together   |
+| **Tool support**      | GitHub Copilot, Cursor, Windsurf, etc. (not Claude Code) | Claude Code only              |
 
 **Key takeaway:** AGENTS.md is one universal file. CLAUDE.md is a hierarchical system where multiple files are loaded and merged based on your working directory.
+
+:::tip Mixed Ecosystem: Using Claude Code with AGENTS.md
+Claude Code is the only major AI coding assistant that doesn't support AGENTS.md natively. If you're working in a mixed-tool environment (e.g., team members use Codex/Copilot while you use Claude Code), avoid duplicating content by using **@linking** in your `CLAUDE.md` to reference the shared `AGENTS.md`:
+
+```markdown
+# CLAUDE.md - Claude-specific configurations
+
+@/AGENTS.md
+
+# Additional Claude Code-specific context below
+```
+
+This imports the entire AGENTS.md content into Claude's context, maintaining a single source of truth while supporting both file formats.
+:::
 
 :::warning Security Consideration
 Context files are injected directly into system prompts. Security researchers have identified "Rules File Backdoor" attacks where malicious instructions are injected using Unicode characters or evasion techniques. Keep context files minimal, version-controlled, and code-reviewed like any other code.
