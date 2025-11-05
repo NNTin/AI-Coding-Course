@@ -117,7 +117,14 @@ Review the "why" behind the plan, not just the "what." If the agent says "Implem
 
 **Example:** Agent proposes caching user sessions in Redis with 24-hour TTL. Good plan—but did it check your existing session implementation? Did it consider GDPR compliance for session data? Did it account for cache invalidation when users change passwords?
 
-If grounding was shallow, stop and add context before execution. "Before implementing, research our existing session management, check for compliance requirements in COMPLIANCE.md, and propose cache invalidation strategy for security-critical events. Use ArguSeek, validate the approach against current security best practices."
+If grounding was shallow, stop and add context before execution:
+
+```markdown
+Before implementing, research our existing session management,
+check for compliance requirements in COMPLIANCE.md, and propose cache
+invalidation strategy for security-critical events.
+Use ArguSeek, validate the approach against current security best practices.
+```
 
 ### Glance Over Suggested Changes
 
@@ -133,7 +140,12 @@ This is high-level architectural fit, not line-by-line code review (validation c
 
 **Example:** Agent plans to add email validation by creating a new validation library in `src/lib/validators/`. But you already have Zod schemas in `src/validation/`. This is a grounding failure—the agent generated a plausible solution from training patterns instead of discovering your existing validation approach.
 
-Stop and correct: "We use Zod for validation—check `src/validation/userSchema.ts` and follow that pattern instead of creating a new library."
+Stop and correct:
+
+```markdown
+We use Zod for validation—check `src/validation/userSchema.ts` and follow that
+pattern instead of creating a new library.
+```
 
 **Why this matters:** Catching grounding failures at the planning stage is faster than rewriting generated code. If the plan reveals shallow grounding, add constraints and force deeper research before execution.
 
@@ -181,7 +193,12 @@ git worktree add ../project-bugfix bugfix/login-error
 
 Modern terminal options worth exploring: [**Ghostty**](https://ghostty.org) (fast, GPU-accelerated, native), [**Kitty**](https://sw.kovidgoyal.net/kitty/) (GPU-based, extensive graphics support), [**WezTerm**](https://wezterm.org) (Lua-configured, cross-platform), and [**Alacritty**](https://alacritty.org) (minimalist, OpenGL-accelerated). Each offers different customization approaches—compare based on your workflow needs.
 
-**Use ArguSeek to learn terminal customization.** Research best practices for your chosen terminal, especially around session management, keybindings for rapid context switching, notification configuration, and visual indicators for different agent contexts. Example prompt: "Use ArguSeek to research Kitty terminal customization for managing multiple development sessions with different contexts and long-running processes."
+**Use ArguSeek to learn terminal customization.** Research best practices for your chosen terminal, especially around session management, keybindings for rapid context switching, notification configuration, and visual indicators for different agent contexts. Example prompt:
+
+```markdown
+Use ArguSeek to research Kitty terminal customization for managing multiple
+development sessions with different contexts and long-running processes.
+```
 
 ### Modern CLI Tools for Efficient Workflows
 
@@ -217,7 +234,7 @@ The agent will research worktree workflows, propose a clean directory layout, an
 
 ### Mix CLI and UI Tools: Use What Works
 
-Don't be dogmatic about terminal-only or GUI-only workflows. IDEs remain the best tools for code navigation, symbol search, and refactoring. CLI excels at quick edits, git operations, and managing parallel sessions.
+Don't be dogmatic about terminal-only or GUI-only workflows. IDEs remain the best tools for code navigation, symbol search, and viewing large files. CLI excels at quick edits, git operations, and managing parallel sessions.
 
 **Use the best tool for each task:**
 
