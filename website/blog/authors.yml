@@ -1,8 +1,0 @@
-course-team:
-  name: AI Coding Course Team
-  title: Course Maintainers
-  url: https://github.com/ofriw/AI-Coding-Course
-  image_url: https://github.com/ofriw.png
-  page: false
-  socials:
-    github: ofriw

@@ -59,24 +59,7 @@ const config: Config = {
           showLastUpdateTime: false,
           showLastUpdateAuthor: false,
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          editUrl:
-            'https://github.com/ofriw/AI-Coding-Course/tree/main/website/',
-          blogTitle: 'AI Coding Insights',
-          blogDescription:
-            'Case studies, industry trends, and best practices for AI-assisted development',
-          postsPerPage: 10,
-          blogSidebarTitle: 'Recent posts',
-          blogSidebarCount: 'ALL',
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -94,7 +77,7 @@ const config: Config = {
         language: ['en'],
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
-        indexBlog: true,
+        indexBlog: false,
         indexDocs: true,
         docsRouteBasePath: '/docs',
       },
@@ -127,7 +110,6 @@ const config: Config = {
           position: 'left',
           label: 'Course',
         },
-        { to: '/blog', label: 'Blog', position: 'left' },
         {
           type: 'docsVersionDropdown',
           position: 'right',
@@ -172,10 +154,6 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
             {
               label: 'GitHub',
               href: 'https://github.com/ofriw/AI-Coding-Course',

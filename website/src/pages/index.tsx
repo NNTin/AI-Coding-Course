@@ -219,8 +219,6 @@ function FinalCTA() {
           <Link to="https://github.com/ofriw/AI-Coding-Course/discussions">
             Join Discussions
           </Link>
-          <span className={styles.metaSeparator}>•</span>
-          <Link to="/blog">Read the Blog</Link>
         </div>
       </div>
     </section>
