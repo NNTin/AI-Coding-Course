@@ -1,27 +1,27 @@
 {
   "methodology/lesson-4-prompting-101.md": {
     "scriptPath": "methodology/lesson-4-prompting-101.md",
-    "size": 12961,
-    "tokenCount": 3169,
-    "generatedAt": "2025-11-04T07:17:35.899Z"
+    "size": 8317,
+    "tokenCount": 2010,
+    "generatedAt": "2025-11-05T13:01:32.175Z"
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "scriptPath": "methodology/lesson-3-high-level-methodology.md",
-    "size": 11304,
-    "tokenCount": 2760,
-    "generatedAt": "2025-11-04T07:17:42.544Z"
+    "size": 9033,
+    "tokenCount": 2184,
+    "generatedAt": "2025-11-05T12:47:08.195Z"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "scriptPath": "practical-techniques/lesson-10-debugging.md",
-    "size": 17071,
-    "tokenCount": 4197,
-    "generatedAt": "2025-11-04T07:18:33.809Z"
+    "size": 9166,
+    "tokenCount": 2227,
+    "generatedAt": "2025-11-05T06:44:18.243Z"
   },
   "methodology/lesson-5-grounding.md": {
     "scriptPath": "methodology/lesson-5-grounding.md",
-    "size": 12291,
-    "tokenCount": 3000,
-    "generatedAt": "2025-11-04T07:18:22.633Z"
+    "size": 8750,
+    "tokenCount": 2114,
+    "generatedAt": "2025-11-05T13:31:50.657Z"
   },
   "practical-techniques/lesson-6-project-onboarding.md": {
     "scriptPath": "practical-techniques/lesson-6-project-onboarding.md",
@@ -49,20 +49,20 @@
   },
   "understanding-the-tools/lesson-2-understanding-agents.md": {
     "scriptPath": "understanding-the-tools/lesson-2-understanding-agents.md",
-    "size": 11203,
-    "tokenCount": 2724,
-    "generatedAt": "2025-11-04T07:20:21.866Z"
+    "size": 9900,
+    "tokenCount": 2401,
+    "generatedAt": "2025-11-05T12:37:44.311Z"
   },
   "understanding-the-tools/lesson-1-intro.md": {
     "scriptPath": "understanding-the-tools/lesson-1-intro.md",
-    "size": 10227,
-    "tokenCount": 2492,
-    "generatedAt": "2025-11-04T07:20:17.809Z"
+    "size": 7725,
+    "tokenCount": 1867,
+    "generatedAt": "2025-11-05T11:53:52.403Z"
   },
   "intro.md": {
     "scriptPath": "intro.md",
-    "size": 7438,
-    "tokenCount": 1799,
-    "generatedAt": "2025-11-04T07:17:19.415Z"
+    "size": 5018,
+    "tokenCount": 1192,
+    "generatedAt": "2025-11-05T11:46:27.246Z"
   }
 }
