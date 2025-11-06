@@ -172,7 +172,7 @@ Provide your conclusions with evidence.
 - **Transparent execution**—You see exactly what happened at each step, making debugging straightforward.
 - **Essential for complex operations**—Modern models handle simple tasks without CoT, but multi-step operations (5+ steps) require explicit guidance for accuracy.
 
-CoT is particularly powerful for QA workflows where you need methodical execution. See [Lesson 8: Tests as Guardrails](../practical-techniques/lesson-8-tests-as-guardrails.md#agent-debug-process) for a production example of CoT driving a debug workflow (lines 280-320).
+CoT is particularly powerful for QA workflows where you need methodical execution. See [Lesson 8: Tests as Guardrails](../practical-techniques/lesson-8-tests-as-guardrails.md) for production examples of using tests as guardrails in agent workflows.
 
 ## Applying Structure to Prompts
 
@@ -286,7 +286,7 @@ Include unit tests validating the calculation.
 - **Prompting is pattern completion, not conversation**—Draw the beginning of the pattern you want the model to complete
 - **Skip pleasantries**—"Please" and "thank you" dilute signal without adding value
 - **Personas affect vocabulary, not capability**—Use them to bias toward domain-specific terms that improve grounding
-- **CoT paves a clear path**—Use explicit step-by-step instructions for complex tasks when you need control and accuracy; particularly effective for QA workflows (see [Lesson 8](../practical-techniques/lesson-8-tests-as-guardrails.md#agent-debug-process))
+- **CoT paves a clear path**—Use explicit step-by-step instructions for complex tasks when you need control and accuracy; particularly effective for QA workflows (see [Lesson 8](../practical-techniques/lesson-8-tests-as-guardrails.md))
 - **Structure directs attention**—Markdown, JSON, XML are information-dense and well-represented in training data
 - **Avoid negation**—State what you want explicitly; negation is easy to miss
 - **LLMs can't do math**—Have them write code that does math instead
