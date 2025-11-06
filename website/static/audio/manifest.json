@@ -1,91 +1,101 @@
 {
   "intro.md": {
     "audioUrl": "/audio/intro.wav",
-    "size": 14145210,
+    "size": 18621256,
     "format": "audio/wav",
-    "tokenCount": 1041,
-    "chunks": 1,
-    "generatedAt": "2025-11-05T11:50:23.993Z",
+    "tokenCount": 1333,
+    "chunks": 2,
+    "generatedAt": "2025-11-06T12:27:15.621Z",
     "scriptSource": "intro.md"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "audioUrl": "/audio/practical-techniques/lesson-10-debugging.wav",
-    "size": 26085690,
+    "size": 28048982,
     "format": "audio/wav",
-    "tokenCount": 2189,
-    "generatedAt": "2025-10-31T14:34:08.119Z"
+    "tokenCount": 1935,
+    "chunks": 3,
+    "generatedAt": "2025-11-06T13:06:01.386Z",
+    "scriptSource": "practical-techniques/lesson-10-debugging.md"
   },
   "practical-techniques/lesson-6-project-onboarding.md": {
     "audioUrl": "/audio/practical-techniques/lesson-6-project-onboarding.wav",
-    "size": 27383610,
+    "size": 25419976,
     "format": "audio/wav",
-    "tokenCount": 2121,
-    "generatedAt": "2025-10-31T14:38:39.277Z"
+    "tokenCount": 1866,
+    "chunks": 2,
+    "generatedAt": "2025-11-06T13:13:23.118Z",
+    "scriptSource": "practical-techniques/lesson-6-project-onboarding.md"
   },
   "practical-techniques/lesson-7-planning-execution.md": {
     "audioUrl": "/audio/practical-techniques/lesson-7-planning-execution.wav",
-    "size": 31446330,
+    "size": 39211862,
     "format": "audio/wav",
-    "tokenCount": 2395,
-    "generatedAt": "2025-10-31T14:43:33.986Z"
+    "tokenCount": 2205,
+    "chunks": 3,
+    "generatedAt": "2025-11-06T13:24:49.206Z",
+    "scriptSource": "practical-techniques/lesson-7-planning-execution.md"
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
     "audioUrl": "/audio/practical-techniques/lesson-8-tests-as-guardrails.wav",
-    "size": 31446330,
+    "size": 30692822,
     "format": "audio/wav",
-    "tokenCount": 2422,
-    "generatedAt": "2025-10-31T14:42:24.457Z"
+    "tokenCount": 1959,
+    "chunks": 3,
+    "generatedAt": "2025-11-06T13:34:44.672Z",
+    "scriptSource": "practical-techniques/lesson-8-tests-as-guardrails.md"
   },
   "practical-techniques/lesson-9-reviewing-code.md": {
     "audioUrl": "/audio/practical-techniques/lesson-9-reviewing-code.wav",
-    "size": 31446330,
+    "size": 21238216,
     "format": "audio/wav",
-    "tokenCount": 3398,
-    "generatedAt": "2025-10-31T14:43:44.361Z"
+    "tokenCount": 1446,
+    "chunks": 2,
+    "generatedAt": "2025-11-06T13:40:51.810Z",
+    "scriptSource": "practical-techniques/lesson-9-reviewing-code.md"
   },
   "understanding-the-tools/lesson-1-intro.md": {
     "audioUrl": "/audio/understanding-the-tools/lesson-1-intro.wav",
-    "size": 22480456,
+    "size": 20339656,
     "format": "audio/wav",
-    "tokenCount": 1628,
+    "tokenCount": 1352,
     "chunks": 2,
-    "generatedAt": "2025-11-05T12:00:27.690Z",
+    "generatedAt": "2025-11-06T13:46:44.539Z",
     "scriptSource": "understanding-the-tools/lesson-1-intro.md"
   },
   "understanding-the-tools/lesson-2-understanding-agents.md": {
     "audioUrl": "/audio/understanding-the-tools/lesson-2-understanding-agents.wav",
-    "size": 27870422,
+    "size": 23519176,
     "format": "audio/wav",
-    "tokenCount": 2026,
-    "chunks": 3,
-    "generatedAt": "2025-11-05T12:46:13.140Z",
+    "tokenCount": 1690,
+    "chunks": 2,
+    "generatedAt": "2025-11-06T13:53:48.140Z",
     "scriptSource": "understanding-the-tools/lesson-2-understanding-agents.md"
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "audioUrl": "/audio/methodology/lesson-3-high-level-methodology.wav",
-    "size": 21782102,
+    "size": 30086102,
     "format": "audio/wav",
-    "tokenCount": 1823,
+    "tokenCount": 2191,
     "chunks": 3,
-    "generatedAt": "2025-11-05T12:54:01.379Z",
+    "generatedAt": "2025-11-06T12:36:55.591Z",
     "scriptSource": "methodology/lesson-3-high-level-methodology.md"
   },
   "methodology/lesson-4-prompting-101.md": {
     "audioUrl": "/audio/methodology/lesson-4-prompting-101.wav",
-    "size": 23912776,
+    "size": 26368456,
     "format": "audio/wav",
-    "tokenCount": 1691,
+    "tokenCount": 1800,
     "chunks": 2,
-    "generatedAt": "2025-11-05T13:07:55.451Z",
+    "generatedAt": "2025-11-06T12:45:42.493Z",
     "scriptSource": "methodology/lesson-4-prompting-101.md"
   },
   "methodology/lesson-5-grounding.md": {
     "audioUrl": "/audio/methodology/lesson-5-grounding.wav",
-    "size": 25784776,
+    "size": 25888456,
     "format": "audio/wav",
-    "tokenCount": 1760,
+    "tokenCount": 1813,
     "chunks": 2,
-    "generatedAt": "2025-11-05T13:39:16.803Z",
+    "generatedAt": "2025-11-06T12:57:51.422Z",
     "scriptSource": "methodology/lesson-5-grounding.md"
   }
 }
