@@ -1,562 +1,238 @@
 ---
 sidebar_position: 4
 sidebar_label: 'Lesson 9: Reviewing Code'
-title: 'Reviewing Code with AI'
+title: 'Reviewing Code'
 ---
 
-Code review is a high-leverage activity. When done well, it catches bugs, maintains architectural consistency, and shares knowledge. When done poorly, it wastes time on trivial issues while missing critical flaws.
+You've completed the implementation. Tests pass. The agent executed your plan successfully. Now comes the critical question: is it actually correct?
 
-AI agents excel at the mechanical aspects of code review - syntax, style, common patterns - freeing you to focus on architecture, business logic, and context that requires human judgment.
+This is the **Validate** phase from [Lesson 3's four-phase workflow](../methodology/lesson-3-high-level-methodology.md)—the systematic quality gate before shipping. Code review catches the probabilistic errors that agents inevitably introduce: subtle logic bugs, architectural mismatches, edge cases handled incorrectly, patterns that don't quite fit your codebase.
 
-## Learning Objectives
+The key insight: **review in a fresh context, separate from where the code was written.** This prevents confirmation bias and leverages the stateless nature of agents from [Lessons 1](../understanding-the-tools/lesson-1-intro.md) and [2](../understanding-the-tools/lesson-2-understanding-agents.md). An agent reviewing its own work in the same conversation will defend its decisions. An agent in a fresh context analyzes objectively, without attachment to prior choices.
 
-By the end of this lesson, you will be able to:
+## The Review Prompt Template
 
-- Conduct pre-commit reviews using AI to catch issues before submission
-- Generate atomic commits with contextual, meaningful commit messages
-- Leverage AI to analyze pull requests for architectural concerns and security issues
-- Apply a systematic review workflow that balances AI automation with human oversight
+This template integrates techniques from [Lesson 4: Prompting 101](../methodology/lesson-4-prompting-101.md). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).
 
-## Pre-Commit Review: Quality Gate Before Submission
+```markdown
+You are an expert code reviewer. Analyze the current changeset and provide a critical review.
 
-The most effective code review happens before you commit. AI agents can perform comprehensive self-reviews in seconds, catching issues that would otherwise waste reviewer time.
+The changes in the working tree were meant to: $DESCRIBE_CHANGES
 
-### The Self-Review Workflow
+Think step-by-step through each aspect below, focusing solely on the changes in the working tree.
 
-Before committing code, use your AI agent to perform a critical review:
+1. **Architecture & Design**
+   - Verify conformance to project architecture
+   - Check module responsibilities are respected
+   - Ensure changes align with the original intent
 
-```bash
-# Stage your changes
-git add .
+2. **Code Quality**
+   - Code must be self-explanatory and readable
+   - Style must match surrounding code patterns
+   - Changes must be minimal - nothing unneeded
+   - Follow KISS principle
 
-# Review with AI
-# Prompt: "Review the staged changes critically. Check for:
-# - Logic errors and edge cases
-# - Security vulnerabilities (injection, auth, data exposure)
-# - Performance issues (N+1 queries, unnecessary allocations)
-# - Architectural inconsistencies with existing patterns
-# - Missing error handling
-# - Test coverage gaps
-# Be specific about file and line numbers."
+3. **Maintainability**
+   - Optimize for future LLM agents working on the codebase
+   - Ensure intent is clear and unambiguous
+   - Verify comments and docs remain in sync with code
+
+4. **User Experience**
+   - Identify areas where extra effort would significantly improve UX
+   - Balance simplicity with meaningful enhancements
+
+Review the changes critically. Focus on issues that matter.
+Use ChunkHound's code research.
+DO NOT EDIT ANYTHING - only review.
 ```
 
-**What AI catches effectively:**
+After implementing code ([Lesson 7](./lesson-7-planning-execution.md)), writing tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)), and making everything pass, this review step catches what the iterative development process left behind—the final quality gate before committing.
 
-- **Security issues:** SQL injection, XSS, auth bypasses, sensitive data exposure
-- **Performance patterns:** N+1 queries, unnecessary loops, inefficient algorithms
-- **Error handling:** Missing try-catch, unchecked returns, silent failures
-- **Code smells:** Duplicated logic, god objects, tight coupling
-- **Style inconsistencies:** Formatting, naming conventions, file organization
+### Iterative Review: Repeat Until Green or Diminishing Returns
 
-**What requires human judgment:**
+Code review is rarely one-pass—first review finds issues, you fix them, re-run tests ([Lesson 8](./lesson-8-tests-as-guardrails.md)) to catch regressions, then review again in a fresh context (not the same conversation where the agent will defend its prior decisions). Continue this cycle: review in fresh context, fix issues, validate with tests, repeat.
 
-- **Business logic correctness:** Does this implement the actual requirement?
-- **Architectural fit:** Does this belong in this module?
-- **UX implications:** Will this confuse users?
-- **Operational concerns:** How does this behave under load? During deployments?
+**Review itself is probabilistic**—it's also an LLM making statistical predictions. The agent can be wrong. It might suggest "fixes" that break working code or introduce regressions that your test suite catches.
 
-### Example: Pre-Commit Review Session
+This is where operator judgment becomes essential (the "art" of the process):
 
-**Scenario:** You've implemented a new API endpoint for user data export.
+- **Tests passing + review green** = ship
+- **Tests passing + review nitpicking** = ship
+- **Tests failing after review "fixes"** = the review was probably wrong, reject the suggestion
 
-```typescript
-// src/api/export.ts
-export async function exportUserData(userId: string) {
-  const user = await db.users.findUnique({ where: { id: userId } });
-  const posts = await db.posts.findMany({ where: { authorId: userId } });
-  const comments = await db.comments.findMany({ where: { authorId: userId } });
+Stop iterating when you reach either a **green light** (no substantive issues, tests pass) or **diminishing returns**. Diminishing returns manifest as:
 
-  return {
-    user,
-    posts,
-    comments,
-  };
-}
+- **Nitpicking**: Trivial style preferences like "rename this variable"
+- **Hallucinations**: Agent invents non-existent issues or suggests patterns that don't fit your architecture
+- **Review-induced test failures**: The "fix" broke previously working code
+- **Excessive cost**: 4+ iterations for minor remaining issues
+
+At that point, trust your tests as the objective arbiter and ship the code—further AI review costs more than it provides and risks degrading quality.
+
+## Pull Requests for Human and AI Reviewers
+
+Pull requests serve two audiences: human maintainers and their AI review assistants. These audiences process information fundamentally differently—humans skim for intent and infer context from visual hierarchy, while AI agents parse statistically and need explicit structure ([Lesson 5](../methodology/lesson-5-grounding.md)). A well-crafted PR description serves both.
+
+This pattern demonstrates an advanced prompting technique that leverages sub-agents ([Lesson 7](./lesson-7-planning-execution.md)) to generate dual-optimized PR descriptions: one concise summary for human reviewers, one detailed technical explanation optimized for AI comprehension.
+
+### The Dual Audience Problem
+
+When you create a pull request, your description needs to communicate effectively with:
+
+1. **Human reviewers**: They scan quickly, infer meaning from context, and value concise summaries (1-3 paragraphs max). They want to understand the "why" and business value at a glance.
+
+2. **AI review assistants**: They parse content chunk-by-chunk, struggle with vague pronouns and semantic drift, and need explicit structure. They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
+
+Traditional PR descriptions optimize for one audience or the other. This creates friction—too verbose for humans, too vague for AI agents. The solution: generate both in a coordinated workflow.
+
+### The Advanced Prompt Pattern
+
+This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../methodology/lesson-4-prompting-101.md), [Lesson 5 (Grounding)](../methodology/lesson-5-grounding.md), and [Lesson 7 (Planning & Execution)](./lesson-7-planning-execution.md):
+
+```markdown
+You are a contributor to {PROJECT_NAME} creating a GitHub pull request for the current branch.
+Using the sub task tool to conserve context, explore the changes in the git history relative to main.
+Summarize and explain them like you would to a fellow co-worker:
+
+- Direct and concise
+- Professional but conversational
+- Assume competence and intelligence
+- Skip obvious explanations
+
+The intent of the changes are:
+{CHANGES_DESC}
+
+Building upon this, draft two markdown files: one for a human reviewer/maintainer for the project
+and another complementary that's optimized for the reviewer's agent. Explain:
+
+- What was done and the reasoning behind it
+- Breaking changes, if any exist
+- What value it adds to the project
+
+Constraints:
+
+- The human optimized markdown file should be 1-3 paragraphs max
+- Agent optimized markdown should focus on explaining the changes efficiently
+
+Use ArguSeek, learn how to explain and optimize both for humans and LLMs.
+Use the code research to learn the overall architecture, module responsibilities and coding style.
 ```
 
-**AI Review Output:**
+### Mechanisms at Work
 
-```
-Issues found in src/api/export.ts:
+This prompt combines multiple advanced techniques taught throughout the course:
 
-1. SECURITY (Critical): No authorization check - any userId can be exported
-   Line 2: Missing auth validation before data access
-   Fix: Add auth middleware or explicit permission check
+**Sub-agents for context conservation ([Lesson 7](./lesson-7-planning-execution.md)):**
 
-2. PERFORMANCE (High): N+1 query pattern
-   Lines 2-4: Three sequential database calls
-   Fix: Use Promise.all() or single query with joins
+The instruction "Using the sub task tool to conserve context" tells Claude Code CLI to spawn a separate agent for git history exploration. This prevents the main orchestrator's context window from filling with commit diffs and file changes—the sub-agent returns only synthesized findings. Without sub-agents, exploring 20-30 changed files would consume 40K+ tokens before you finish gathering context, pushing critical constraints into the ignored middle of the U-shaped attention curve ([Lesson 5](../methodology/lesson-5-grounding.md#the-u-shaped-attention-curve)).
 
-3. ERROR HANDLING (High): No error handling
-   Lines 2-4: Unhandled database errors will crash the request
-   Fix: Add try-catch with appropriate error responses
+**For tools without sub-agents:** Remove "Using the sub task tool to conserve context" and accept that context will fill faster. Consider breaking the task into multiple prompts: one for exploration, one for drafting after you've reviewed findings.
 
-4. SECURITY (Medium): Potential data exposure
-   Line 6-10: Returning raw database objects may include sensitive fields
-   Fix: Use explicit DTOs to control exposed fields
+**Agentic RAG with multiple sources ([Lesson 5](../methodology/lesson-5-grounding.md#agentic-rag-agent-driven-retrieval)):**
 
-5. MISSING TESTS: No test coverage for this endpoint
-   Add tests for: auth failure, user not found, successful export
-```
+Two grounding tools work in parallel:
 
-**Post-AI iteration:**
+1. **ArguSeek**: "learn how to explain and optimize both for humans and LLMs" triggers web research on documentation best practices, PR description standards, and LLM optimization techniques. The agent dynamically queries multiple sources and synthesizes current best practices (2025).
 
-```typescript
-// src/api/export.ts
-import { verifyUserAccess } from './auth';
-import { UserExportDTO, PostDTO, CommentDTO } from './dto';
+2. **Code Research (ChunkHound)**: "learn the overall architecture, module responsibilities and coding style" grounds the description in your actual codebase. The agent discovers naming conventions, architectural patterns, and module boundaries—ensuring the PR description uses project-specific terminology and accurately reflects your design decisions.
 
-export async function exportUserData(
-  requestingUserId: string,
-  targetUserId: string
-): Promise<UserExportDTO> {
-  // 1. Authorization check
-  if (requestingUserId !== targetUserId) {
-    throw new UnauthorizedError('Cannot export other users data');
-  }
+This multi-source grounding combines ecosystem knowledge (web research) with codebase-specific context (semantic code search).
 
-  try {
-    // 2. Parallel queries for performance
-    const [user, posts, comments] = await Promise.all([
-      db.users.findUnique({ where: { id: targetUserId } }),
-      db.posts.findMany({ where: { authorId: targetUserId } }),
-      db.comments.findMany({ where: { authorId: targetUserId } }),
-    ]);
+**Structured prompting with persona and constraints ([Lesson 4](../methodology/lesson-4-prompting-101.md)):**
 
-    if (!user) {
-      throw new NotFoundError('User not found');
-    }
+- **Persona**: "You are a contributor to PROJECT_NAME" biases vocabulary toward collaborative development terms and establishes the communication context
+- **Communication constraints**: "Direct and concise, professional but conversational, assume competence" defines the tone—matching the course's target audience of senior engineers
+- **Format constraints**: "1-3 paragraphs max" (human), "focus on explaining changes efficiently" (AI) provide clear boundaries for each output
+- **Structural requirements**: "Explain: What was done... Breaking changes... Value added" creates a checklist that directs attention to critical information
 
-    // 3. Explicit DTOs - no sensitive data leakage
-    return {
-      user: sanitizeUser(user),
-      posts: posts.map(sanitizePost),
-      comments: comments.map(sanitizeComment),
-    };
-  } catch (error) {
-    // 4. Proper error handling
-    if (error instanceof NotFoundError || error instanceof UnauthorizedError) {
-      throw error;
-    }
-    throw new InternalServerError('Failed to export user data');
-  }
-}
-```
+**Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):**
 
-**This is the power of pre-commit review:** Catching critical issues before they hit CI, before reviewers see them, before they become technical debt.
+The prompt implicitly requires evidence through "explore the changes in the git history" and "learn the overall architecture, module responsibilities and coding style." The agent cannot draft accurate descriptions without reading actual commits and code—this forces grounding in your real changes rather than statistical guesses about what "typical" PRs contain.
 
-:::tip Production Pattern
-Run pre-commit AI reviews on every change. It's faster than waiting for CI failures and cheaper than reviewer time on trivial issues.
+### Applying This Pattern
+
+**When to use it:** You have a feature branch with multiple commits ready for review. Your team uses AI-assisted code review tools (GitHub Copilot, CodeRabbit, Qodo Merge, etc.) alongside human reviewers.
+
+**Implementation:**
+
+Replace the placeholders in the prompt pattern above:
+
+- **`{PROJECT_NAME}`**: Your actual project name
+- **`{CHANGES_DESC}`**: Brief description of your intended changes (1-2 sentences)
+
+Run the prompt in Claude Code CLI, or adapt for your tool by removing the sub-agent instruction if your tool doesn't support context-isolated agents.
+
+**Validate the outputs:**
+
+The human-optimized description should be:
+
+- Scannable—lead with value, mention key files/changes, highlight breaking changes prominently
+- Concise—1-3 paragraphs that communicate the "why" and business value
+
+The AI-optimized description should be:
+
+- Comprehensive—explicit terminology, structured sections, specific file paths
+- Unambiguous—no vague pronouns ("it", "them"), architectural decisions enumerated clearly
+
+**Integration into workflow:**
+
+- **GitHub PR description**: Use the human-optimized version
+- **Separate markdown file** (e.g., `PR_REVIEW_CONTEXT.md`): Commit the AI-optimized version to help reviewers' AI assistants
+- **Commit message**: Reference both: "See PR description for summary, PR_REVIEW_CONTEXT.md for detailed technical context"
+
+:::tip Advanced Pattern: Multi-Agent Orchestration
+
+This prompt demonstrates production-level agent orchestration:
+
+1. **Sub-agent specialization**: Different agents handle different concerns (git exploration, web research, code analysis)
+2. **Context optimization**: Main orchestrator stays clean, receives only synthesized findings
+3. **Tool-specific optimization**: "Using the sub task tool" is Claude Code CLI specific—other tools (Cursor, Windsurf, Copilot Workspace) have different context management strategies
+
+**Adapting to other tools:** If your tool doesn't support sub-agents, split this into multiple sequential prompts:
+
+- Prompt 1: Explore git history and architecture
+- (Review findings)
+- Prompt 2: Draft descriptions based on exploration above
+
+The pattern remains valid; execution details change based on tool capabilities.
 :::
 
-## Atomic Commits with AI: Meaningful Git History
+### Why This Matters
 
-Git history is your codebase's documentation. Good commits tell the story of why changes happened. Bad commits are noise.
+AI-generated PRs often have significantly longer descriptions than human-written ones—documenting the agent's reasoning and process in detail. This verbosity serves AI reviewers well but creates cognitive load for human maintainers. Dual-optimized descriptions solve this by separating concerns: humans get signal without noise, AI agents get comprehensive context without ambiguity.
 
-### The Atomic Commit Principle
-
-**Atomic commit:** The smallest complete unit of change. One logical change, one commit. Tests pass. Can be reverted cleanly.
-
-**Why it matters:**
-
-- **Reviewability:** Small, focused changes are easy to review
-- **Reversibility:** `git revert` works cleanly on atomic commits
-- **Bisectability:** `git bisect` pinpoints the exact commit that introduced a bug
-- **Context:** Each commit message explains why a specific change was made
-
-### Commit Message Structure (Conventional Commits)
-
-Industry standard format that enables automation and clarity:
-
-```
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-**Types (semantic versioning integration):**
-
-- `feat:` New feature (minor version bump)
-- `fix:` Bug fix (patch version bump)
-- `docs:` Documentation only
-- `style:` Code style/formatting (no logic change)
-- `refactor:` Code restructuring (no behavior change)
-- `perf:` Performance improvement
-- `test:` Test changes
-- `build:` Build system or dependency changes
-- `ops:` Infrastructure or deployment changes
-- `chore:` Maintenance (last resort - usually there's a better type)
-
-**Breaking changes:** Add `!` before the colon:
-
-```
-feat(api)!: remove deprecated /v1/status endpoint
-
-BREAKING CHANGE: The /v1/status endpoint has been removed.
-Use /v2/health instead.
-```
-
-### AI-Generated Commit Messages: Good vs Bad
-
-**Bad (AI default without guidance):**
-
-```
-fix: update code
-```
-
-**Why bad:** Useless. Doesn't explain what or why.
-
-**Good (with proper prompting):**
-
-```
-fix(auth): prevent session fixation attack
-
-Sessions were reused after login, allowing session fixation attacks.
-Now generating new session IDs post-authentication per OWASP guidelines.
-
-Fixes: #2847
-```
-
-**Why good:** Clear what changed, why it changed, what security issue it addresses, traceable to ticket.
-
-### Prompting AI for Good Commit Messages
-
-**Poor prompt:**
-
-```
-Write a commit message for my changes
-```
-
-**Better prompt:**
-
-```
-Generate a conventional commit message for the staged changes.
-Requirements:
-- Use conventional commits format (type(scope): description)
-- Subject line: imperative mood, 50 chars max, no period
-- Body: explain WHY (not what - the diff shows what)
-- Reference any related issues
-- If breaking change, add ! and BREAKING CHANGE footer
-```
-
-**AI output:**
-
-```
-feat(export): add user data export API endpoint
-
-Implements GDPR data portability requirement. Users can now export
-their complete account data (profile, posts, comments) in JSON format.
-
-- Added authorization check (user can only export own data)
-- Optimized with parallel queries (Promise.all)
-- Sanitized output to prevent sensitive data exposure
-- Added comprehensive test coverage
-
-Refs: #3421
-```
-
-### Multi-Commit Workflow: Breaking Up Large Changes
-
-Large PRs should contain multiple atomic commits, not one monolithic commit.
-
-**Example scenario:** Implementing a feature that requires database migration, backend API, and frontend UI.
-
-**Bad approach (single commit):**
-
-```
-feat: add user preferences feature
-[247 files changed, 3,842 insertions, 891 deletions]
-```
-
-**Good approach (atomic commits):**
-
-```
-1. feat(db): add user_preferences table schema
-   [Migration only - 2 files changed]
-
-2. feat(api): add GET/PUT /api/preferences endpoints
-   [Backend API with tests - 8 files changed]
-
-3. feat(ui): add preferences page component
-   [Frontend UI with tests - 12 files changed]
-
-4. docs: update API documentation for preferences
-   [Documentation - 3 files changed]
-```
-
-**Benefits:**
-
-- Each commit is independently reviewable
-- Tests pass at each commit
-- Can cherry-pick or revert individual changes
-- Clear history of implementation progression
-
-:::warning Squashing Considered Harmful
-Don't squash all commits in a PR by default. Preserve atomic commits for future archaeology. Only squash fixup commits (typos, linter fixes) into their parent commits.
-:::
-
-### AI Workflow for Commit Staging
-
-```bash
-# 1. Check what changed
-git status
-git diff
-
-# 2. Ask AI to analyze and suggest commit grouping
-# Prompt: "Review git diff output. Suggest how to group these changes
-# into atomic commits. For each group, draft a conventional commit message."
-
-# 3. Stage and commit each atomic group
-git add src/db/migrations/
-git commit -m "feat(db): add user_preferences table schema
-
-Adds migration for user preferences storage with columns for
-theme, language, notification settings, and timezone.
-
-Refs: #3421"
-
-# 4. Repeat for each logical group
-```
-
-## Reviewing Pull Requests with AI
-
-You're reviewing a teammate's PR. AI can handle mechanical checks while you focus on architecture and business logic.
-
-### The AI-Assisted PR Review Workflow
-
-**Step 1: Automated Analysis (AI)**
-
-```bash
-# Fetch the PR
-gh pr checkout 1234
-
-# Let AI analyze
-# Prompt: "Review this PR critically:
-# 1. Security vulnerabilities
-# 2. Performance issues
-# 3. Error handling gaps
-# 4. Test coverage
-# 5. Architectural concerns
-# 6. Breaking changes
-# Provide specific file:line references."
-```
-
-**Step 2: Human Judgment (You)**
-
-Focus your attention on:
-
-- **Business logic correctness:** Does this solve the actual problem?
-- **Architectural fit:** Does this belong here? Does it create coupling?
-- **UX implications:** Edge cases, error states, loading states
-- **Operational concerns:** Monitoring, rollback strategy, performance under load
-- **Team knowledge:** Does this need documentation? Will others understand it?
-
-**Step 3: Feedback (AI + Human)**
-
-Use AI to draft constructive feedback:
-
-```
-# Prompt: "Draft a PR review comment for this issue:
-# File: src/api/billing.ts
-# Line: 142
-# Issue: Using floating point for currency calculations
-# Tone: Constructive, explain why it's problematic and suggest fix"
-```
-
-**AI output:**
-
-```
-Hey! Quick concern about the currency calculation on line 142.
-
-Using floating point (`Number`) for currency can lead to precision errors:
-  0.1 + 0.2 === 0.30000000000000004
-
-Suggestion: Use integers (cents) or a decimal library:
-  - Stripe approach: Store amounts in cents (integer)
-  - Dinero.js: Currency-safe decimal math
-  - Decimal.js: General-purpose decimal library
-
-This prevents the classic "$0.01 discrepancy" bugs in billing.
-```
-
-### PR Review Checklist (AI-Augmented)
-
-**AI handles:**
-
-- [ ] Code compiles and tests pass
-- [ ] No obvious security vulnerabilities (SQL injection, XSS, etc.)
-- [ ] Error handling exists for failure paths
-- [ ] No hardcoded secrets or credentials
-- [ ] Performance patterns are sound (no obvious N+1, etc.)
-- [ ] Code style is consistent
-- [ ] New code has test coverage
-
-**You handle:**
-
-- [ ] Business requirements are actually met
-- [ ] Architecture aligns with system design
-- [ ] UX flows make sense (error states, loading, edge cases)
-- [ ] No unnecessary complexity or over-engineering
-- [ ] Changes are appropriately scoped (not sneaking in unrelated refactors)
-- [ ] Breaking changes are documented and necessary
-- [ ] Rollback strategy is clear for risky changes
-
-### Common AI Code Review Patterns
-
-**Pattern 1: Security Audit**
-
-```
-# Prompt: "Security audit of this PR:
-# - Input validation and sanitization
-# - Authentication and authorization checks
-# - Sensitive data exposure
-# - Injection vulnerabilities (SQL, NoSQL, command)
-# - Insecure dependencies
-# Provide CVE references where applicable."
-```
-
-**Pattern 2: Performance Analysis**
-
-```
-# Prompt: "Analyze for performance issues:
-# - Database query patterns (N+1, missing indexes)
-# - Algorithmic complexity
-# - Memory allocations in hot paths
-# - Unnecessary network calls
-# Estimate impact and suggest optimizations."
-```
-
-**Pattern 3: Error Handling Review**
-
-```
-# Prompt: "Review error handling:
-# - Are all failure paths handled?
-# - Are errors logged with sufficient context?
-# - Are user-facing errors informative but not leaking internals?
-# - Are resources cleaned up on error?
-# List specific gaps with line numbers."
-```
-
-**Pattern 4: Test Coverage Analysis**
-
-```
-# Prompt: "Analyze test coverage:
-# - What's covered?
-# - What critical paths are missing tests?
-# - Are edge cases tested?
-# - Are error paths tested?
-# Suggest specific test cases to add."
-```
-
-### When NOT to Use AI in Code Review
-
-AI is a tool, not a replacement for human judgment. Skip AI when:
-
-1. **Architectural discussions:** "Should we use microservices or a monolith?" requires context AI doesn't have
-2. **Product decisions:** "Is this the right user flow?" requires domain knowledge
-3. **Team dynamics:** "Is this person being overloaded?" requires human awareness
-4. **Subjective style:** "Do we prefer X or Y pattern?" is a team decision
-5. **Context-heavy changes:** Refactors that span months of history benefit from human memory
-
-:::info Human in the Loop
-AI finds mechanical issues. You make judgment calls. Use both. The best code review combines AI's consistency with human context.
-:::
-
-## Hands-On Exercise: AI-Assisted Code Review
-
-**Scenario:** You're reviewing a PR that adds a password reset feature to your authentication system.
-
-**PR Changes:**
-
-```typescript
-// src/auth/password-reset.ts
-export async function resetPassword(email: string, newPassword: string) {
-  const user = await db.users.findUnique({ where: { email } });
-
-  await db.users.update({
-    where: { id: user.id },
-    data: { password: newPassword },
-  });
-
-  return { success: true };
-}
-```
-
-### Your Task
-
-**Part 1: AI Security Audit**
-
-1. Prompt your AI agent to perform a security audit of this code
-2. Document all issues found (expected: 5+ critical issues)
-3. For each issue, note the severity and potential exploit
-
-**Part 2: AI-Assisted Iteration**
-
-1. Ask the AI to suggest a secure implementation
-2. Review the AI's suggestion critically
-3. Identify what the AI got right and what still needs human judgment
-
-**Part 3: Human Review**
-
-Beyond AI's findings, consider:
-
-- What operational concerns exist? (Rate limiting, email deliverability)
-- What UX considerations? (What happens if email doesn't exist?)
-- What monitoring/logging is needed?
-- What's the rollback plan if this causes issues?
-
-**Part 4: Constructive Feedback**
-
-Use AI to draft review comments that:
-
-- Explain the issue clearly
-- Suggest specific fixes
-- Link to relevant documentation (OWASP, RFCs, etc.)
-- Maintain a collaborative tone
-
-### Expected Findings
-
-**AI should catch:**
-
-- No password hashing (storing plaintext passwords)
-- No token-based reset flow (anyone with email can reset password)
-- No rate limiting (brute force attacks)
-- No input validation (email format, password strength)
-- No error handling (crashes if user not found)
-- No logging/audit trail
-- No email verification before reset
-
-**You should catch:**
-
-- No password reset email sent (how does user know password changed?)
-- No session invalidation (existing sessions remain active)
-- No notification to old email address (security best practice)
-- Missing requirements context (does this meet product spec?)
-
-**Combined review:** AI finds mechanical issues, you find product/operational gaps. Together, you prevent shipping a critical security flaw.
+As AI-assisted code review becomes standard practice (GitHub Copilot, CodeRabbit, Qodo Merge, etc.), optimizing for both audiences isn't optional—it's necessary for effective collaboration in hybrid human-AI development workflows.
 
 ## Key Takeaways
 
-- **Pre-commit AI reviews** catch issues before they waste reviewer time - run them on every change
-- **Atomic commits with meaningful messages** make git history a powerful debugging and documentation tool - use Conventional Commits format
-- **AI excels at mechanical code review** (security, performance, style) - automate this
-- **Humans excel at contextual review** (architecture, UX, operations) - focus your energy here
-- **The best code review workflow combines both** - AI for consistency, humans for judgment
+- **Review in fresh context to prevent confirmation bias** - An agent reviewing its own work in the same conversation will defend its decisions. Fresh context provides objective analysis.
 
-### Production Checklist
+- **Apply the same four-phase methodology to reviewing** - Research (understand intent) → Plan (structure review) → Execute (perform analysis) → Validate (decide to ship, fix, or regenerate).
 
-Before merging any PR:
+- **Use structured review prompts with Chain-of-Thought** - The review template from this lesson applies Lesson 4's prompting principles: persona, CoT, structure, grounding, constraints. Adapt this pattern for security reviews, performance analysis, or architectural validation.
 
-- [ ] AI pre-commit review completed (security, performance, errors)
-- [ ] Commits are atomic with conventional messages
-- [ ] Human review covered business logic and architecture
-- [ ] Tests pass and cover new functionality
-- [ ] Breaking changes are documented
-- [ ] Rollback strategy is clear
+- **Iterate until green light or diminishing returns** - Fix issues, then re-review in fresh context. Stop when findings become trivial nitpicks or the agent hallucinates problems that don't exist.
 
-**Code review is quality assurance for your codebase.** AI makes you faster and more thorough. Use it systematically.
+- **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding) ensures review findings are based on actual code, not statistical guesses.
+
+### Production Workflow
+
+Codify this review process in your project's `.claude.md` or `AGENTS.md` file ([Lesson 6](./lesson-6-project-onboarding.md)) so agents automatically trigger systematic reviews after completing implementation tasks:
+
+```markdown
+# Post-Implementation Review Protocol
+
+After completing any code generation task:
+
+1. Open a fresh context (new conversation)
+2. Use the review template from Lesson 9
+3. Include: original requirements, architectural constraints, changeset
+4. Review findings systematically (Architecture → Quality → Maintainability → UX)
+5. Fix critical issues, then repeat review in fresh context
+6. Iterate until green light or diminishing returns
+```
+
+This makes systematic review a standard practice, not an afterthought.
 
 ---
 
