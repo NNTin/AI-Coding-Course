@@ -87,8 +87,162 @@ function parseArgs() {
 // ============================================================================
 
 /**
+ * Analyze code block context and generate audio-appropriate description
+ * Transforms code into natural language that preserves pedagogical value
+ */
+function describeCodeBlock(codeBlock, precedingContext, followingContext) {
+  // Extract language and code content
+  const langMatch = codeBlock.match(/```(\w+)?\n([\s\S]*?)```/);
+  const language = langMatch?.[1] || '';
+  const code = langMatch?.[2]?.trim() || '';
+
+  if (!code) {
+    return '[Code example]';
+  }
+
+  // Focus on immediate context (last 100 chars before, first 100 chars after)
+  const immediatePreContext = precedingContext.substring(Math.max(0, precedingContext.length - 100));
+  const immediatePostContext = followingContext.substring(0, 100);
+
+  // Detect code block type based on context and content
+  const fullContext = (precedingContext + ' ' + followingContext).toLowerCase();
+  const immediateContext = (immediatePreContext + ' ' + immediatePostContext).toLowerCase();
+
+  // Type 1: Comparison examples (ineffective vs effective)
+  // Prioritize immediate context for these labels
+  if (immediateContext.includes('**ineffective:**') || immediateContext.includes('**risky:**') ||
+      immediateContext.includes('**bad:**') || immediateContext.includes('**wrong:**') ||
+      immediateContext.includes('**don\'t rely on llms')) {
+    return `[INEFFECTIVE CODE EXAMPLE: ${extractCodeSummary(code, language)}]`;
+  }
+
+  if (immediateContext.includes('**effective:**') || immediateContext.includes('**better:**') ||
+      immediateContext.includes('**good:**') || immediateContext.includes('**correct:**') ||
+      immediateContext.includes('**instead')) {
+    return `[EFFECTIVE CODE EXAMPLE: ${extractCodeSummary(code, language)}]`;
+  }
+
+  // Fallback to emojis and broader context if no immediate label found
+  if (fullContext.includes('❌') && !immediateContext.includes('✅')) {
+    return `[INEFFECTIVE CODE EXAMPLE: ${extractCodeSummary(code, language)}]`;
+  }
+
+  if (fullContext.includes('✅') && !immediateContext.includes('❌')) {
+    return `[EFFECTIVE CODE EXAMPLE: ${extractCodeSummary(code, language)}]`;
+  }
+
+  // Type 2: Pattern demonstrations (showing structure)
+  if (fullContext.includes('pattern') || fullContext.includes('structure') ||
+      immediateContext.includes('example') || fullContext.includes('template')) {
+    return `[CODE PATTERN: ${extractCodeSummary(code, language)}]`;
+  }
+
+  // Type 3: Specifications with requirements (numbered lists, constraints)
+  if (code.includes('\n-') || code.includes('\n•') ||
+      /\d+\./.test(code) || fullContext.includes('requirement') ||
+      fullContext.includes('constraint') || fullContext.includes('specification')) {
+    const requirements = extractRequirements(code);
+    return `[CODE SPECIFICATION: ${extractCodeSummary(code, language)}. ${requirements}]`;
+  }
+
+  // Type 4: Default - describe the code structure
+  return `[CODE EXAMPLE: ${extractCodeSummary(code, language)}]`;
+}
+
+/**
+ * Extract a concise summary of what the code does/shows
+ */
+function extractCodeSummary(code, language) {
+  const lines = code.split('\n').filter(l => l.trim());
+
+  // Detect function definitions - more precise matching
+  const functionMatch = code.match(/(?:^|\n)\s*(?:export\s+)?(?:async\s+)?(?:function\s+(\w+)|(?:const|let|var)\s+(\w+)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>|(?:const|let|var)\s+(\w+)\s*=\s*(?:async\s*)?function)/m);
+  if (functionMatch) {
+    const funcName = functionMatch[1] || functionMatch[2] || functionMatch[3];
+    // Validate it's a real function name (at least 3 chars, starts with letter)
+    if (funcName && funcName.length >= 3 && /^[a-zA-Z]/.test(funcName)) {
+      const params = code.match(/\(([^)]*)\)/)?.[1] || '';
+      const paramCount = params.trim() ? params.split(',').length : 0;
+      const hasReturn = code.includes('return');
+      return `Function '${funcName}'${paramCount > 0 ? ` with ${paramCount} parameter${paramCount > 1 ? 's' : ''}` : ''}${hasReturn ? ' that returns a value' : ''}`;
+    }
+  }
+
+  // Detect type/interface definitions
+  if (code.includes('interface') || code.includes('type')) {
+    const typeMatch = code.match(/(?:interface|type)\s+(\w+)/);
+    if (typeMatch) {
+      return `Type definition '${typeMatch[1]}'`;
+    }
+  }
+
+  // Detect class definitions
+  if (code.includes('class')) {
+    const classMatch = code.match(/class\s+(\w+)/);
+    if (classMatch) {
+      return `Class '${classMatch[1]}'`;
+    }
+  }
+
+  // Detect imports
+  if (code.includes('import') || code.includes('require')) {
+    return 'Import statements for dependencies';
+  }
+
+  // Detect configuration/object
+  if (code.trim().startsWith('{') || code.includes('config') || code.includes('options')) {
+    return 'Configuration object with properties';
+  }
+
+  // Detect command-line/shell
+  if (language === 'bash' || language === 'sh' || code.includes('$') || code.includes('npm') || code.includes('git')) {
+    const commands = lines.filter(l => !l.startsWith('#')).length;
+    return `Shell command${commands > 1 ? 's' : ''} (${commands} line${commands > 1 ? 's' : ''})`;
+  }
+
+  // Detect specifications/requirements
+  if (code.includes('-') || code.includes('•') || /^\d+\./.test(code)) {
+    const items = lines.filter(l => l.match(/^[\s-•\d]/)).length;
+    return `Specification with ${items} requirement${items > 1 ? 's' : ''}`;
+  }
+
+  // Default: describe by line count and language
+  const lineCount = lines.length;
+  return `${language || 'Code'} snippet (${lineCount} line${lineCount > 1 ? 's' : ''})`;
+}
+
+/**
+ * Extract and summarize requirements from code
+ */
+function extractRequirements(code) {
+  const lines = code.split('\n');
+  const requirements = [];
+
+  // Extract lines that look like requirements (bullets, numbers, dashes)
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.match(/^[-•\d]+[.)]?\s+(.+)/) && trimmed.length > 5) {
+      const content = trimmed.replace(/^[-•\d]+[.)]?\s+/, '').trim();
+      if (content.length > 0) {
+        requirements.push(content);
+      }
+    }
+  }
+
+  if (requirements.length === 0) {
+    return '';
+  }
+
+  if (requirements.length <= 3) {
+    return `Requirements: ${requirements.join('; ')}`;
+  }
+
+  return `${requirements.length} specific requirements including: ${requirements.slice(0, 2).join('; ')}`;
+}
+
+/**
  * Parse MDX/MD file and extract clean text content
- * Strips frontmatter, JSX components, and code blocks
+ * Transforms code blocks into audio-appropriate descriptions
  */
 function parseMarkdownContent(filePath) {
   const content = readFileSync(filePath, 'utf-8');
@@ -99,10 +253,39 @@ function parseMarkdownContent(filePath) {
   // Remove JSX components (simple approach - remove anything with <>)
   cleaned = cleaned.replace(/<[^>]+>/g, '');
 
-  // Extract text from code blocks but label them
-  cleaned = cleaned.replace(/```[\s\S]*?```/g, () => {
-    return '[Code example omitted for audio]';
-  });
+  // First pass: Find all code blocks and their contexts BEFORE transformation
+  // This prevents context pollution from replaced blocks
+  const codeBlocks = [];
+  const regex = /```[\s\S]*?```/g;
+  let match;
+
+  while ((match = regex.exec(cleaned)) !== null) {
+    const precedingStart = Math.max(0, match.index - 200);
+    const precedingContext = cleaned.substring(precedingStart, match.index);
+
+    const followingEnd = Math.min(cleaned.length, match.index + match[0].length + 200);
+    const followingContext = cleaned.substring(match.index + match[0].length, followingEnd);
+
+    codeBlocks.push({
+      original: match[0],
+      index: match.index,
+      precedingContext,
+      followingContext
+    });
+  }
+
+  // Second pass: Replace code blocks with descriptions
+  let offset = 0;
+  for (const block of codeBlocks) {
+    const description = describeCodeBlock(block.original, block.precedingContext, block.followingContext);
+    const adjustedIndex = block.index + offset;
+
+    cleaned = cleaned.substring(0, adjustedIndex) +
+              description +
+              cleaned.substring(adjustedIndex + block.original.length);
+
+    offset += description.length - block.original.length;
+  }
 
   // Remove inline code
   cleaned = cleaned.replace(/`[^`]+`/g, (match) => match.replace(/`/g, ''));
@@ -180,6 +363,54 @@ DIALOG STYLE REQUIREMENTS:
 ✗ AVOID: "Laundry lists" of points without depth
 ✗ AVOID: Dumbing down technical concepts
 ✗ AVOID: Marketing language or hype
+
+CRITICAL: HANDLING CODE BLOCKS IN AUDIO FORMAT
+
+The source material includes code blocks that have been transformed into audio-appropriate descriptions with tags like:
+- [INEFFECTIVE CODE EXAMPLE: ...] - Shows what NOT to do
+- [EFFECTIVE CODE EXAMPLE: ...] - Shows the correct approach
+- [CODE PATTERN: ...] - Demonstrates a structure or template
+- [CODE SPECIFICATION: ...] - Lists requirements or constraints
+- [CODE EXAMPLE: ...] - General code reference
+
+HOW TO NARRATE CODE IN DIALOG:
+
+✓ DO: Narrate the code's structure and intent in natural language
+   Example: "The effective version is a TypeScript function called validateEmail that takes an email string and returns an object with a valid boolean and optional reason. It has three specific constraints: reject multiple @ symbols, reject missing domains, and accept plus addressing."
+
+✓ DO: Explain what the code demonstrates pedagogically
+   Example: "This code pattern shows how starting with a function signature and type annotations helps the AI understand exactly what you want."
+
+✓ DO: Connect code to the conversational point being made
+   Example: "See the difference? The ineffective prompt just says 'validate emails', but the effective version specifies the RFC standard, lists edge cases, and defines the return structure."
+
+✓ DO: Use code as concrete examples to back abstract discussions
+   Example: "When I say 'be specific', here's what I mean: instead of 'handle errors', write 'throw ValidationError with a descriptive message for each of these five cases'."
+
+✓ DO: Compare code blocks when showing ineffective vs effective patterns
+   Example: "The first version gives no context, just 'Write a function that validates emails.' The second version specifies TypeScript, references RFC 5322, lists three edge cases, and defines the exact return type."
+
+✗ DO NOT: Skip over code blocks - they're pedagogically important
+✗ DO NOT: Say "there's a code example here" without describing what it shows
+✗ DO NOT: Lose the specificity that the code demonstrates
+✗ DO NOT: Read code character-by-character or line-by-line
+✗ DO NOT: Use phrases like "the code shows" without explaining WHAT it shows
+
+COMPARING EFFECTIVE VS INEFFECTIVE CODE:
+When you see both [INEFFECTIVE CODE EXAMPLE: ...] and [EFFECTIVE CODE EXAMPLE: ...]:
+1. First, describe what's wrong with the ineffective version (vague, missing context, unclear requirements)
+2. Then, contrast with the effective version (specific, constrained, clear expectations)
+3. Explain WHY the effective version works better (helps AI understand intent, reduces ambiguity, produces better results)
+4. Make the contrast explicit and compelling
+
+EXAMPLE DIALOG FOR CODE BLOCKS:
+Alex: "Let me show you the difference between an ineffective and effective prompt. The ineffective one just says 'Write a function that validates emails.' That's it. No language, no specification, no edge cases."
+
+Sam: "So the AI has to guess everything - which TypeScript or Python, which validation standard, how to handle plus addressing..."
+
+Alex: "Exactly. Now look at the effective version: 'Write a TypeScript function that validates email addresses per RFC 5322. Handle these edge cases: reject multiple @ symbols, reject missing domains, accept plus addressing. Return an object with a valid boolean and optional reason field.' See how much clearer that is?"
+
+Sam: "That's night and day. The second version gives the AI everything it needs - language, standard, edge cases, return type."
 
 CRITICAL: CONTENT DEDUPLICATION REQUIREMENTS
 

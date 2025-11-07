@@ -7,81 +7,79 @@ speakers:
   - name: Sam
     role: Senior Engineer
     voice: Charon
-generatedAt: 2025-11-06T12:21:17.587Z
+generatedAt: 2025-11-07T13:32:23.650Z
 model: claude-haiku-4.5
-tokenCount: 1576
+tokenCount: 1229
 ---
 
-Alex: Welcome to the AI Coding Course. I'm Alex, and this is Sam. We're going to spend the next few hours going deep on something that probably feels familiar but wrong: most developers who pick up AI coding assistants hit a wall within weeks.
+Alex: So here's where we are in 2025: AI coding assistants work. Companies are shipping features faster. Individual engineers are doing the work of teams. The technology isn't the problem anymore.
 
-Sam: Yeah, I've seen that. People get excited, then frustrated. The tools work in demos but something breaks down in real projects.
+Sam: But?
 
-Alex: Exactly. And here's the thing—the tools are genuinely production-standard in 2025. Companies ship faster with them. Individual engineers are doing 10x their normal output. The technology isn't the problem.
+Alex: But almost every engineer who picks up these tools hits the same wall within weeks. They get frustrated and either go back to writing code themselves or use it just for boilerplate. The tool stays superficial.
 
-Sam: So what is?
+Sam: What's causing that wall? The tools aren't good enough yet, or is something else going on?
 
-Alex: The operating model. Most developers approach AI agents like junior developers—you explain what you want, you wait for them to understand, you fix code line-by-line, you manage context limits. You're treating them like teammates when you should be treating them like CNC machines.
+Alex: It's not the tools. It's the mental model. Most developers approach AI agents the way they'd work with a junior developer. You wait for them to understand context. You fix their code line-by-line. You work around context limits like they're personality quirks.
 
-Sam: That's a striking analogy. You don't expect a CNC machine to understand design intent. You give it precise instructions and it executes.
+Sam: That sounds exhausting.
 
-Alex: Precisely. You need to learn to operate them. That's what this course is about.
+Alex: It is. And it misses the whole point of what these tools actually are. AI agents aren't teammates. Think of them differently—they're CNC machines for code. You don't teach a CNC machine design principles. You learn to operate it precisely.
 
-Sam: Before we go deeper—I noticed something interesting. This course and the podcast you're listening to, they were both developed using the same AI techniques we're going to teach. The script, the voices you're hearing, all generated and validated through the methodology we're about to outline.
+Sam: So the skill isn't in prompt writing, it's in operation?
 
-Alex: Right. It's not marketing. It's validation. If these techniques can produce production-grade training material on their own application, they're robust enough for your codebase. There's something recursive about that.
+Alex: Exactly. That's what this course is about. It's operator training for AI coding agents. We're covering the systematic approach used in production environments right now—companies that have actually figured this out.
 
-Sam: Definitely. Okay, so let's talk about what this course actually covers.
+Sam: What does that look like operationally?
 
-Alex: The course is structured around three things: Plan, Execute, Validate. That's the systematic approach used in production environments.
+Alex: Three phases: Plan, Execute, Validate. You break work into agent-appropriate tasks. You research the architecture, ground yourself in context. Then you execute with precise prompts, delegate to specialized sub-agents, run operations in parallel. Finally, you validate with tests, review the code critically, and require evidence of correctness.
 
-Planning is breaking work into agent-appropriate tasks, researching the architecture, and grounding everything in context. Execution is crafting precise prompts, delegating to specialized sub-agents, and running operations in parallel. Validation is using tests as guardrails, reviewing generated code critically, and requiring evidence of correctness.
+Sam: Not exactly hand-holding.
 
-Sam: Those are distinct skills. Most people focus on execution—getting good at prompt-writing—but you're saying the planning and validation are equally important.
+Alex: Right. This course assumes you know how to engineer software. You understand design patterns, system design, architecture. We're teaching you how to orchestrate agents that execute autonomously.
 
-Alex: More important, honestly. Good prompting means nothing if you've planned poorly. And weak validation is how bad code slips into production. The three work together.
+Sam: Who actually needs this? It sounds specific.
 
-Sam: Who's this course for?
+Alex: You do if you've got three-plus years of professional engineering experience. If you've tried these tools and hit a wall. If you care about production-readiness, not just demos. If you want to move faster without sacrificing code quality.
 
-Alex: Three-plus years of professional engineering experience is the baseline. You need to understand architecture, design patterns, system design. We're not teaching software engineering fundamentals. We're teaching you how to orchestrate agents that execute it autonomously.
+Sam: What about people who are just starting out?
 
-You also need to have already tried AI coding assistants and hit those frustration points. People who haven't yet don't know what problems they're solving.
+Alex: Not the right audience. This isn't foundational engineering training. It's advanced operator training for people who already know the fundamentals.
 
-Sam: So this isn't for people learning to code.
+Sam: Fair. So what's actually in the course?
 
-Alex: No. And it's not AI theory. We cover enough about how these systems work to operate effectively, but nothing more. And honestly, copying prompts doesn't work. Understanding the principles does. That's why we focus on methodology, not templates.
+Alex: Three modules. First: Understanding the Tools—mental models and architecture. Second: Methodology—how to prompt effectively, ground work in context, design workflows. Third: Practical Techniques—onboarding to codebases, planning features, testing, reviewing, debugging.
 
-Sam: What about someone who's tried an AI assistant, got frustrated, and then gave up? Is this course going to help them?
+Sam: Sequential order?
 
-Alex: If they're willing to shift their mental model, absolutely. The frustration usually comes from treating agents like they're junior developers—expecting them to learn context, make judgment calls, understand intent. You have to change how you think about delegation.
+Alex: Yeah. Each module builds on the previous concepts. You can't really skip ahead.
 
-Sam: What will people actually be able to do after completing this?
+Sam: And I assume the exercises are hands-on?
 
-Alex: You'll be able to onboard to unfamiliar codebases five to ten times faster using agentic research. You'll refactor complex features reliably with test-driven validation. You can debug production issues by delegating log and database analysis to agents. You'll review code systematically with AI assistance while maintaining critical judgment.
+Alex: Mandatory. Reading alone won't build the operating skills you need. You work through exercises on real codebases—your own, not the examples we provide.
 
-And maybe most importantly—you'll know when to use agents and when to write code yourself. That judgment is what separates effective operators from frustrated ones.
+Sam: What does "completion" look like? What can you actually do after finishing?
 
-Sam: The judgment piece seems crucial. There's a real temptation to throw everything at an AI tool.
+Alex: Onboard to unfamiliar codebases five to ten times faster using agentic research. Refactor complex features reliably with test-driven validation. Debug production issues by delegating analysis to agents. Review code systematically while maintaining critical judgment. Plan and execute features with parallel sub-agent delegation.
 
-Alex: Absolutely. Some tasks aren't suited for agentic work. Some require human intuition or architectural judgment that agents can't make independently. Learning those boundaries is part of becoming a good operator.
+Sam: That's a significant productivity shift.
 
-Sam: How should people approach the course itself?
+Alex: It is. But the real learning is judgment—knowing when to use agents and when to write code yourself. That's what separates effective operators from frustrated ones.
 
-Alex: Sequential consumption is recommended. Each module builds on previous concepts. You have three modules: Understanding the Tools covers mental models and architecture. Methodology covers prompting, grounding, and workflow design. Practical Techniques covers onboarding, planning, testing, reviewing, and debugging.
+Sam: Okay, one more thing—I noticed this is a podcast version. Is there something recursive happening here?
 
-But here's the critical part—hands-on exercises are mandatory. Reading alone won't build operating skills. You need to work through exercises on real codebases, not the examples we provide. Real code has complexity and ambiguity that examples can't replicate.
+Alex: Yeah, actually. The entire course—content, lesson structure, code examples, documentation—was developed using the exact same AI-assisted techniques you're about to learn. We didn't just teach this methodology; we validated it by building the course itself.
 
-Sam: That's probably where people actually learn whether they've internalized this stuff.
+Sam: So you're teaching with proof of concept.
 
-Alex: Exactly. Theory and practice are separated for a reason in this course structure. The exercises force you to make real judgment calls.
+Alex: Exactly. Every module was planned, researched, drafted, refined through systematic prompting and agentic research. The podcast version, these scripts—we converted technical content to dialogue using Claude and Gemini. Even the voices are AI-generated.
 
-Sam: What do you need to actually get started?
+Sam: That's either clever or slightly ironic.
 
-Alex: You need three things. First, experience—three-plus years of professional software engineering. Second, access to a CLI coding agent. That could be Claude Code, OpenAI tools, Copilot CLI, or similar. Third, and this is non-negotiable, a willingness to unlearn the "AI as teammate" model and adopt "AI as tool" instead.
+Alex: Both. It's not marketing. It's validation. If these techniques can produce production-grade training material on their own application, they're robust enough for real work.
 
-Sam: That mindset shift is the hardest part for most people, I'd guess.
+Sam: Alright. So where do we actually start?
 
-Alex: It is. Because we've spent decades learning how to mentor junior developers, how to explain intent, how to be patient with learning curves. Those instincts actually work against you with AI agents. You have to think in terms of precise specifications, not mentorship.
+Alex: Module One: Understanding the Tools. We're going to break down mental models and architecture—what these agents actually are, how they work, what they're good at and bad at.
 
-Sam: All right. Let's go.
-
-Alex: Let's go. Ready to start with Understanding the Tools.
+Sam: Let's go.
