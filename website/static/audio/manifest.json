@@ -91,11 +91,11 @@
   },
   "methodology/lesson-5-grounding.md": {
     "audioUrl": "/audio/methodology/lesson-5-grounding.wav",
-    "size": 23876296,
+    "size": 24544456,
     "format": "audio/wav",
-    "tokenCount": 1689,
+    "tokenCount": 1666,
     "chunks": 2,
-    "generatedAt": "2025-11-07T14:05:33.203Z",
+    "generatedAt": "2025-11-08T07:31:05.746Z",
     "scriptSource": "methodology/lesson-5-grounding.md"
   }
 }
