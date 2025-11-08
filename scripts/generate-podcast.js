@@ -314,9 +314,62 @@ function parseMarkdownContent(filePath) {
 }
 
 /**
- * Generate podcast dialog prompt optimized for Claude Haiku 4.5
+ * Calculate target token count based on source material complexity
  */
-function buildDialogPrompt(content, fileName, outputPath) {
+function calculateTargetTokens(sourceContent) {
+  const MIN_TOKENS = 3000;
+  const MAX_TOKENS = 15000;
+
+  // Estimate source token count (rough: ~4 chars per token)
+  const sourceTokenCount = Math.ceil(sourceContent.length / 4);
+
+  // Base scaling: 0.6x source tokens (allows expansion for dialogue format)
+  let target = Math.floor(sourceTokenCount * 0.6);
+
+  // Complexity multipliers - count structural elements
+  const hasCodeBlocks = (sourceContent.match(/```/g) || []).length / 2;
+  const hasTables = (sourceContent.match(/^\|/gm) || []).length;
+  const hasDeepDives = (sourceContent.match(/<details>/g) || []).length;
+  const hasPedagogicalNotes = (sourceContent.match(/:::(tip|warning|info|note)/gi) || []).length;
+
+  // Add tokens for complex content that needs narration
+  target += hasCodeBlocks * 200;       // Each code block needs explanation
+  target += hasTables * 150;           // Tables need verbal description
+  target += hasDeepDives * 500;        // Deep dives = high information density
+  target += hasPedagogicalNotes * 100; // Pedagogical notes add context
+
+  // Clamp to reasonable bounds
+  const finalTarget = Math.max(MIN_TOKENS, Math.min(MAX_TOKENS, target));
+
+  console.log(`  📊 Source complexity analysis:`);
+  console.log(`     - Estimated source tokens: ${sourceTokenCount}`);
+  console.log(`     - Code blocks: ${hasCodeBlocks}`);
+  console.log(`     - Tables: ${hasTables}`);
+  console.log(`     - Deep dives: ${hasDeepDives}`);
+  console.log(`     - Pedagogical notes: ${hasPedagogicalNotes}`);
+  console.log(`     - Target podcast tokens: ${finalTarget}`);
+
+  return finalTarget;
+}
+
+/**
+ * Select appropriate model based on content complexity
+ */
+function selectModel(targetTokenCount, sourceTokenCount) {
+  // Use Sonnet for complex lessons requiring depth
+  if (targetTokenCount > 8000 || sourceTokenCount > 6000) {
+    console.log(`  🤖 Selected model: Sonnet (high complexity)`);
+    return 'sonnet';
+  }
+  // Haiku for shorter, simpler content
+  console.log(`  🤖 Selected model: Haiku (standard complexity)`);
+  return 'haiku';
+}
+
+/**
+ * Generate podcast dialog prompt optimized for Claude Haiku 4.5 or Sonnet
+ */
+function buildDialogPrompt(content, fileName, outputPath, targetTokens, sourceTokens) {
   // Special handling for intro.md - add brief meta-acknowledgement
   const isIntro = fileName === 'intro';
   const metaCommentary = isIntro ? `
@@ -412,6 +465,40 @@ Alex: "Exactly. Now look at the effective version: 'Write a TypeScript function 
 
 Sam: "That's night and day. The second version gives the AI everything it needs - language, standard, edge cases, return type."
 
+CRITICAL: PRESERVE TECHNICAL SPECIFICITY
+
+The source material contains actionable technical details that MUST be preserved in the podcast:
+
+✓ PRESERVE: Exact numbers (token counts, LOC thresholds, dimensions, percentages, ratios)
+  Example: "60-120K tokens reliable attention" NOT "somewhat less than advertised"
+  Example: "<10K LOC use agentic search, 10-100K use semantic search" NOT "different tools for different sizes"
+
+✓ PRESERVE: Tool and product names with brief context
+  Example: "ChunkHound for structured multi-hop traversal" NOT just "a tool"
+  Example: "ChromaDB, pgvector, or Qdrant vector databases" NOT just "vector databases"
+
+✓ PRESERVE: Decision matrices and selection criteria
+  Example: "Under 10K lines use X, 10-100K lines use Y, above 100K use Z with reason" NOT just "pick the right tool"
+
+✓ PRESERVE: Technical architecture details
+  Example: "768-1536 dimensional vectors with cosine similarity" NOT just "high-dimensional vectors"
+
+✓ PRESERVE: Concrete examples with specific numbers
+  Example: "10 chunks at 15K tokens plus 25K for files equals 40K" NOT just "uses a lot of tokens"
+
+✗ DO NOT: Replace specific numbers with vague descriptors ("a lot", "many", "significant")
+✗ DO NOT: Skip tool names - always mention them with 1-sentence context of what they do
+✗ DO NOT: Simplify decision criteria into generic advice
+✗ DO NOT: Omit architectural details that explain how things work
+
+EXAMPLE - BAD (too vague):
+"You need different approaches for different codebase sizes to get good results."
+
+EXAMPLE - GOOD (preserves specifics):
+"For codebases under 10,000 lines, agentic search with Grep and Read works well. Between 10,000 and 100,000 lines,
+switch to semantic search - tools like ChunkHound or Claude Context via MCP servers. Above 100,000 lines, you need
+ChunkHound's structured multi-hop traversal because autonomous agents start missing connections."
+
 CRITICAL: CONTENT DEDUPLICATION REQUIREMENTS
 
 The source material uses pedagogical reinforcement patterns designed for written learning:
@@ -484,9 +571,14 @@ Alex: [natural dialog here]
 </podcast_dialog>${metaCommentary}
 
 LENGTH CONSTRAINT:
-Target 6,000-7,500 tokens for the complete dialog. This ensures it fits within TTS API limits while maintaining quality.
-Given the deduplication requirements above, your podcast will likely be SHORTER than the source material - this is expected and desirable.
-Focus on depth and clarity over comprehensive coverage. Prioritize depth over breadth.
+Target ${targetTokens}-${targetTokens + 1500} tokens for the complete dialog (dynamically calculated based on source complexity).
+This lesson has ${sourceTokens} estimated source tokens with specific complexity factors considered.
+
+IMPORTANT: Depth is prioritized over compression for this content.
+- Preserve ALL technical specifics, numbers, tool names, and decision criteria
+- The token budget is adaptive - complex lessons get more space to preserve detail
+- Deduplication is for removing redundancy, NOT for cutting essential technical information
+- Focus on making content clear and complete, not artificially short
 
 TECHNICAL CONTENT TITLE: ${fileName}
 
@@ -502,9 +594,9 @@ Just write the raw dialog to the file now.`;
 /**
  * Call Claude Code CLI in headless mode to generate dialog
  */
-async function generateDialogWithClaude(prompt, outputPath) {
+async function generateDialogWithClaude(prompt, outputPath, model = 'haiku') {
   return new Promise((resolve, reject) => {
-    console.log(`  🤖 Calling Claude Code CLI (Haiku 4.5)...`);
+    console.log(`  🤖 Calling Claude Code CLI (${model})...`);
 
     // Ensure output directory exists before Claude tries to write
     mkdirSync(dirname(outputPath), { recursive: true });
@@ -512,7 +604,7 @@ async function generateDialogWithClaude(prompt, outputPath) {
     // Spawn claude process with headless mode
     const claude = spawn('claude', [
       '-p',              // Headless mode (non-interactive)
-      '--model', 'haiku', // Use Haiku 4.5
+      '--model', model,  // Use specified model (haiku or sonnet)
       '--allowedTools', 'Edit', 'Write' // Allow file editing and writing only
     ]);
 
@@ -585,6 +677,50 @@ async function generateDialogWithClaude(prompt, outputPath) {
     claude.stdin.write(prompt);
     claude.stdin.end();
   });
+}
+
+/**
+ * Validate technical depth and information preservation
+ */
+function validateTechnicalDepth(dialog, sourceContent) {
+  const warnings = [];
+
+  // Extract numbers from source and dialog (including LOC like "10K", percentages, dimensions)
+  const sourceNumbers = sourceContent.match(/\b\d+[KM]?(?:%|K|M|,\d{3})*\b/g) || [];
+  const dialogNumbers = dialog.match(/\b\d+[KM]?(?:%|K|M|,\d{3})*\b/g) || [];
+
+  // Should preserve at least 40% of specific numbers
+  if (dialogNumbers.length < sourceNumbers.length * 0.4) {
+    warnings.push(
+      `⚠️  Low number preservation: ${dialogNumbers.length}/${sourceNumbers.length} numbers mentioned ` +
+      `(${((dialogNumbers.length / sourceNumbers.length) * 100).toFixed(0)}%)`
+    );
+  }
+
+  // Extract tool/product names (capitalized technical terms)
+  const toolPattern = /\b(?:[A-Z][a-z]+(?:[A-Z][a-z]+)*(?:DB|RAG|Search|Agent|Hound|Seek|Context|MCP|Serena|Perplexity|ChunkHound|ArguSeek)|ChunkHound|ArguSeek|ChromaDB|pgvector|Qdrant)\b/g;
+  const sourceTools = new Set(sourceContent.match(toolPattern) || []);
+  const dialogTools = new Set(dialog.match(toolPattern) || []);
+
+  const missingTools = [...sourceTools].filter(t => !dialogTools.has(t));
+  if (missingTools.length > sourceTools.size * 0.3) {
+    warnings.push(
+      `⚠️  Missing important tools: ${missingTools.slice(0, 5).join(', ')}` +
+      `${missingTools.length > 5 ? ` (+ ${missingTools.length - 5} more)` : ''}`
+    );
+  }
+
+  // Check for decision matrices / thresholds (lines with multiple | symbols)
+  const sourceTables = (sourceContent.match(/^\|.*\|.*\|/gm) || []).length;
+  if (sourceTables > 0) {
+    // Tables should be mentioned or narrated somehow
+    const tableKeywords = /(matrix|table|comparison|threshold|scale|tier)/gi;
+    if (!tableKeywords.test(dialog)) {
+      warnings.push(`⚠️  Source contains ${sourceTables} table rows but podcast doesn't narrate them`);
+    }
+  }
+
+  return warnings;
 }
 
 /**
@@ -1166,13 +1302,23 @@ async function generateScript(filePath, scriptManifest, config) {
   console.log(`\n📄 Generating script: ${relativePath}`);
 
   try {
-    // Parse content
+    // Read raw content first for complexity analysis
+    const rawContent = readFileSync(filePath, 'utf-8');
+
+    // Parse content for podcast generation
     const content = parseMarkdownContent(filePath);
 
     if (content.length < 100) {
       console.log(`  ⚠️  Skipping - content too short`);
       return null;
     }
+
+    // Calculate dynamic token budget based on RAW content complexity (before parsing)
+    const targetTokens = calculateTargetTokens(rawContent);
+    const sourceTokens = Math.ceil(rawContent.length / 4);
+
+    // Select appropriate model
+    const model = selectModel(targetTokens, sourceTokens);
 
     // Determine output path
     const outputFileName = `${fileName}.md`;
@@ -1184,8 +1330,8 @@ async function generateScript(filePath, scriptManifest, config) {
       console.log(`  🗑️  Deleted existing file for fresh generation`);
     }
 
-    // Build prompt
-    const prompt = buildDialogPrompt(content, fileName, outputPath);
+    // Build prompt with dynamic parameters
+    const prompt = buildDialogPrompt(content, fileName, outputPath, targetTokens, sourceTokens);
 
     // Debug mode: save prompt
     if (config.debug) {
@@ -1194,14 +1340,24 @@ async function generateScript(filePath, scriptManifest, config) {
       console.log(`  🔍 Debug prompt saved: ${debugPath}`);
     }
 
-    // Generate dialog using Claude
-    const dialog = await generateDialogWithClaude(prompt, outputPath);
+    // Generate dialog using Claude with selected model
+    const dialog = await generateDialogWithClaude(prompt, outputPath, model);
 
-    // Validate dialog quality
-    const warnings = validateDialogQuality(dialog);
-    if (warnings.length > 0) {
+    // Validate technical depth and information preservation (against raw content)
+    console.log(`  🔍 Validating technical depth...`);
+    const technicalWarnings = validateTechnicalDepth(dialog, rawContent);
+    if (technicalWarnings.length > 0) {
+      console.log(`  ⚠️  Technical depth warnings:`);
+      technicalWarnings.forEach(w => console.log(`     ${w}`));
+    } else {
+      console.log(`  ✅ Technical depth validation passed`);
+    }
+
+    // Validate dialog quality (repetition)
+    const qualityWarnings = validateDialogQuality(dialog);
+    if (qualityWarnings.length > 0) {
       console.log(`  ⚠️  Quality warnings detected:`);
-      warnings.forEach(w => console.log(`     - ${w}`));
+      qualityWarnings.forEach(w => console.log(`     - ${w}`));
       console.log(`  💡 Consider regenerating if repetition is significant`);
     } else {
       console.log(`  ✅ Quality validation passed - no repetition detected`);
