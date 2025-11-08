@@ -96,12 +96,12 @@ Summarize and explain them like you would to a fellow co-worker:
 The intent of the changes are:
 {CHANGES_DESC}
 
-Building upon this, draft two markdown files: one for a human reviewer/maintainer for the project
+Building upon this, draft two markdown files: one for a human reviewer/maintainer of the project
 and another complementary that's optimized for the reviewer's agent. Explain:
 
 - What was done and the reasoning behind it
 - Breaking changes, if any exist
-- What value it adds to the project
+- What value the changes adds to the project
 
 Constraints:
 
@@ -118,7 +118,7 @@ Use the code research to learn the overall architecture, module responsibilities
 
 The instruction "Using the sub task tool to conserve context" spawns a separate agent for git history exploration, preventing the main orchestrator's context from filling with commit diffs. The sub-agent returns only synthesized findings. Without this, exploring 20-30 changed files consumes 40K+ tokens, pushing critical constraints into the U-shaped attention curve's ignored middle.
 
-This sub-agent capability is unique to Claude Code CLI (early 2025). Other tools (Cursor, Windsurf, GitHub Copilot, Cody) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
+This sub-agent capability is unique to Claude Code CLI. Other tools (Codex, GitHub Copilot) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
 
 **Multi-source grounding ([Lesson 5](../methodology/lesson-5-grounding.md#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
 
@@ -126,36 +126,80 @@ This sub-agent capability is unique to Claude Code CLI (early 2025). Other tools
 
 **Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
 
-### Applying This Pattern
+### Reviewing PRs with AI Assistants
 
-**When to use it:** You have a feature branch with multiple commits ready for review. Your team uses AI-assisted code review tools (GitHub Copilot, CodeRabbit, Qodo Merge, etc.) alongside human reviewers.
+When you're on the receiving end of a PR with dual-optimized descriptions, you have structured context for both human understanding and AI-assisted review. This section shows how to leverage both descriptions effectively.
 
-**Implementation:**
+#### Consuming the Dual Descriptions
 
-Replace the placeholders in the prompt pattern above:
+**The human-optimized description** (PR description on GitHub):
 
-- **`{PROJECT_NAME}`**: Your actual project name
-- **`{CHANGES_DESC}`**: Brief description of your intended changes (1-2 sentences)
+- Read first to understand the "why" and business value
+- Quickly scan for breaking changes and key files affected
+- Use this to form your initial mental model of the changeset
 
-Run the prompt in Claude Code CLI, or adapt for your tool by removing the sub-agent instruction if your tool doesn't support context-isolated agents.
+**The AI-optimized description** (`PR_REVIEW_CONTEXT.md` or similar):
 
-**Validate the outputs:**
+- Feed this to your AI review assistant (GitHub Copilot, Codex, Claude Code, etc)
+- Provides comprehensive technical context the AI needs for accurate analysis
+- Contains explicit terminology, file paths, and architectural patterns
 
-The human-optimized description should be:
+#### The Review Prompt Pattern
 
-- Scannable—lead with value, mention key files/changes, highlight breaking changes prominently
-- Concise—1-3 paragraphs that communicate the "why" and business value
+When reviewing a PR with dual-optimized descriptions, use this pattern with your AI assistant:
 
-The AI-optimized description should be:
+````markdown
+You are {PROJECT_NAME}'s maintainer reviewing {PR_LINK}. Ensure code quality, prevent technical debt, and maintain architectural consistency.
 
-- Comprehensive—explicit terminology, structured sections, specific file paths
-- Unambiguous—no vague pronouns ("it", "them"), architectural decisions enumerated clearly
+Context from the PR author:
+{PASTE_AI_OPTIMIZED_DESCRIPTION}
 
-**Integration into workflow:**
+# Review Process
 
-- **GitHub PR description**: Use the human-optimized version
-- **Separate markdown file** (e.g., `PR_REVIEW_CONTEXT.md`): Commit the AI-optimized version to help reviewers' AI assistants
-- **Commit message**: Reference both: "See PR description for summary, PR_REVIEW_CONTEXT.md for detailed technical context"
+1. Use GitHub CLI to read the PR discussions, comments, and related issues
+2. Think step by step, but only keep a minimum draft for each thinking step, with 5 words at most. End the assessment with a separator ####.
+3. Never speculate about code you haven't read - investigate files before commenting
+
+# Critical Checks
+
+Before approving, verify:
+
+- Can existing code be extended instead of creating new?
+- Does this respect module boundaries and responsibilities?
+- Are there similar patterns elsewhere? Search the codebase.
+- Is this introducing duplication?
+
+# Output Format
+
+```markdown
+**Summary**: [One sentence verdict]
+**Strengths**: [2-3 items]
+**Issues**: [By severity: Critical/Major/Minor with file:line refs]
+**Reusability**: [Specific refactoring opportunities]
+**Decision**: [APPROVE/REQUEST CHANGES/REJECT]
+```
+
+Start by executing `gh pr view {PR_LINK} --comments`, follow with the Code Research tool for codebase understanding.
+````
+
+:::tip Chain of Draft (CoD): An Efficient Alternative to Chain of Thought
+
+**Notice the technique in Review Process step 2 above:**
+
+> "Think step by step, but only keep a minimum draft for each thinking step, with 5 words at most. Return the assessment at the end of the response after a separator ####."
+
+This is **Chain of Draft (CoD)**—an optimization of Chain of Thought (CoT) prompting that maintains structured reasoning while being more efficient.
+
+**How it works:** Instead of generating verbose step-by-step explanations, CoD instructs the LLM to think through each step but keep the draft concise (5 words max per step), then return the final assessment after a separator (`####`).
+
+**Why use it for reviews:** CoD provides the same reasoning benefits as CoT—breaking down complex analysis into logical steps—but with reduced token consumption and faster response times.
+
+**Learn more:**
+
+- [Original research paper](https://arxiv.org/abs/2502.18600)
+- [Learn Prompting documentation](https://learnprompting.org/docs/advanced/thought_generation/chain-of-draft)
+
+:::
 
 ## Key Takeaways
 
@@ -169,24 +213,9 @@ The AI-optimized description should be:
 
 - **Evidence requirements force grounding** - "Provide file paths and line numbers" from [Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding) ensures review findings are based on actual code, not statistical guesses.
 
-### Production Workflow
+- **Generate dual-optimized PR descriptions for human and AI reviewers** - Humans need concise, scannable summaries (1-3 paragraphs). AI assistants need comprehensive, unambiguous technical context. Generate both in a coordinated workflow to serve both audiences effectively.
 
-Codify this review process in your project's `.claude.md` or `AGENTS.md` file ([Lesson 6](./lesson-6-project-onboarding.md)) so agents automatically trigger systematic reviews after completing implementation tasks:
-
-```markdown
-# Post-Implementation Review Protocol
-
-After completing any code generation task:
-
-1. Open a fresh context (new conversation)
-2. Use the review template from Lesson 9
-3. Include: original requirements, architectural constraints, changeset
-4. Review findings systematically (Architecture → Quality → Maintainability → UX)
-5. Fix critical issues, then repeat review in fresh context
-6. Iterate until green light or diminishing returns
-```
-
-This makes systematic review a standard practice, not an afterthought.
+- **Leverage AI-optimized context when reviewing PRs** - When reviewing a PR with dual descriptions, feed the AI-optimized description to your review assistant. This provides the grounding and architectural context needed for accurate analysis, reducing hallucinations and improving review quality.
 
 ---
 
