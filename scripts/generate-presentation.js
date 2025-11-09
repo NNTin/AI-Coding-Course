@@ -106,7 +106,7 @@ PRESENTATION STRUCTURE REQUIREMENTS:
   - Discussion prompts or questions to ask students
   - Real-world examples to reference
 ✓ DO: Preserve important code examples as slide content
-✓ DO: Identify which visual components to use (CapabilityMatrix, UShapeAttentionCurve, etc.)
+✓ DO: Identify which visual components to use (CapabilityMatrix, UShapeAttentionCurve, WorkflowCircle, GroundingComparison, ContextWindowMeter, AbstractShapesVisualization, etc.)
 
 ✗ AVOID: Long paragraphs on slides (slides are visual anchors, not reading material)
 ✗ AVOID: More than 5 bullet points per slide
@@ -137,8 +137,40 @@ For presentation slides:
 ✓ Add context in speaker notes about what the code demonstrates
 ✓ For comparison slides, show ineffective and effective side-by-side
 ✓ Keep code snippets under 15 lines for readability
+✓ EXCEPTION: Textual context flow examples showing agent conversation flows should use "codeExecution" slide type regardless of length (see section below)
 ✗ Don't include every code example from the lesson
 ✗ Don't show code without explaining its purpose
+
+COMPONENT DETECTION (CRITICAL):
+
+The source content contains markers for visual React components in the format:
+[VISUAL_COMPONENT: ComponentName]
+
+Examples you will see:
+- [VISUAL_COMPONENT: AbstractShapesVisualization]
+- [VISUAL_COMPONENT: CapabilityMatrix]
+- [VISUAL_COMPONENT: UShapeAttentionCurve]
+- [VISUAL_COMPONENT: ContextWindowMeter]
+
+**MANDATORY RULE:** When you encounter a [VISUAL_COMPONENT: X] marker, you MUST:
+1. Generate a "visual" slide type (NOT a "concept" slide)
+2. Set "component" field to the exact component name from the marker
+3. Use the surrounding context to write a descriptive caption
+
+Example:
+{
+  "type": "visual",
+  "component": "AbstractShapesVisualization",
+  "caption": "Visual comparison showing cluttered vs clean context"
+}
+
+**DO NOT:**
+- Convert component markers into text bullet points
+- Skip component markers
+- Change the component name
+- Generate a "concept" slide when you see a component marker
+
+If you see [VISUAL_COMPONENT: X] anywhere in the content, it MUST become a visual slide.
 
 CODE EXECUTION SLIDES:
 
@@ -170,6 +202,40 @@ SEMANTIC RULES (critical for correct color coding):
 ✗ Don't use for static code examples (use "code" type instead)
 ✗ Don't create more than 10 steps (split into multiple slides if needed)
 ✗ Don't confuse "LLM receives data and predicts" (prediction) with "data returned" (feedback)
+
+RECOGNIZING TEXTUAL CONTEXT FLOW PATTERNS (CRITICAL):
+
+When you see code blocks showing conversation/execution flows with patterns like:
+- "SYSTEM: ... USER: ... ASSISTANT: ... TOOL_RESULT: ..."
+- Sequential back-and-forth between human, LLM, and tools
+- Full execution traces showing how text flows through agent context
+- Examples demonstrating the actual content of the context window
+
+→ These are PEDAGOGICALLY CRITICAL and must be included as "codeExecution" slides
+
+Why these matter MORE than config examples:
+- They show the fundamental mental model of how agents operate
+- They demystify what "context" actually contains
+- They're the core learning insight, not just implementation details
+
+How to handle them:
+1. Break the flow into 8-12 logical steps (not necessarily every line)
+2. Map conversation elements to highlightTypes:
+   - "SYSTEM:" or system instructions → human
+   - "USER:" or task specification → human
+   - "ASSISTANT:" thinking/reasoning → prediction
+   - "<tool_use>" or tool calls → execution
+   - "TOOL_RESULT:" or outputs → feedback
+3. Add annotations explaining the significance of each step
+4. Focus on the FLOW of text through the context, not just the code
+
+Example transformation:
+- Source: 67-line conversation showing full agent execution
+- Slide: 10 steps highlighting key moments in the conversation flow
+- Annotations: "Notice how the tool result becomes input to the next prediction"
+
+PRIORITIZATION: Textual flow examples showing context mechanics trump configuration
+examples like MCP setup. Configuration is implementation; textual flow is understanding.
 
 SPEAKER NOTES GUIDELINES:
 
@@ -278,15 +344,34 @@ You must generate a valid JSON file with this structure:
       ],
       "speakerNotes": { ... }
     },
+
+COMPARISON SLIDE CONVENTION (CRITICAL - HARDCODED IN UI):
+
+The comparison slide type has HARDCODED styling in the presentation component:
+- LEFT side → RED background, RED heading, ✗ icons (ineffective/worse/limited)
+- RIGHT side → GREEN background, GREEN heading, ✓ icons (effective/better/superior)
+
+YOU MUST ALWAYS follow this convention:
+- LEFT: The worse/ineffective/traditional/limited approach
+- RIGHT: The better/effective/modern/superior approach
+
+Correct examples:
+- "Chat Interface" (left) vs "Agent Workflow" (right)
+- "Heavy Mocking" (left) vs "Sociable Tests" (right)
+- "Chat/IDE Agents" (left) vs "CLI Agents" (right)
+- "Traditional RAG" (left) vs "Agentic RAG" (right)
+
+INCORRECT: Putting the better option on the left will show it with RED ✗ styling!
+
     {
       "type": "comparison",
       "title": "Ineffective vs Effective",
       "left": {
-        "label": "Ineffective",
+        "label": "Ineffective",        // MANDATORY: LEFT = worse/ineffective/limited (RED ✗)
         "content": ["Point 1", "Point 2"]
       },
       "right": {
-        "label": "Effective",
+        "label": "Effective",          // MANDATORY: RIGHT = better/effective/superior (GREEN ✓)
         "content": ["Point 1", "Point 2"]
       },
       "speakerNotes": { ... }
@@ -307,7 +392,7 @@ You must generate a valid JSON file with this structure:
     {
       "type": "visual",
       "title": "Visual Component",
-      "component": "CapabilityMatrix",
+      "component": "CapabilityMatrix | UShapeAttentionCurve | WorkflowCircle | GroundingComparison | ContextWindowMeter | AbstractShapesVisualization",
       "caption": "Description of what the visual shows",
       "speakerNotes": { ... }
     },
@@ -508,6 +593,90 @@ async function promptSelectFile(files, baseDir) {
 // ============================================================================
 
 /**
+ * Extract visual component names from parsed content
+ * @param {string} content - Parsed markdown content
+ * @returns {string[]} Array of component names
+ */
+function extractExpectedComponents(content) {
+  const componentRegex = /\[VISUAL_COMPONENT: ([A-Za-z]+)\]/g;
+  const components = [];
+  let match;
+
+  while ((match = componentRegex.exec(content)) !== null) {
+    components.push(match[1]);
+  }
+
+  return components;
+}
+
+/**
+ * Validate that all expected visual components appear in the presentation
+ * @param {string} content - Parsed markdown content
+ * @param {object} presentation - Generated presentation object
+ * @returns {object} Validation result with missing components
+ */
+function validateComponents(content, presentation) {
+  const expectedComponents = extractExpectedComponents(content);
+  const visualSlides = presentation.slides.filter(s => s.type === 'visual');
+  const renderedComponents = visualSlides.map(s => s.component);
+
+  const missing = expectedComponents.filter(c => !renderedComponents.includes(c));
+
+  return {
+    expected: expectedComponents,
+    rendered: renderedComponents,
+    missing,
+    allPresent: missing.length === 0
+  };
+}
+
+/**
+ * Validate semantic correctness of comparison slides
+ * Checks that better/effective options are on the RIGHT (green ✓)
+ * and worse/ineffective options are on the LEFT (red ✗)
+ * @param {object} presentation - Generated presentation object
+ * @returns {object} Validation result with potential ordering issues
+ */
+function validateComparisonSemantics(presentation) {
+  const comparisonSlides = presentation.slides.filter(s => s.type === 'comparison');
+  const issues = [];
+
+  // Keywords that indicate a "positive/better" option
+  const positiveKeywords = ['cli', 'effective', 'better', 'modern', 'agentic', 'sociable', 'agent workflow'];
+  // Keywords that indicate a "negative/worse" option
+  const negativeKeywords = ['chat', 'ide', 'ineffective', 'worse', 'traditional', 'mocked', 'chat interface'];
+
+  for (const slide of comparisonSlides) {
+    if (!slide.left || !slide.right) continue;
+
+    const leftLabel = slide.left.label?.toLowerCase() || '';
+    const rightLabel = slide.right.label?.toLowerCase() || '';
+
+    // Check if left side has positive keywords (should be on right instead)
+    const leftIsPositive = positiveKeywords.some(k => leftLabel.includes(k));
+    // Check if right side has negative keywords (should be on left instead)
+    const rightIsNegative = negativeKeywords.some(k => rightLabel.includes(k));
+
+    if (leftIsPositive || rightIsNegative) {
+      issues.push({
+        slide: slide.title,
+        left: slide.left.label,
+        right: slide.right.label,
+        reason: leftIsPositive
+          ? `"${slide.left.label}" appears positive/better but is on LEFT (will show RED ✗)`
+          : `"${slide.right.label}" appears negative/worse but is on RIGHT (will show GREEN ✓)`
+      });
+    }
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    totalComparisons: comparisonSlides.length
+  };
+}
+
+/**
  * Generate presentation for a file
  */
 async function generatePresentation(filePath, manifest, config) {
@@ -548,6 +717,31 @@ async function generatePresentation(filePath, manifest, config) {
 
     // Generate presentation using Claude
     const presentation = await generatePresentationWithClaude(prompt, outputPath);
+
+    // Validate that all visual components were included
+    const validation = validateComponents(content, presentation);
+    if (!validation.allPresent) {
+      console.log(`  ⚠️  WARNING: ${validation.missing.length} visual component(s) not rendered:`);
+      validation.missing.forEach(c => console.log(`      - ${c}`));
+      console.log(`  ℹ️  Expected: [${validation.expected.join(', ')}]`);
+      console.log(`  ℹ️  Rendered: [${validation.rendered.join(', ')}]`);
+    } else if (validation.expected.length > 0) {
+      console.log(`  ✅ All ${validation.expected.length} visual component(s) rendered correctly`);
+    }
+
+    // Validate comparison slide semantics
+    const semanticValidation = validateComparisonSemantics(presentation);
+    if (!semanticValidation.valid) {
+      console.log(`  ⚠️  WARNING: ${semanticValidation.issues.length} comparison slide(s) may have reversed order:`);
+      semanticValidation.issues.forEach(issue => {
+        console.log(`      - "${issue.slide}"`);
+        console.log(`        LEFT: "${issue.left}" | RIGHT: "${issue.right}"`);
+        console.log(`        ${issue.reason}`);
+      });
+      console.log(`  ℹ️  Remember: LEFT = ineffective/worse (RED ✗), RIGHT = effective/better (GREEN ✓)`);
+    } else if (semanticValidation.totalComparisons > 0) {
+      console.log(`  ✅ All ${semanticValidation.totalComparisons} comparison slide(s) follow correct convention`);
+    }
 
     // Copy to static directory for deployment
     const staticPath = join(STATIC_OUTPUT_DIR, dirname(relativePath), outputFileName);
