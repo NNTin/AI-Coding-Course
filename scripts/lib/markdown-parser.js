@@ -128,7 +128,11 @@ export function parseMarkdownContent(filePath) {
   // Remove frontmatter
   let cleaned = content.replace(/^---[\s\S]*?---\n/, '');
 
-  // Remove JSX components
+  // Extract and preserve React components (capital letter start = React components)
+  // Replace with clear markers so LLM can detect them
+  cleaned = cleaned.replace(/<([A-Z][a-zA-Z]*)\s*\/>/g, '[VISUAL_COMPONENT: $1]');
+
+  // Remove remaining HTML tags (lowercase = HTML elements)
   cleaned = cleaned.replace(/<[^>]+>/g, '');
 
   // First pass: Find all code blocks and their contexts
