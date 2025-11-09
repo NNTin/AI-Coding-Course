@@ -4,724 +4,84 @@ sidebar_label: 'Lesson 10: Debugging'
 title: 'Lesson 10: Debugging with AI Agents'
 ---
 
-Debugging with AI agents isn't about asking "what's wrong with my code?" It's about systematically placing agents in diagnostic environments where they can observe, reproduce, and verify fixes with evidence.
-
-## Learning Objectives
-
-- Apply systematic debugging methodology with AI agents as diagnostic tools
-- Build reproducible environments that isolate bugs for agent inspection
-- Configure agents with direct access to logs, databases, and runtime state
-- Establish evidence-based verification before accepting proposed solutions
-
-## The Debugging Mindset: Scientific Method Over Guesswork
-
-Traditional debugging with AI assistants often looks like this:
-
-```
-Engineer: "This endpoint is returning 500 errors. Fix it."
-Agent: "The issue is likely in the database query. Try this..."
-Engineer: *applies patch blindly*
-Result: Bug persists, or new bug introduced
-```
-
-Production debugging requires the scientific method:
-
-1. **Observe** - Collect data (logs, metrics, traces)
-2. **Hypothesize** - Form testable theories about root cause
-3. **Reproduce** - Isolate the bug in a controlled environment
-4. **Test** - Verify the hypothesis with evidence
-5. **Fix** - Apply solution with regression tests
-6. **Verify** - Confirm fix resolves the issue without side effects
+Debugging with AI agents isn't about describing symptoms and hoping for solutions. It's about requiring evidence at every step. The core principle: **never accept a fix without reproducible proof it works**.
 
-AI agents excel when you give them access to the full diagnostic environment, not just a description of symptoms.
+## Always Require Evidence
 
-## Code Inspection: Teaching Agents to Read Runtime State
+The fundamental shift in debugging with AI is moving from "what do you think is wrong?" to "prove the bug exists, then prove your fix works." AI agents excel at pattern recognition and systematic investigation when given concrete data, but fail spectacularly when forced to speculate.
 
-Before diving into reproduction, agents need to understand what's actually happening in your system.
+**Anti-pattern:** Describing a bug and asking the agent to fix it blindly.
 
-### Static Analysis First
+**Production pattern:** Provide reproduction steps, give the agent access to diagnostic tools, and require before/after evidence.
 
-Give agents the full execution path:
+## Code Inspection: Understanding Before Fixing
 
-```bash
-# Bad: "Debug this API endpoint"
-# Good: Give context
-"""
-Debug the `/api/orders/:id` endpoint returning 500 errors.
+Before diving into logs or reproduction, have the agent explain the architecture and execution flow. Use conversational analysis to identify mismatches between your mental model and actual system behavior. Ask the agent to trace request paths, explain data flow, and identify potential failure points based on code structure.
 
-Stack trace from production:
-[paste stack trace]
+This isn't about having the agent read every line of code. Use semantic code search and research tools to find relevant components, then focus the conversation on critical paths. For example: "Trace the authentication flow from API request to database query. Where could a race condition occur?" The agent's explanation often reveals edge cases or assumptions you missed.
 
-Read these files to understand the flow:
-- src/api/orders.ts (HTTP handler)
-- src/services/OrderService.ts (business logic)
-- src/db/OrderRepository.ts (data access)
-- src/middleware/auth.ts (authentication)
+## Log Analysis: AI's Superpower
 
-Check for:
-- Unhandled promise rejections
-- Missing null checks
-- Race conditions in async operations
-"""
-```
+AI agents excel with the messy logs humans struggle with. Multi-line stack traces scattered across thousands of entries? Inconsistent formats from different services? Raw debug output without structured fields? That's where AI has the biggest advantage—processing chaos humans can't parse manually.
 
-### Dynamic Inspection with Debug Scripts
+What takes senior engineers days of manual correlation happens in minutes. AI spots patterns across log formats: cascading errors in microservices with different logging styles, timing patterns indicating race conditions buried in verbose output, specific user cohorts experiencing failures across fragmented logs. The messier the logs, the more AI's pattern recognition outpaces human capability.
 
-For production issues, create inspection scripts that agents can run:
+Give agents access however works: paste grep output, pipe script output, upload raw log files, direct CLI access to log aggregators. AI doesn't need JSON with correlation IDs to be effective—it parses whatever you have. That said, structured logs (consistent timestamps, request IDs, JSON formatting) are good engineering practice and make **both** human and AI analysis easier. But don't wait for perfect logging infrastructure before leveraging AI—its strength is working with what you already have.
 
-```typescript
-// scripts/debug-order-500.ts
-import { OrderService } from '../src/services/OrderService';
-import { logger } from '../src/utils/logger';
+When you do control logging, add targeted diagnostic statements preemptively when investigating bugs. Fifteen minutes writing specific log output beats hours of speculation. The agent can guide what to log based on its hypothesis—then analyze the new output immediately.
 
-async function inspectOrder(orderId: string) {
-  logger.info('Starting order inspection', { orderId });
+## Reproduction Scripts: Code is Cheap
 
-  // Check database state
-  const order = await db.orders.findById(orderId);
-  logger.info('Order record', { order });
-
-  // Check related entities
-  const items = await db.orderItems.findByOrderId(orderId);
-  logger.info('Order items', { items, count: items.length });
-
-  // Check user state
-  const user = await db.users.findById(order.userId);
-  logger.info('User state', {
-    userId: user.id,
-    status: user.status,
-    permissions: user.permissions,
-  });
-
-  // Reproduce the operation
-  try {
-    const result = await OrderService.calculateTotal(orderId);
-    logger.info('Calculate total succeeded', { result });
-  } catch (error) {
-    logger.error('Calculate total failed', { error, orderId });
-    throw error;
-  }
-}
-
-// Run with: npm run debug:order -- <order-id>
-const orderId = process.argv[2];
-inspectOrder(orderId).catch((err) => {
-  logger.error('Inspection failed', { err });
-  process.exit(1);
-});
-```
-
-**Agent workflow:**
-
-```
-Engineer: "Run scripts/debug-order-500.ts with order ID abc123 and analyze the output."
-Agent: *executes script, reads logs, identifies null reference in items array*
-Agent: "The bug is in OrderService.calculateTotal() - it doesn't handle orders with zero items."
-Engineer: "Show me the evidence in the logs."
-Agent: *points to specific log line showing items.length === 0 causing undefined access*
-```
-
-## Reproduction: Isolating Bugs in Controlled Environments
-
-Reproducibility is everything. If you can't reproduce it, you can't verify the fix.
-
-### Docker-Based Reproduction
-
-Create isolated environments that capture production state:
-
-```dockerfile
-# Dockerfile.debug
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Install debugging tools
-RUN apk add --no-cache curl jq postgresql-client redis
-
-# Copy application code
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-
-# Add debug entrypoint
-COPY scripts/debug-entrypoint.sh /debug-entrypoint.sh
-RUN chmod +x /debug-entrypoint.sh
-
-ENTRYPOINT ["/debug-entrypoint.sh"]
-```
-
-```bash
-# scripts/debug-entrypoint.sh
-#!/bin/sh
-set -e
-
-echo "=== Debug Environment Setup ==="
-echo "Node version: $(node --version)"
-echo "Environment: ${NODE_ENV}"
-echo "Database: ${DATABASE_URL}"
-
-# Verify connectivity
-echo "Testing database connection..."
-pg_isready -h ${DB_HOST} -p ${DB_PORT} || exit 1
-
-echo "Testing Redis connection..."
-redis-cli -h ${REDIS_HOST} ping || exit 1
-
-echo "=== Starting application in debug mode ==="
-exec node --inspect=0.0.0.0:9229 dist/server.js
-```
-
-```yaml
-# docker-compose.debug.yml
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile.debug
-    ports:
-      - '3000:3000'
-      - '9229:9229' # Node debugger
-    environment:
-      NODE_ENV: development
-      DATABASE_URL: postgres://user:pass@postgres:5432/app_db
-      REDIS_URL: redis://redis:6379
-      LOG_LEVEL: debug
-    volumes:
-      - ./logs:/app/logs
-      - ./scripts:/app/scripts
-    depends_on:
-      - postgres
-      - redis
-
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: app_db
-    volumes:
-      - ./db/dump.sql:/docker-entrypoint-initdb.d/dump.sql
-
-  redis:
-    image: redis:7-alpine
-
-  pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - '5050:80'
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-```
-
-**Agent workflow:**
-
-```
-Engineer: "Reproduce the order calculation bug using docker-compose.debug.yml"
-
-Agent workflow:
-1. Reads docker-compose.debug.yml to understand environment
-2. Runs: docker-compose -f docker-compose.debug.yml up -d
-3. Waits for services to be healthy
-4. Loads test data: docker-compose exec postgres psql -U user -d app_db -f /scripts/test-data.sql
-5. Executes reproduction script: docker-compose exec app node scripts/debug-order-500.ts abc123
-6. Collects logs: docker-compose logs app > logs/reproduction.log
-7. Analyzes logs and identifies root cause
-```
-
-### Reproduction Scripts with Snapshots
-
-For complex state-dependent bugs, capture and restore exact state:
-
-```typescript
-// scripts/snapshot-production-state.ts
-import { db } from '../src/db';
-import { writeFileSync } from 'fs';
-
-async function captureState(orderId: string) {
-  const snapshot = {
-    timestamp: new Date().toISOString(),
-    order: await db.orders.findById(orderId),
-    items: await db.orderItems.findByOrderId(orderId),
-    user: await db.users.findById(order.userId),
-    inventory: await db.inventory.findByProductIds(
-      items.map((i) => i.productId)
-    ),
-    config: await db.config.findActive(),
-  };
-
-  writeFileSync(
-    `snapshots/${orderId}-${Date.now()}.json`,
-    JSON.stringify(snapshot, null, 2)
-  );
-
-  return snapshot;
-}
-```
-
-```typescript
-// scripts/restore-snapshot.ts
-import { db } from '../src/db';
-import { readFileSync } from 'fs';
-
-async function restoreState(snapshotPath: string) {
-  const snapshot = JSON.parse(readFileSync(snapshotPath, 'utf-8'));
-
-  await db.transaction(async (tx) => {
-    // Restore in dependency order
-    await tx.users.upsert(snapshot.user);
-    await tx.config.upsert(snapshot.config);
-    await tx.orders.upsert(snapshot.order);
-    await tx.orderItems.bulkUpsert(snapshot.items);
-    await tx.inventory.bulkUpsert(snapshot.inventory);
-  });
-
-  console.log(`Restored state from ${snapshot.timestamp}`);
-}
-```
-
-**Agent prompt:**
-
-```
-"Restore snapshot snapshots/abc123-1738123456.json in the debug environment
-and reproduce the calculation bug. Provide evidence of the failure."
-```
-
-## Agents Inspecting Logs and Databases
-
-Don't make agents guess. Give them read access to actual system state.
-
-### Structured Log Analysis
-
-Format logs for agent consumption:
-
-```typescript
-// src/utils/logger.ts
-import winston from 'winston';
-
-export const logger = winston.createLogger({
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.errors({ stack: true }),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({
-      filename: 'logs/debug.log',
-      level: 'debug',
-    }),
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-    }),
-  ],
-});
-
-// Usage in code
-logger.debug('OrderService.calculateTotal called', {
-  orderId: order.id,
-  itemCount: items.length,
-  userTier: user.tier,
-});
-```
-
-**Agent analysis workflow:**
-
-```bash
-# Give agent grep-friendly access
-Engineer: "Analyze logs/debug.log for order abc123 failures"
-
-Agent: *runs grep commands*
-grep -A 10 '"orderId":"abc123"' logs/debug.log | grep '"level":"error"'
-
-Agent: *identifies pattern*
-"Found 15 error logs. Common pattern: items array is empty causing
-undefined reference in calculateDiscount(). Evidence:
-- Line 4521: items.length === 0
-- Line 4523: items[0].price throws TypeError
-- Stack trace points to src/services/OrderService.ts:87"
-```
-
-### Database Inspection Helpers
-
-Create read-only access for agents:
-
-```typescript
-// scripts/db-inspector.ts
-import { db } from '../src/db';
-
-const inspectors = {
-  async order(orderId: string) {
-    const order = await db.orders.findById(orderId);
-    const items = await db.orderItems.findByOrderId(orderId);
-    const user = await db.users.findById(order.userId);
-
-    return {
-      order,
-      items,
-      user,
-      diagnostics: {
-        totalItems: items.length,
-        totalValue: items.reduce(
-          (sum, item) => sum + item.price * item.quantity,
-          0
-        ),
-        userStatus: user.status,
-        orderStatus: order.status,
-      },
-    };
-  },
-
-  async user(userId: string) {
-    const user = await db.users.findById(userId);
-    const orders = await db.orders.findByUserId(userId);
-    const recentActivity = await db.activity.findByUserId(userId, {
-      limit: 50,
-    });
-
-    return { user, orders, recentActivity };
-  },
-};
-
-// CLI: npm run inspect -- order abc123
-const [type, id] = process.argv.slice(2);
-inspectors[type](id).then((data) => console.log(JSON.stringify(data, null, 2)));
-```
-
-**Agent workflow:**
-
-```
-Engineer: "Inspect order abc123 and user xyz789 in the debug environment"
-
-Agent:
-1. Runs: docker-compose exec app npm run inspect -- order abc123
-2. Runs: docker-compose exec app npm run inspect -- user xyz789
-3. Analyzes both outputs
-4. Identifies: "User xyz789 has status='suspended' but order abc123
-   was created after suspension. Bug is in order creation validation."
-```
-
-## Remote Debugging with Helper Scripts
-
-For production issues that can't be fully reproduced locally, create safe debugging interfaces.
-
-### Read-Only Production Queries
-
-```typescript
-// scripts/prod-readonly-query.ts
-import { createReadOnlyConnection } from '../src/db';
-
-const ALLOWED_QUERIES = {
-  orderDetails: `
-    SELECT o.*, json_agg(oi.*) as items
-    FROM orders o
-    LEFT JOIN order_items oi ON oi.order_id = o.id
-    WHERE o.id = $1
-    GROUP BY o.id
-  `,
-  userOrders: `
-    SELECT * FROM orders
-    WHERE user_id = $1
-    ORDER BY created_at DESC
-    LIMIT 50
-  `,
-};
-
-async function query(queryName: keyof typeof ALLOWED_QUERIES, params: any[]) {
-  const db = createReadOnlyConnection(process.env.PROD_REPLICA_URL);
-
-  try {
-    const result = await db.query(ALLOWED_QUERIES[queryName], params);
-    return result.rows;
-  } finally {
-    await db.end();
-  }
-}
-
-// Usage: npm run prod:query -- orderDetails abc123
-const [queryName, ...params] = process.argv.slice(2);
-query(queryName as any, params).then((data) =>
-  console.log(JSON.stringify(data, null, 2))
-);
-```
-
-### Production Log Streaming
-
-```bash
-# scripts/stream-prod-logs.sh
-#!/bin/bash
-set -e
-
-NAMESPACE=${1:-production}
-POD_FILTER=${2:-app}
-
-echo "Streaming logs from ${NAMESPACE}/${POD_FILTER}..."
-
-kubectl logs -f -n ${NAMESPACE} \
-  -l app=${POD_FILTER} \
-  --tail=100 \
-  --timestamps \
-  | jq -r 'select(.level == "error" or .level == "warn") | "\(.timestamp) [\(.level | ascii_upcase)] \(.message) \(.context | tostring)"'
-```
-
-**Agent workflow:**
-
-```
-Engineer: "Stream production logs and identify patterns in order failures"
-
-Agent:
-1. Runs: bash scripts/stream-prod-logs.sh production order-service > logs/prod-stream.log
-2. Waits 60 seconds to collect sample
-3. Analyzes logs: grep -E "OrderService|calculateTotal" logs/prod-stream.log
-4. Identifies: "Pattern found: 23 failures in the last minute, all for
-   orders with promo codes. Database query timeout after 30s."
-```
-
-## Requiring Evidence Before Accepting Solutions
-
-Never accept "this should fix it" without proof.
-
-### Evidence-Based Verification Workflow
-
-````
-Step 1: Agent proposes a fix
-Step 2: Engineer demands evidence
-
-Engineer: "Show me proof this fix works. I need:
-1. Reproduction showing the bug BEFORE your fix
-2. Test output showing the bug is fixed AFTER your change
-3. Regression tests proving no side effects"
-
-Step 3: Agent provides evidence
-
-Agent:
-1. Runs reproduction: npm run debug:order -- abc123
-   Output: "TypeError: Cannot read property 'price' of undefined"
-
-2. Applies fix to OrderService.calculateTotal():
-   ```diff
-   -  const firstItem = items[0];
-   +  if (items.length === 0) {
-   +    return { total: 0, discount: 0 };
-   +  }
-   +  const firstItem = items[0];
-````
-
-3. Reruns reproduction: npm run debug:order -- abc123
-   Output: "Order total: $0 (no items)"
-
-4. Runs tests: npm test -- OrderService
-   Output: "12/12 tests passed"
-
-5. Runs integration tests: npm run test:integration
-   Output: "45/45 tests passed"
-
-Step 4: Engineer reviews and approves
-
-````
-
-### Automated Verification Scripts
-
-Build verification into your debugging workflow:
-
-```typescript
-// scripts/verify-fix.ts
-import { execSync } from 'child_process';
-import { logger } from '../src/utils/logger';
-
-interface VerificationStep {
-  name: string;
-  command: string;
-  expectedOutput?: RegExp;
-  mustFail?: boolean;
-}
-
-const VERIFICATION_STEPS: VerificationStep[] = [
-  {
-    name: 'Reproduce bug (should fail)',
-    command: 'npm run debug:order -- abc123',
-    mustFail: true,
-  },
-  {
-    name: 'Run unit tests',
-    command: 'npm test -- OrderService',
-    expectedOutput: /\d+ passed/,
-  },
-  {
-    name: 'Run integration tests',
-    command: 'npm run test:integration',
-    expectedOutput: /\d+ passed/,
-  },
-  {
-    name: 'Verify fix (should succeed)',
-    command: 'npm run debug:order -- abc123',
-    expectedOutput: /Order total: \$\d+/,
-  },
-];
-
-async function verify() {
-  for (const step of VERIFICATION_STEPS) {
-    logger.info(`Running: ${step.name}`);
-
-    try {
-      const output = execSync(step.command, { encoding: 'utf-8' });
-
-      if (step.mustFail) {
-        logger.error(`FAILED: ${step.name} should have failed but succeeded`);
-        return false;
-      }
-
-      if (step.expectedOutput && !step.expectedOutput.test(output)) {
-        logger.error(`FAILED: ${step.name} output doesn't match expected pattern`);
-        return false;
-      }
-
-      logger.info(`PASSED: ${step.name}`);
-    } catch (error) {
-      if (!step.mustFail) {
-        logger.error(`FAILED: ${step.name}`, { error });
-        return false;
-      }
-      logger.info(`PASSED: ${step.name} (expected failure)`);
-    }
-  }
-
-  logger.info('All verification steps passed');
-  return true;
-}
-
-verify().then((success) => process.exit(success ? 0 : 1));
-````
-
-**Agent workflow:**
-
-```
-Engineer: "Fix the order calculation bug and run scripts/verify-fix.ts to prove it works"
-
-Agent:
-1. Proposes fix
-2. Applies fix
-3. Runs: npm run verify:fix
-4. Reports: "All 4 verification steps passed. Evidence: [logs output]"
-```
-
-### Regression Test Requirements
-
-Every fix must include a regression test:
-
-```typescript
-// tests/bugs/order-empty-items-regression.test.ts
-import { OrderService } from '../../src/services/OrderService';
-import { createTestOrder } from '../fixtures/orders';
-
-describe('Bug: Order with zero items causes TypeError', () => {
-  it('should handle orders with no items gracefully', async () => {
-    // Reproduce the exact scenario from production
-    const order = await createTestOrder({
-      id: 'test-order',
-      userId: 'test-user',
-      items: [], // Empty items array caused the bug
-    });
-
-    // This threw TypeError before the fix
-    const result = await OrderService.calculateTotal(order.id);
-
-    // After fix, should return zero total
-    expect(result).toEqual({
-      total: 0,
-      discount: 0,
-      tax: 0,
-      grandTotal: 0,
-    });
-  });
-
-  it('should handle null items array', async () => {
-    const order = await createTestOrder({
-      id: 'test-order-2',
-      userId: 'test-user',
-      items: null as any, // Edge case
-    });
-
-    const result = await OrderService.calculateTotal(order.id);
-    expect(result.total).toBe(0);
-  });
-});
-```
-
-**Engineer requirement:**
-
-```
-"Before I accept this fix, show me:
-1. The regression test you added
-2. Proof the test fails on the broken code
-3. Proof the test passes on the fixed code
-4. Full test suite still passing"
-```
-
-## Hands-On Exercise: Debug a Production Memory Leak
-
-**Scenario:** Your Node.js API is experiencing memory leaks in production. Memory usage grows steadily until the process crashes with OOM errors after 6-8 hours of uptime.
-
-**Your Task:**
-
-1. **Setup Reproduction Environment**
-   - Create a Docker Compose setup that includes your API, PostgreSQL, and monitoring tools (Prometheus/Grafana)
-   - Add heap dump capture on OOM: `node --max-old-space-size=512 --heapsnapshot-on-oom`
-   - Load test script to simulate production traffic
-
-2. **Build Inspection Tools**
-   - Script to capture heap snapshots on demand
-   - Script to analyze heap growth over time
-   - Database query to check for connection leaks
-
-3. **Agent-Driven Investigation**
-
-   ```
-   Prompt: "Investigate the memory leak in this application. Steps:
-   1. Start the reproduction environment
-   2. Run the load test for 30 minutes
-   3. Capture heap snapshots every 5 minutes
-   4. Analyze heap growth patterns
-   5. Identify the source of the leak
-   6. Propose a fix with evidence"
-   ```
-
-4. **Verify the Fix**
-   - Run 8-hour load test before and after
-   - Compare memory profiles
-   - Ensure fix doesn't impact performance
-
-**Expected Outcome:**
-
-- Reproducible environment that demonstrates the leak
-- Agent identifies the root cause (e.g., event listener accumulation, unclosed DB connections)
-- Fix includes regression tests
-- Evidence showing stable memory usage after fix
-
-**Bonus Challenge:**
-
-- Implement automated memory monitoring that alerts before OOM
-- Create a memory leak detection test in CI
+When code inspection and log analysis aren't sufficient—when you need bulletproof evidence or must reproduce complex state/timing conditions—reproduction scripts become invaluable. This is where AI agents' massive code generation capabilities shine: environments that take humans hours to set up (K8s, Docker configs, database snapshots, mock services, state initialization) take AI minutes to generate.
+
+Reproduction scripts eliminate ambiguity and create verifiable test cases. They capture full context: database state, external API responses, configuration, and user inputs. The agent generates comprehensive reproduction environments trivially, turning what would be tedious manual work into a simple prompt. Ask the agent to simulate the exact conditions where the bug occurs, and it will produce the scaffolding on demand.
+
+For complex systems, use Docker to create isolated reproduction environments. Snapshot production database state, configure services with production-like settings, and write a script that triggers the bug reliably. Once you have reliable reproduction, the agent can iterate on fixes and verify each attempt.
+
+## Closing the Loop: Place Agents Inside Failing Environments
+
+With good grounding, agents can always explore your codebase and research online issues—that's what [Lesson 5](/docs/methodology/lesson-5-grounding) teaches. **But closing the loop means the agent can test its fixes and verify its reasoning actually works.** Without environment access, the agent proposes solutions it can't validate. With closed-loop access, it applies fixes, re-runs reproduction, and proves they work—or iterates on new hypotheses when they don't.
+
+The difference: An open-loop agent researches your code and online issues, then reports: "The bug is likely missing RS256 signature verification at jwt.ts:67—try adding algorithm validation." A closed-loop agent does the same research, then **applies that fix, re-runs the failing request, observes it now returns 401 correctly, and reports: "Fixed and verified—RS256 validation added at jwt.ts:67, reproduction now passes."**
+
+### The Closed-Loop Debugging Workflow
+
+**1. BUILD** - Create a reproducible environment (Docker, scripts, database snapshots) that reliably triggers the bug
+
+**2. REPRODUCE** - Verify the bug manifests consistently with concrete evidence (logs, status codes, error output)
+
+**3. PLACE** - Give the agent tool access WITHIN the environment—not just code, but runtime execution capabilities
+
+:::tip CLI Agents for Closed-Loop Debugging
+This is where CLI agents (Claude Code, Codex, Copilot CLI) shine over IDE assistants. CLI agents can run **anywhere you have shell access**: inside Docker containers, on remote servers, in CI/CD pipelines, on problematic production instances. IDE agents are tied to your local development machine.
+:::
+
+**4. INVESTIGATE** - Agent leverages grounding techniques to form hypotheses by correlating:
+
+- **Runtime behavior**: Execute diagnostic commands, inspect responses, analyze logs
+- **Codebase**: Use ChunkHound's code research for comprehensive investigation with architectural context and cross-module relationships. For smaller codebases, [agentic search](/docs/methodology/lesson-5-grounding#the-discovery-problem-agentic-search) (Grep, Read) works well. See [Lesson 5](/docs/methodology/lesson-5-grounding#code-grounding-choosing-tools-by-scale) for scale guidance.
+- **Known issues**: Research error patterns, CVEs, and similar bugs using tools like ArguSeek
+
+**5. VERIFY** - Agent applies the fix, re-runs reproduction, and confirms the bug is resolved—or forms a new hypothesis and iterates
+
+This workflow transforms debugging from "research and guess" to "research, fix, test, and prove"—a closed feedback loop where the environment validates or refutes the agent's reasoning.
+
+## Remote Diagnosis: Scripts Over Access
+
+When you can't reproduce bugs locally or access the failing environment—customer deployments, edge infrastructure, locked-down production—you face limited information and no iteration cycle. This is where AI agents' **probabilistic reasoning** becomes a feature, not a limitation. Combined with their code generation capabilities, agents turn remote diagnosis from "send me logs and wait" into an active investigation workflow.
+
+The workflow follows the research-first pattern from [Lesson 5](/docs/methodology/lesson-5-grounding): ground yourself in the codebase (understand the architecture around the failing component using code research) and in known issues (search for similar problems in the ecosystem). With this context, the agent generates ranked hypotheses based on evidence—not generic patterns. Then it produces targeted diagnostic scripts that collect evidence for each hypothesis: configuration states, version mismatches, timing data, whatever's needed to validate or refute each theory.
+
+The key is trading developer time for compute time. Writing a comprehensive diagnostic script takes humans days but takes agents 30 minutes. More importantly, agents generate thorough diagnostics trivially—scripts that check dozens of potential issues, cross-reference configuration, and output structured data. Send the script to the customer, load the output into the agent's context, and it correlates evidence with hypotheses to identify the root cause. What would be tedious manual work becomes a simple prompt.
 
 ## Key Takeaways
 
-- **Systematic debugging beats guesswork** - Apply scientific method: observe, hypothesize, reproduce, test, verify
-- **Reproducibility is everything** - Use Docker, snapshots, and scripts to isolate bugs in controlled environments
-- **Give agents full diagnostic access** - Logs, databases, runtime state, not just code
-- **Remote debugging requires safety** - Read-only queries, controlled access, helper scripts
-- **Demand evidence before accepting fixes** - Reproduction before/after, tests passing, no regressions
-- **Every bug needs a regression test** - Prevent the same issue from recurring
+- **Evidence over speculation** - Never accept fixes without reproducible proof they work
+- **Code inspection first** - Understand architecture and execution flow before diving into fixes
+- **Log analysis is AI's superpower** - Process thousands of log lines to spot patterns, correlations, and timing issues humans miss
+- **Code is cheap, write it liberally** - Reproduction scripts, diagnostic tools, and verification workflows are trivial for AI to generate
+- **Closed-loop debugging** - Place agents inside failing environments with the BUILD → REPRODUCE → PLACE → INVESTIGATE → VERIFY workflow
+- **CLI agents access any environment** - Unlike IDE assistants, CLI agents work in Docker, remote servers, CI/CD, and production instances
+- **Remote diagnosis requires scripts** - Generate comprehensive diagnostic scripts when direct access isn't possible
 
-**Production debugging checklist:**
-
-1. Can you reproduce it in isolation?
-2. Does the agent have access to all diagnostic data?
-3. Is the fix verified with evidence?
-4. Does a regression test prevent recurrence?
-5. Are there monitoring gaps to address?
-
-Debugging with AI agents is about **building the right diagnostic environment** and requiring **evidence-based solutions**. The agent is your systematic investigator - give it the tools and demand proof.
-
----
-
-**Next:** Advanced Topics Module - Optimization and Performance
+Debugging with AI agents is about **building diagnostic environments** where evidence is abundant and verification is systematic. The agent is your tireless investigator—give it the tools and demand proof.

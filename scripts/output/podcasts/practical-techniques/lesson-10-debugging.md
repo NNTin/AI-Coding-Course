@@ -7,201 +7,165 @@ speakers:
   - name: Sam
     role: Senior Engineer
     voice: Charon
-generatedAt: 2025-11-08T08:56:31.622Z
+generatedAt: 2025-11-09T13:27:19.173Z
 model: claude-haiku-4.5
-tokenCount: 4522
+tokenCount: 4170
 ---
 
-Alex: Let's talk about debugging with AI agents. And I want to start by saying what debugging with AI is not. It's not asking "what's wrong with my code?" and hoping for an answer.
+Alex: So we're talking about debugging with AI agents today, and I want to start with something that might sound obvious but is actually where most people go wrong. When you have a bug, your instinct is to describe the symptoms to the AI and hope it figures out what's wrong. That's the fundamental mistake.
 
-Sam: Right, because the agent doesn't have access to your runtime state, your logs, your database. It's just looking at code you've pasted and guessing.
+Sam: Right, you're treating it like a rubber duck—just explaining the problem and expecting the agent to magically see what you missed?
 
-Alex: Exactly. Production debugging with AI agents is about building diagnostic environments where agents can observe actual behavior, reproduce issues systematically, and verify fixes with evidence. Think scientific method, not guesswork.
+Alex: Exactly. But AI agents aren't magic. They're pattern matchers. They excel when you give them concrete evidence and a systematic process. The core principle is simple: never accept a fix without reproducible proof it actually works. You stop speculating and start demanding evidence at every step.
 
-Sam: So observation, hypothesis, reproduction, testing, verification - the whole cycle.
+Sam: So instead of "my API is returning the wrong status code, fix it," you're saying what—trace the actual request and show me the response?
 
-Alex: Precisely. And the key insight is that AI agents excel when you give them access to the full diagnostic environment. Not just a description of symptoms, but the actual logs, the actual database state, the actual runtime behavior.
+Alex: Precisely. And that's actually a shift in how you interact with the agent. You're moving from "what do you think is wrong?" to "prove the bug exists, then prove your fix works." The agent becomes your investigator with a structured methodology.
 
-Sam: Walk me through how that works in practice. What does "full diagnostic access" actually mean?
+Sam: That makes sense. So what's the investigation methodology? How do you actually structure this?
 
-Alex: Let's start with code inspection. Before you can fix anything, the agent needs to understand what's actually happening in your system. Begin with static analysis - give the agent the full execution path. For example, if you have an order processing bug, you'd show the agent the HTTP handler at src/api/orders.ts, the business logic in src/services/OrderService.ts, the database models, the validation schemas, even your test files. The complete picture.
+Alex: There are several phases. First, before you even touch logs or try to reproduce anything, understand the architecture. Have the agent explain the execution flow from request to response. This isn't about having it read every line of code—it's about tracing the critical path. Where could things actually break?
 
-Sam: That's a lot of context, but I see why it matters. The bug might be in the interaction between layers, not just one file.
+Sam: Why not just jump to the logs? Wouldn't that be faster?
 
-Alex: Right. And then you layer on dynamic inspection. For production issues, create inspection scripts that agents can actually run. Let's say you have a function called inspectOrder that takes an order ID, queries the database, checks cache state, prints the order object with all relationships loaded, and validates business rules. The agent can run that script, see the actual state, and immediately spot anomalies.
+Alex: Because logs are noise without context. You might see an error message, but without understanding the system architecture, you can't connect it to root cause. The agent can use code research tools to find relevant components, then you have a conversation about the flow. Often this alone reveals assumptions you made that don't match reality.
 
-Sam: So instead of describing what you see in production, you're giving the agent a tool to see it themselves.
+Sam: So you're essentially asking the agent to explain the system before trying to fix anything?
 
-Alex: Exactly. And this is where reproducibility becomes critical. If you can't reproduce a bug, you can't verify your fix. Docker-based reproduction is your friend here.
+Alex: Yes. And this is where tools like ChunkHound shine for larger codebases. For code under 10,000 lines, simple grep and read operations work fine. But once you're in the 10,000 to 100,000 line range, you want semantic code search because you need architectural context. ChunkHound gives the agent structured multi-hop traversal—it can walk the call graph, understand module relationships, not just find matching strings.
 
-Sam: How do you capture production state in a Docker environment?
+Sam: Got it. So if you're working with a 50,000 line codebase, you'd guide the agent with ChunkHound to understand the architecture around the failing component first.
 
-Alex: Create isolated environments that mirror production conditions. You'd have a Docker Compose setup with your application, database, cache, message queues - the whole stack. Then you create seed data that triggers the bug. For instance, if orders with empty item arrays cause crashes, your seed script creates exactly that scenario. You can even capture production database snapshots, sanitize sensitive data, and restore them locally.
+Alex: Correct. And then once you have that mental model aligned, you move to log analysis. This is where AI has a massive advantage over humans. I'm talking about those massive log files with thousands of entries, inconsistent formats across microservices, debug output scattered everywhere with no structure.
 
-Sam: That's powerful. You're essentially freezing the exact conditions that cause the bug.
+Sam: Oh man, I've spent entire days digging through logs like that.
 
-Alex: Right. And your agent workflow becomes: run the reproduction script, observe the failure with actual logs and stack traces, analyze the root cause with full context, propose a fix, verify the fix in the same environment. No guessing involved.
+Alex: Exactly. That's the tedious correlation work that takes senior engineers days but AI does in minutes. Multi-line stack traces from different services in different logging styles? The agent spots cascading errors you'd miss manually. Timing patterns indicating race conditions buried in verbose output? The agent finds them. User cohorts experiencing failures across fragmented logs from different systems?
 
-Sam: What about more complex state-dependent bugs? Things that depend on timing, or specific sequences of operations?
+Sam: So the messier the logs, the bigger the advantage AI has?
 
-Alex: Reproduction scripts with snapshots. Capture the exact state before the bug occurs and restore it on demand. You'd have a captureState function that dumps your database, captures cache contents, saves message queue state, exports configuration, stores uploaded files - everything. Then a restoreState function that rebuilds that exact environment. This is especially useful for race conditions or bugs that only appear after specific user workflows.
+Alex: Yes. And honestly, don't wait for perfect logging infrastructure. You might have CSV output, raw grep dumps, unstructured debug text. The agent can parse whatever you have. That said, structured logs with consistent timestamps, request IDs, and JSON formatting are good engineering practice anyway—they help both humans and AI. But if you've got what you've got, use it.
 
-Sam: Okay, so you've got reproduction working. The agent can trigger the bug reliably. Now what?
+Sam: What if logs aren't telling you enough? What if you need to actually see the bug happen yourself?
 
-Alex: Now you let the agent inspect logs and databases directly. Don't make them guess - give them read access to actual system state. Structure your logs for agent consumption. Use structured logging with JSON format, include correlation IDs to trace requests across services, log timestamps, severity levels, context objects. When an agent analyzes logs, they can grep for specific request IDs, parse JSON to extract error patterns, trace the full execution flow.
+Alex: That's where reproduction scripts become critical. This is one of the best use cases for AI agents because code generation is cheap for them. Setting up a complete reproduction environment—K8s configs, Docker setups, database snapshots, mock services, state initialization—that takes humans hours. An AI agent generates the scaffolding in minutes.
 
-Sam: Give me a concrete example.
+Sam: So you're saying if I can't easily reproduce the bug in my environment, I ask the agent to write a script that sets it up?
 
-Alex: Sure. Let's say you have an "items is null" error. The agent runs your log analysis, finds request ID abc123, sees that at line 4521, items.length is zero, then at line 4523, items[0].price throws a TypeError. The stack trace points to src/services/OrderService.ts line 87. That's precise, actionable information - not a vague description of "sometimes orders crash."
+Alex: Exactly. The agent generates Docker configurations, initialization scripts, database snapshots, whatever's needed to reliably trigger the bug. You get bulletproof evidence and a verifiable test case. The reproduction environment captures everything: database state, external API responses, configuration, exact user inputs.
 
-Sam: And database inspection works similarly?
+Sam: That sounds great if you have access to the failing environment. But what about when you don't? What if it's a customer's production system you can't touch?
 
-Alex: Yes. Create read-only database helpers for agents. A TypeScript function that opens a read-only connection, runs safe SELECT queries, formats results as JSON, includes row counts and query execution time. The agent can inspect actual data, check for constraint violations, analyze relationships between tables.
+Alex: Now that's a different pattern. You can't build a reproduction environment, and you can't iterate locally. This is where the agent's probabilistic reasoning becomes a feature, not a limitation. You're trading developer time for compute time.
 
-Sam: What about production issues that you can't fully reproduce locally? Sometimes bugs only happen at scale or with specific production data you can't copy.
+Sam: Meaning what, exactly?
 
-Alex: Remote debugging with helper scripts, but you must be careful about safety. Create read-only production query tools - scripts that can only run SELECT statements, with query timeouts, rate limiting, and audit logging. For logs, use streaming tools that tail production logs with filtering by service, request ID, or time range, again with rate limits and automatic timeout.
+Alex: You start the same way—ground yourself in the codebase architecture using code research. Understand the system around the failing component. Then research known issues in the ecosystem. With that context, the agent generates ranked hypotheses based on evidence, not speculation. Then it produces diagnostic scripts.
 
-Sam: So the agent can observe production, but can't modify anything.
+Sam: Diagnostic scripts?
 
-Alex: Correct. And here's a critical point: never accept solutions without evidence. I cannot stress this enough. "This should fix it" is not acceptable.
+Alex: Yes. The agent writes comprehensive scripts that check multiple potential issues simultaneously: configuration states, version mismatches, timing data, cross-references between settings. These scripts might take humans days to write. The agent generates them in 30 minutes and makes them thorough enough to test dozens of scenarios. You send the script to the customer, get the output back, load it into the agent's context, and the agent correlates the evidence with hypotheses.
 
-Sam: What does evidence-based verification actually look like?
+Sam: So instead of "send me logs and wait," you're systematically testing theories?
 
-Alex: You require proof in your agent prompt. The agent must provide reproduction showing the bug before the fix, test output showing the bug is fixed after the change, the exact diff of code changes, and proof that existing tests still pass. If they can't provide all four pieces of evidence, you reject the solution.
+Alex: Precisely. The agent acts as your tireless investigator when direct access isn't possible. Now, when you do have access to the failing environment—that's when things get powerful.
 
-Sam: That's rigorous.
+Sam: How so?
 
-Alex: It has to be. Here's a real example: agent finds that items[0] is accessed without checking if items is empty. They propose wrapping it in an if statement that checks items.length and returns zero totals for empty arrays. Then they must rerun the reproduction script with the fix applied, run unit tests for OrderService, run integration tests for the full order flow. All passing. That's evidence.
+Alex: This is what I call closed-loop debugging. The agent doesn't just research and propose fixes. It places itself inside the failing environment where it can test hypotheses and verify fixes actually work. There's a workflow for this: BUILD, REPRODUCE, PLACE, INVESTIGATE, VERIFY.
 
-Sam: And you can automate this verification?
+Sam: Walk me through that.
 
-Alex: Absolutely. Build verification into your debugging workflow. Create a verify script that checks out the proposed fix branch, runs all tests, runs the reproduction case, compares output against baseline, generates a pass/fail report. The agent runs this script before claiming success.
+Alex: Build first. Create a reproducible environment—Docker container, scripts, database snapshots—that reliably triggers the bug every time. Reproduce second. Run it, confirm the bug manifests with concrete evidence: logs, status codes, error output. You have proof.
 
-Sam: What about regression tests? I assume every fix needs one?
+Sam: Then you place the agent in the environment?
 
-Alex: Non-negotiable. Every bug fix must include a regression test that would have caught the bug. The agent must show you the specific test case they added and proof that the test fails on the broken code - demonstrating it actually catches the bug - and passes after the fix. This prevents the same issue from recurring.
+Alex: Right. You give the agent tool access within the environment. Not just code reading capabilities, but the ability to execute commands, inspect runtime state, apply fixes. This is where CLI agents like Claude Code are superior to IDE assistants. An IDE assistant is stuck on your local machine. A CLI agent works anywhere you have shell access: inside Docker containers, on remote servers, in CI/CD pipelines, even on problematic production instances if you have the access.
 
-Sam: Let's make this concrete. Walk me through debugging a real production issue using this methodology.
+Sam: So the agent is actually making changes and running tests?
 
-Alex: Good idea. Imagine you have a Node.js API with a memory leak. Memory usage grows steadily until the process crashes with out-of-memory errors after six to eight hours of uptime.
+Alex: Yes. It investigates by running diagnostic commands, inspecting responses, analyzing logs. It uses code research to understand the codebase—and for this, codebase size matters. Under 10,000 lines, simple agentic search with grep and read is fine. 10,000 to 100,000 lines, you want ChunkHound's semantic search for architectural context. Above 100,000 lines, ChunkHound's structured multi-hop traversal becomes essential because autonomous agents start missing cross-module connections.
 
-Sam: Classic production nightmare.
+Sam: The agent forms hypotheses based on all this information?
 
-Alex: Right. First, you build the reproduction environment. Docker Compose with your API, PostgreSQL, and monitoring tools like Prometheus and Grafana. You run Node with heap snapshot on OOM enabled - specifically node --max-old-space-size=512 --heapsnapshot-on-oom. Then you create a load test script that simulates production traffic patterns.
+Alex: Correct. It correlates runtime behavior with codebase structure and known issues. Then it applies a fix to the actual code in the environment, re-runs the reproduction scenario, and confirms the bug is resolved. If the fix works, you have proof. If it doesn't, the agent sees the failure and iterates with a new hypothesis.
 
-Sam: So you're recreating the conditions that cause the leak.
+Sam: That's completely different from what most people do—researching the code and suggesting changes.
 
-Alex: Exactly. Next, you build inspection tools. A script to capture heap snapshots on demand, another to analyze heap growth over time, a database query to check for connection leaks. Now you have diagnostic instruments.
+Alex: It is. You're transforming debugging from "research and guess" into "research, fix, test, and prove." The environment validates or refutes the agent's reasoning in real time. This closed-loop feedback eliminates ambiguity.
 
-Sam: And then you turn the agent loose?
+Sam: What does that actually look like in practice? Say you have a JWT authentication bug.
 
-Alex: With a very specific prompt. You tell the agent to start the reproduction environment, run the load test for thirty minutes, capture heap snapshots every five minutes, analyze the snapshots to identify growing objects, check for event listener accumulation, inspect database connection pools, and report findings with evidence.
+Alex: Open-loop agent: researches your code, finds that RS256 signature verification is missing at jwt.ts:67, reports back "try adding algorithm validation." You have to decide if that's right and implement it yourself.
 
-Sam: What kind of evidence would you expect?
+Sam: Right, you don't actually know if that fix works.
 
-Alex: Heap snapshot comparisons showing which objects are accumulating, stack traces showing where those objects are allocated, database connection count over time, memory graphs showing the growth curve. Concrete data, not speculation.
+Alex: Exactly. Closed-loop agent: does the same research, but then applies the fix—actually adds the algorithm validation at jwt.ts:67, re-runs the failing request, observes it now returns a 401 correctly when it was returning 200 before, and reports: "Fixed and verified. RS256 validation added at jwt.ts:67. Reproduction passes."
 
-Sam: And when they find the root cause?
+Sam: So you have proof the fix works because the agent actually tested it.
 
-Alex: They propose a fix and you verify it rigorously. Run an eight-hour load test before the fix, capture the memory profile. Apply the fix, run the same eight-hour test, compare memory profiles. The fixed version should show stable memory usage, no growth over time.
+Alex: And if the fix doesn't work, the agent doesn't leave you hanging. It observes the new behavior, forms a different hypothesis based on what happened, and tries again. The loop closes continuously until the bug is resolved or the evidence points to a different root cause.
 
-Sam: And of course, the fix needs regression tests.
+Sam: This requires the agent to have access to the actual development environment though, right? That's not always practical or safe.
 
-Alex: Always. In this case, you'd add a test that runs the problematic code path in a loop, monitors memory usage, and fails if it grows beyond a threshold. This catches memory leaks in CI before they reach production.
+Alex: True. But think about where you can do this. Your local Docker environment? Yes. Staging infrastructure? Yes. Even specific production instances if you have controlled CLI access. The point is to close the loop wherever you safely can. When you can't—locked-down production, customer systems, edge infrastructure—you fall back to diagnostic scripts and remote diagnosis.
 
-Sam: What are the common patterns you see when memory leaks happen?
+Sam: So the methodology adapts to what access you have.
 
-Alex: Event listener accumulation is big - adding listeners without removing them. Unclosed database connections or file handles. Caching without eviction policies. Global references to objects that should be garbage collected. Closures capturing large objects unintentionally.
+Alex: Exactly. The principle stays the same: evidence over speculation, systematic investigation over guessing. The tools and workflow adjust based on constraints. When you have closed-loop access, use it. When you don't, generate comprehensive diagnostic scripts and correlate the output.
 
-Sam: And the agent can identify these patterns in heap snapshots?
+Sam: What about the actual investigation phase? Beyond running commands, how does the agent form hypotheses?
 
-Alex: Yes, especially with structured data. The heap snapshot shows you object counts and retained size. If you see EventEmitter instances growing linearly with requests, or database connection objects accumulating, that's a smoking gun.
+Alex: The agent correlates what it observes in runtime behavior with what it knows about the codebase and known issues. Maybe it observes a timing pattern in the logs that suggests a race condition. It traces the code to find the shared state and potential interleaving. Maybe it notices a version mismatch in error output and searches for CVEs or known incompatibilities in that dependency. It's triangulating evidence.
 
-Sam: Let's talk about the bigger debugging methodology. You mentioned the scientific method earlier - how does that map to working with AI agents?
+Sam: And as it gathers more evidence, the hypothesis gets more or less probable.
 
-Alex: Each phase has a specific agent role. In the observation phase, agents analyze logs, metrics, and traces. They're pattern-matching across large datasets, which they're good at. During hypothesis formation, agents propose testable theories based on code analysis and observed behavior. For reproduction, agents run scripts and Docker environments to isolate bugs. In testing, they verify hypotheses with evidence. For the fix phase, they apply solutions with regression tests. And verification ensures the fix resolves the issue without side effects.
+Alex: Right. The agent is essentially building a Bayesian understanding. "If hypothesis A were true, I'd expect to see X, Y, and Z in the logs. I see X and Y but not Z. So hypothesis A becomes less likely. Hypothesis B predicts I'd see X, Y, and W. I see X, Y, and W, so B becomes more likely."
 
-Sam: What's the most common mistake you see engineers make when debugging with AI agents?
+Sam: That's actually elegant. The agent isn't just guessing—it's testing predictions.
 
-Alex: Accepting solutions without reproduction. An engineer describes a bug, the agent suggests a fix that "should work," and the engineer applies it to production without ever reproducing the issue or verifying the fix. That's dangerous.
+Alex: Exactly. And when you close the loop by letting it apply fixes and test them, you get definitive proof. The hypothesis either predicts the fix works, or it doesn't. That's the power of the closed-loop workflow.
 
-Sam: Because you don't actually know if you fixed the root cause.
+Sam: Let me ask about something practical. If I'm debugging a complex distributed system—maybe a microservices architecture with multiple databases, message queues, caching layers—how would I even structure the reproduction environment?
 
-Alex: Right. You might have fixed a symptom, or gotten lucky, or introduced a new bug. Without reproduction and verification, you're flying blind.
+Alex: You'd scale it appropriately. Docker Compose is your friend. The agent can generate a docker-compose.yml that spins up all the services with production-like configurations. You can snapshot real database state from production, configure mock responses for external APIs, and write initialization scripts that put the system in the state where the bug manifests.
 
-Sam: What about cases where reproduction is genuinely difficult? Heisenbugs that disappear when you observe them, race conditions that only happen under specific timing?
+Sam: And the agent generates all of that?
 
-Alex: Those are the hardest cases, but the methodology still applies. You invest more heavily in instrumentation - distributed tracing, detailed timing logs, chaos engineering to trigger race conditions. You might use tools like rr for record-replay debugging, capturing an execution trace you can replay deterministically. The key is not giving up on reproducibility, but finding creative ways to achieve it.
+Alex: Yes. You describe what's failing and what systems are involved. The agent generates the compose file, the database snapshot logic, the initialization scripts. You run it, and fifteen minutes later you have a complete reproduction environment on your machine. It's time spent once, but it pays dividends because then the closed-loop debugging works.
 
-Sam: And sometimes that means accepting "we can reproduce it one in a hundred times" rather than demanding every time?
+Sam: What about logging during investigation? You mentioned adding targeted diagnostic statements.
 
-Alex: Yes, but you quantify it. "This script triggers the bug in 5% of runs over a ten-minute period." That's reproducible enough to verify a fix - you run the script before the fix and see the 5% failure rate, apply the fix, run it again and see zero failures over a much longer period.
+Alex: That's where the agent guides the investigation. It forms a hypothesis about what's happening, and that hypothesis tells you exactly what to log. Maybe it suspects a race condition between service A and service B. You add targeted log statements with timestamps and request IDs that make the interleaving visible. The agent analyzes the new logs and either confirms the hypothesis or points you toward a different angle.
 
-Sam: Statistical validation rather than deterministic.
+Sam: So logging becomes a tool controlled by the agent's investigation, not just hoping you logged the right thing already.
 
-Alex: Exactly. Especially for concurrency bugs, that's often the best you can do.
+Alex: Precisely. Fifteen minutes of targeted logging beats hours of speculation. The agent says "I need to see these three timing points to validate my hypothesis," you add those log statements, and suddenly you have the evidence you need.
 
-Sam: Let's talk about the agent's role in hypothesis formation. How do you guide agents to form good hypotheses versus wild guesses?
+Sam: This all assumes you can actually get the agent into the environment. What about security considerations? Won't there be resistance to giving an AI agent shell access?
 
-Alex: Context is everything. Give the agent the full execution path, recent code changes that might have introduced the bug, similar bugs you've seen in the past, relevant architecture documentation. The more context, the better the hypotheses.
+Alex: That's a legitimate concern, and you should be thoughtful about it. But remember, the agent is operating in a controlled environment—reproduction Docker container, sandbox, staging system. You're not giving it production access unless you're confident and have controls. The benefit is that debugging time goes from days to hours because the agent can test fixes immediately.
 
-Sam: So if you just changed the caching layer and suddenly orders are failing, you'd tell the agent "we modified caching yesterday, here's the PR"?
+Sam: And for completely locked-down scenarios?
 
-Alex: Absolutely. That focuses the investigation. The agent might hypothesize cache invalidation timing issues, stale data being served, or cache key collisions. Those are testable hypotheses grounded in recent changes.
+Alex: You fall back on diagnostic scripts and remote diagnosis. The agent generates the scripts, you run them in the locked-down environment, and the agent analyzes the output. It's slower than closed-loop debugging, but still faster than manual investigation. The agent can write scripts that check dozens of potential issues systematically.
 
-Sam: What about truly mysterious bugs where you have no idea what changed?
+Sam: So even in constrained scenarios, the methodology still applies—you're just using different tools.
 
-Alex: Start with correlation analysis. When did the bug start appearing? What deployments happened around that time? What external dependencies were updated? Are there patterns in which users or data trigger it? Agents can analyze logs to find these correlations, then form hypotheses based on what changed.
+Alex: Right. The core principle is always the same: evidence over speculation. Build reproducible test cases. Investigate systematically. Verify fixes actually work. The specific tools and access levels adjust, but the mindset stays consistent.
 
-Sam: And if nothing changed, it's a load or data issue?
+Sam: I think the biggest insight here is that you're not asking the AI to magically solve problems. You're using it as a systematic investigator that can correlate evidence faster than humans can.
 
-Alex: Often, yes. A code path that worked fine with 100 users breaks with 10,000. An edge case in your data that never appeared before suddenly shows up. Agents can analyze traffic patterns and data distributions to identify these scenarios.
+Alex: That's it exactly. The agent isn't magic. It's a tool that excels at processing evidence—logs, code structure, runtime behavior—and spotting patterns humans would miss. Give it clear constraints, concrete data, and verification mechanisms, and it becomes incredibly powerful.
 
-Sam: Let's talk about the verification phase more. You mentioned demanding evidence, but what if the fix genuinely can't be verified locally? Maybe it's a production-scale issue or depends on external APIs?
+Sam: And the closed-loop part makes that verification happen automatically as the agent tests fixes.
 
-Alex: You create production-like verification environments. Use load testing tools to simulate production scale. Use API mocking or contract testing to simulate external dependencies. If you absolutely must verify in production, use feature flags and gradual rollouts - deploy to 1% of traffic, monitor for the issue, expand if clean.
+Alex: Exactly. You're not relying on the agent's confidence in its solution. You're relying on observed reality—the fix either works in the reproduction environment or it doesn't. The loop closes continuously until you have definitive proof.
 
-Sam: Canary deployments as verification.
+Sam: One more question: for someone starting with this, what's the biggest thing they should change about how they debug?
 
-Alex: Yes, but with very specific metrics. You're monitoring error rates, memory usage, response times, whatever metric relates to the bug. You compare the canary group to the control group statistically.
+Alex: Stop describing bugs and asking the agent to fix them blindly. Start by saying "here's proof the bug exists—logs, status codes, reproduction steps. Here's the environment where it happens." Then engage the agent as an investigator. Have it explain the architecture first. Use tools like ChunkHound for larger codebases to get architectural context. Build a reproduction environment so you can verify fixes actually work. Close the loop.
 
-Sam: And if the canary shows the bug is fixed, you roll out fully?
+Sam: The shift from description to evidence.
 
-Alex: With continued monitoring. Bugs have a way of reappearing under different conditions. The regression test in your CI is your long-term protection.
-
-Sam: What's your debugging checklist? If I'm about to start debugging with an AI agent, what are the questions I should ask?
-
-Alex: Five critical questions. One: Can you reproduce it in isolation? If no, stop and build reproduction first. Two: Does the agent have access to all diagnostic data - logs, databases, runtime state? If no, build the inspection tools. Three: Is the fix verified with evidence - before/after reproduction, passing tests? If no, reject the solution. Four: Does a regression test prevent recurrence? If no, write one. Five: Are there monitoring gaps to address? If the bug made it to production, something in your monitoring failed.
-
-Sam: That last one is interesting. Every bug is a monitoring failure?
-
-Alex: In a sense, yes. Either you didn't have the right metrics to catch it before production, or you had the metrics but no alerts, or the alerts fired but weren't actionable. Debugging should improve your monitoring, not just fix the code.
-
-Sam: So the outcome of debugging isn't just a fix, it's better observability?
-
-Alex: Exactly. You should come out of every debugging session with: the bug fixed, a regression test, and improved monitoring or alerting that would catch similar issues earlier.
-
-Sam: Let's go back to the memory leak example. What monitoring improvements would you expect?
-
-Alex: At minimum, memory usage alerts with thresholds. If memory grows more than 20% over a two-hour window, alert. Better yet, automated heap dump capture when memory crosses thresholds, so you have diagnostic data before the crash. Even better, synthetic tests that exercise high-memory code paths and fail if memory isn't released.
-
-Sam: Proactive rather than reactive.
-
-Alex: Right. The best debugging session is one you don't need because monitoring caught the issue first.
-
-Sam: Final question: when should you not use an AI agent for debugging?
-
-Alex: When you don't have reproduction or diagnostic access. If you're just guessing, the agent will guess alongside you, and that's not useful. Also, when the bug requires deep domain expertise the agent doesn't have - maybe a quirk of your database's transaction isolation, or a subtle protocol implementation detail. The agent can help, but you need to drive.
-
-Sam: So agents are diagnostic tools, not magic solutions.
-
-Alex: Precisely. You're still doing the debugging. The agent helps with systematic investigation, pattern matching in logs, running verification scripts. But the engineer owns the process, builds the diagnostic environment, and demands evidence. That's the methodology.
-
-Sam: This is a very different approach than "paste your error into ChatGPT and hope."
-
-Alex: Completely different. This is production-grade debugging with the rigor you'd expect for systems that matter. The agent is your systematic investigator - you give it tools and demand proof.
-
-Sam: And the payoff is fixes you can trust.
-
-Alex: Exactly. Every fix is verified, tested, and monitored. That's how you debug with confidence in production environments.
+Alex: Yes. And from hoping the fix works to proving it works. That's the fundamental change in debugging with AI agents.
