@@ -518,7 +518,7 @@
 }
 
 /* Content area - fills remaining space */
-:global(.reveal .slides section) > *:not(h1):not(h2):not(.slideCaption):not(.comparison):not(.marketingReality) {
+:global(.reveal .slides section) > *:not(h1):not(h2):not(.slideCaption):not(.comparison):not(.marketingReality):not(.executionFlow) {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
