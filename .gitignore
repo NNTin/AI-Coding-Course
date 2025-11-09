@@ -31,3 +31,11 @@ node_modules/
 # AI Tools
 .chunkhound/
 .chunkhound.json
+
+# Generated content
+scripts/output/
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
