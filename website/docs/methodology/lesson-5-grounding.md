@@ -157,6 +157,11 @@ Your codebase size determines which grounding approach works. Here's how to choo
 | **10-100K LOC** | **Claude Code:** Explore agent<br/>**Other CLI agents:** ChunkHound code research (MCP)<br/>**Alternative:** Semantic search (Claude Context, Serena via MCP) | Searches returning 50+ files start overwhelming context        | Sub-agents isolate research in separate contexts. Semantic search extends agentic search with meaning-based queries. ChunkHound is the only MCP-based sub-agent option. |
 | **100K+ LOC**   | ChunkHound code research (structured sub-agent)                                                                                                               | Agentic search misses architectural connections across modules | Essential at 1M+ LOC. Only approach with progressive aggregation across large codebases.                                                                                |
 
+:::tip Measuring LOC
+
+Use [`cloc`](https://github.com/AlDanial/cloc) to measure your codebase: `cloc .` returns language-by-language breakdown. Focus on the "Code" column for accurate LOC counts.
+:::
+
 <details>
 <summary>Deep Dive: ChunkHound Architecture</summary>
 
