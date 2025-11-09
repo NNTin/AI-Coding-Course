@@ -1,0 +1,129 @@
+.container {
+  margin: 2rem 0;
+  padding: 2rem 1.5rem;
+  border-radius: 8px;
+  background: var(--visual-bg-decision);
+  border: 1px solid var(--visual-decision);
+}
+
+.comparison {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.side {
+  flex: 1;
+  max-width: 280px;
+  text-align: center;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.shapes {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.clutteredShapes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.row {
+  font-size: 2.5rem;
+  line-height: 1;
+  letter-spacing: 0.3rem;
+  color: var(--visual-limitation);
+  font-weight: 300;
+}
+
+.cleanShape {
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--visual-capability);
+  font-weight: 300;
+}
+
+.arrow {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 1rem 0;
+  line-height: 1;
+}
+
+.outcome {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.5rem;
+}
+
+.description {
+  text-align: center;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 0.5rem;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
+  .comparison {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .side {
+    max-width: 100%;
+  }
+
+  .shapes {
+    min-height: 140px;
+  }
+
+  .row {
+    font-size: 2rem;
+    letter-spacing: 0.2rem;
+  }
+
+  .cleanShape {
+    font-size: 3rem;
+  }
+
+  .arrow {
+    font-size: 1.5rem;
+    margin: 0.75rem 0;
+  }
+
+  .outcome {
+    font-size: 0.9rem;
+    min-height: 2rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+}
