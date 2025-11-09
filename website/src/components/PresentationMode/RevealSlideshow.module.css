@@ -115,7 +115,7 @@
   grid-template-columns: 1fr 1fr;
   gap: clamp(1em, 2vw, 1.5em);
   margin: 1em 0;
-  max-height: calc(100vh - 18rem);
+  max-height: 400px;
 }
 
 .comparisonLeft,
@@ -183,7 +183,7 @@
   grid-template-columns: 1fr 1fr;
   gap: clamp(1em, 2vw, 1.5em);
   margin: 1em 0;
-  max-height: calc(100vh - 18rem);
+  max-height: 400px;
 }
 
 .metaphorColumn,
@@ -271,6 +271,140 @@
   position: absolute;
   left: 0;
   font-size: 1.2em;
+}
+
+/* Code Execution Flow Styles */
+.executionFlow {
+  text-align: left;
+  max-width: 90%;
+  margin: 1em auto;
+  padding: 0.5em;
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.executionStep {
+  margin: 0.4em 0;
+  padding: 0.6em 1em;
+  border-radius: 6px;
+  border-left: 4px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.executionStep.fragment.visible {
+  border-left-color: rgba(255, 255, 255, 0.3);
+}
+
+.executionStep.fragment.current-fragment {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(0.3em);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Color-coded highlight types - Design system colors only */
+/* Human: neutral/default (no special color) */
+.executionHuman {
+  border-left-color: rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.executionHuman.fragment.current-fragment {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* LLM Prediction: Purple (brand primary) */
+.executionPrediction {
+  border-left-color: #8b5cf6 !important;
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.executionPrediction.fragment.current-fragment {
+  background: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.4);
+}
+
+/* Agent Execution: Green (effective/positive) */
+.executionExecution {
+  border-left-color: #51cf66 !important;
+  background: rgba(81, 207, 102, 0.08);
+}
+
+.executionExecution.fragment.current-fragment {
+  background: rgba(81, 207, 102, 0.15);
+  box-shadow: 0 2px 12px rgba(81, 207, 102, 0.4);
+}
+
+/* Feedback: Purple lighter (LLM context update) */
+.executionFeedback {
+  border-left-color: #8b5cf6 !important;
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.executionFeedback.fragment.current-fragment {
+  background: rgba(139, 92, 246, 0.12);
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Summary: neutral/default */
+.executionSummary {
+  border-left-color: rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.executionSummary.fragment.current-fragment {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 12px rgba(255, 255, 255, 0.2);
+}
+
+.stepLine {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+  font-size: clamp(0.7rem, 1.4vw, 0.85em);
+  line-height: 1.4;
+}
+
+.flowArrow {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1em;
+  font-weight: bold;
+  min-width: 1em;
+  display: inline-block;
+  animation: arrowFlow 0.5s ease-out;
+}
+
+.stepText {
+  flex: 1;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.stepAnnotation {
+  margin-top: 0.3em;
+  padding-left: 1.5em;
+  font-size: clamp(0.6rem, 1.1vw, 0.7em);
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* Arrow flow animation */
+@keyframes arrowFlow {
+  0% {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .error {
