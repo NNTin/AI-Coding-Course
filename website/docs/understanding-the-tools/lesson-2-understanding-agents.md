@@ -4,6 +4,8 @@ sidebar_label: 'Lesson 2: Understanding Agents'
 title: 'Understanding Agents'
 ---
 
+import AbstractShapesVisualization from '@site/src/components/VisualElements/AbstractShapesVisualization';
+
 In Lesson 1, we established that **LLMs are brains** (token prediction engines) and **agent frameworks are bodies** (execution layers). Now let's understand how these components work together to create autonomous coding agents that can complete complex tasks.
 
 ## The Agent Execution Loop
@@ -181,47 +183,17 @@ Here's a crucial insight that transforms how you work with AI coding agents: **T
 
 The LLM doesn't "remember" previous conversations. It has no hidden internal state. Each response is generated solely from the text currently in the context. When the conversation continues, the LLM sees its previous responses as text in the context, not as memories it recalls.
 
-**This is a massive advantage, not a limitation.**
+**This is a massive advantage, not a limitation.** You control what the agent knows by controlling what's in the context.
 
-**Advantage 1: Total control over agent "memory"**
+**Clean-slate exploration:** Start a new conversation, and the agent has no bias from previous decisions. Ask it to implement authentication with JWT in one context, sessions in another - each gets evaluated on merit without defending earlier choices.
 
-You decide what the agent knows by controlling what's in the context:
+**Unbiased code review:** The agent can critically audit its own work. Don't reveal code authorship, and it applies full scrutiny with no defensive bias.
 
-```
-# First conversation
-You: "Implement user authentication using JWT"
-Agent: [Implements auth with JWT, stores tokens in localStorage]
+<AbstractShapesVisualization />
 
-# Later, new conversation (fresh context)
-You: "Implement user authentication using sessions"
-Agent: [Implements auth with sessions, no JWT bias]
-```
+The same code that gets "looks sound overall" in one context triggers "Critical security vulnerabilities: localStorage exposes tokens to XSS attacks" in a fresh context. This enables Generate → Review → Iterate workflows where the agent writes code then objectively audits it, or multi-perspective analysis (security review in one context, performance in another).
 
-The agent doesn't carry baggage from previous decisions. Each conversation is a clean slate. You can explore alternative approaches without the agent defending its earlier choices.
-
-**Advantage 2: Unbiased verification**
-
-The agent can review its own work with fresh eyes:
-
-```
-# Step 1: Implementation
-You: "Add email validation to registration endpoint"
-Agent: [Writes validation code]
-
-# Step 2: Verification (agent doesn't "remember" writing this)
-You: "Review the validation logic in src/handlers/user.ts for security issues"
-Agent: [Analyzes code objectively, finds potential regex DoS vulnerability]
-```
-
-**The agent doesn't know it wrote that code** unless you tell it. It reviews the code as objectively as if someone else wrote it. No ego, no defensive justification of past decisions.
-
-This enables powerful workflows:
-
-- **Generate → Review → Iterate** - Agent writes code, then critically reviews it
-- **Multi-perspective analysis** - Ask for security review in one context, performance review in another
-- **A/B testing approaches** - Explore different implementations without cross-contamination
-
-**Production implication:** Design your prompts to control what context the agent sees. Want unbiased code review? Don't tell it who wrote the code. Want it to follow existing patterns? Include examples in the context. The agent's "knowledge" is entirely what you engineer into the conversation.
+**How you engineer context determines agent behavior.** This manipulation happens through tools - the mechanisms agents use to read files, run commands, and observe results.
 
 ## Tools: Built-In vs External
 
