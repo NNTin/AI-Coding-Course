@@ -119,9 +119,10 @@ SLIDE TYPES:
 1. **Title Slide**: Lesson title, learning objectives
 2. **Concept Slide**: Key idea with 3-5 bullet points
 3. **Code Example Slide**: Code snippet with context
-4. **Comparison Slide**: Effective vs ineffective patterns
-5. **Visual Slide**: Custom component (CapabilityMatrix, etc.)
-6. **Key Takeaway Slide**: Summary of section or lesson
+4. **Code Execution Slide**: Step-by-step visualization of execution flows (agent loops, algorithms, workflows)
+5. **Comparison Slide**: Effective vs ineffective patterns
+6. **Visual Slide**: Custom component (CapabilityMatrix, etc.)
+7. **Key Takeaway Slide**: Summary of section or lesson
 
 HANDLING CODE BLOCKS:
 
@@ -138,6 +139,37 @@ For presentation slides:
 ✓ Keep code snippets under 15 lines for readability
 ✗ Don't include every code example from the lesson
 ✗ Don't show code without explaining its purpose
+
+CODE EXECUTION SLIDES:
+
+Use the "codeExecution" slide type to visualize step-by-step processes like:
+- Agent execution loops (human input → LLM prediction → agent execution → feedback)
+- Algorithm execution flows
+- Request/response cycles
+- Multi-step workflows
+
+Structure with highlightType for semantic color-coding (uses design system colors):
+- **"human"** (white/neutral): Engineer/operator input, commands, task specifications, explicit constraints
+- **"prediction"** (purple): LLM predictions, reasoning, decisions, "I will..." or "I should..." statements
+- **"execution"** (green): Agent/software tool calls, deterministic actions (Read, Edit, Bash commands)
+- **"feedback"** (purple light): Data/results returned from operations, outputs that LLM receives
+- **"summary"** (white/neutral): Loop conditions, conclusions, final outcomes
+
+SEMANTIC RULES (critical for correct color coding):
+✓ "Engineer specifies task:" → human (operator input)
+✓ "LLM predicts:" or "LLM decides:" → prediction (thinking/planning)
+✓ "Agent executes: Read(...)" → execution (tool call)
+✓ "File content returned:" → feedback (operation result)
+✓ "LLM receives and predicts:" → prediction (NOT feedback - it's the prediction after receiving)
+✓ "Loop continues until..." → summary (loop condition)
+
+✓ Use for "how it works" explanations (3-8 steps typical)
+✓ Include annotations to explain WHY each step happens
+✓ Show the complete cycle from start to finish
+✓ Maintain semantic consistency: what's DOING the action determines the type
+✗ Don't use for static code examples (use "code" type instead)
+✗ Don't create more than 10 steps (split into multiple slides if needed)
+✗ Don't confuse "LLM receives data and predicts" (prediction) with "data returned" (feedback)
 
 SPEAKER NOTES GUIDELINES:
 
@@ -202,6 +234,48 @@ You must generate a valid JSON file with this structure:
       "language": "typescript",
       "code": "function example() { ... }",
       "caption": "Brief explanation",
+      "speakerNotes": { ... }
+    },
+    {
+      "type": "codeExecution",
+      "title": "Agent Execution Loop Example",
+      "steps": [
+        {
+          "line": "Engineer specifies: 'Add authentication middleware'",
+          "highlightType": "human",
+          "annotation": "Human provides explicit task and constraints"
+        },
+        {
+          "line": "LLM predicts: 'I should read existing auth patterns'",
+          "highlightType": "prediction",
+          "annotation": "Token prediction drives next action"
+        },
+        {
+          "line": "Agent executes: Read(src/middleware/auth.ts)",
+          "highlightType": "execution",
+          "annotation": "Deterministic tool execution"
+        },
+        {
+          "line": "File content returned to context",
+          "highlightType": "feedback",
+          "annotation": "Operation result available to LLM"
+        },
+        {
+          "line": "LLM analyzes patterns and predicts: 'I'll use JWT approach'",
+          "highlightType": "prediction",
+          "annotation": "Prediction incorporates new context"
+        },
+        {
+          "line": "Agent executes: Edit(src/app.ts, old, new)",
+          "highlightType": "execution",
+          "annotation": "Code modification"
+        },
+        {
+          "line": "Loop continues until tests pass",
+          "highlightType": "summary",
+          "annotation": "Iteration condition"
+        }
+      ],
       "speakerNotes": { ... }
     },
     {
