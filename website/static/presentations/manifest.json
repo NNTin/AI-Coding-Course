@@ -15,10 +15,10 @@
   },
   "methodology/lesson-4-prompting-101.md": {
     "presentationUrl": "/presentations/methodology/lesson-4-prompting-101.json",
-    "slideCount": 13,
-    "estimatedDuration": "35-45 minutes",
-    "title": "Lesson 4: Prompting 101",
-    "generatedAt": "2025-11-10T19:22:54.588Z"
+    "slideCount": 11,
+    "estimatedDuration": "40-50 minutes",
+    "title": "Prompting 101: Pattern Completion, Not Conversation",
+    "generatedAt": "2025-11-10T19:54:29.185Z"
   },
   "methodology/lesson-5-grounding.md": {
     "presentationUrl": "/presentations/methodology/lesson-5-grounding.json",
@@ -50,10 +50,10 @@
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-8-tests-as-guardrails.json",
-    "slideCount": 10,
+    "slideCount": 11,
     "estimatedDuration": "40-50 minutes",
-    "title": "Lesson 8: Tests as Guardrails",
-    "generatedAt": "2025-11-10T18:42:15.943Z"
+    "title": "Tests as Guardrails",
+    "generatedAt": "2025-11-10T19:55:47.621Z"
   },
   "practical-techniques/lesson-9-reviewing-code.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-9-reviewing-code.json",
