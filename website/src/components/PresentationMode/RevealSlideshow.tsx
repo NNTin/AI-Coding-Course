@@ -185,7 +185,7 @@ export default function RevealSlideshow({
               <p className={styles.subtitle}>{slide.subtitle}</p>
             )}
             {presentation.metadata.learningObjectives && (
-              <div className={`${styles.objectives} ${styles.centeredContent}`}>
+              <div className={styles.objectives}>
                 <h3>Learning Objectives</h3>
                 <ul>
                   {presentation.metadata.learningObjectives.map((obj, i) => (
