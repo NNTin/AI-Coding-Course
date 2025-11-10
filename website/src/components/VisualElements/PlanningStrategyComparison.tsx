@@ -1,178 +1,185 @@
 import React from 'react';
 import styles from './PlanningStrategyComparison.module.css';
 
-interface PlanningStrategyComparisonProps {
-  compact?: boolean;
-}
-
-export default function PlanningStrategyComparison({ compact = false }: PlanningStrategyComparisonProps) {
+export default function PlanningStrategyComparison() {
   return (
     <div
-      className={`${styles.container} ${compact ? styles.compact : ''}`}
+      className={styles.container}
       role="img"
-      aria-label="Abstract visualization comparing exploration planning with branching paths versus exact planning with direct linear path"
+      aria-label="Abstract visualization comparing exploration planning approach with scattered discovery pattern versus exact planning with direct linear path"
     >
       <svg
-        viewBox="0 0 800 330"
+        viewBox="0 0 800 240"
         className={styles.svg}
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Define arrow markers */}
+        {/* Define arrow marker for exact planning */}
         <defs>
           <marker
-            id="arrowExploration"
-            markerWidth="8"
-            markerHeight="8"
-            refX="7"
-            refY="4"
-            orient="auto"
-            className={styles.arrowMarkerExploration}
-          >
-            <polygon points="0 0, 8 4, 0 8" />
-          </marker>
-          <marker
             id="arrowExact"
-            markerWidth="10"
-            markerHeight="10"
-            refX="9"
-            refY="5"
+            markerWidth="12"
+            markerHeight="12"
+            refX="11"
+            refY="6"
             orient="auto"
             className={styles.arrowMarkerExact}
           >
-            <polygon points="0 0, 10 5, 0 10" />
+            <polygon points="0 0, 12 6, 0 12" />
           </marker>
         </defs>
 
-        {/* LEFT SIDE: Exploration Planning - Branching Network */}
+        {/* LEFT SIDE: Exploration Planning - Scattered Discovery Pattern */}
         <g className={styles.explorationGroup}>
           {/* Title */}
-          <text x="180" y="40" className={styles.title} textAnchor="middle">
+          <text
+            x="180"
+            y="35"
+            className={`${styles.title} planning-title`}
+            textAnchor="middle"
+          >
             EXPLORATION
           </text>
 
           {/* Starting node */}
-          <circle cx="60" cy="100" r="8" className={styles.explorationNode} />
-          <text x="60" y="130" className={styles.label} textAnchor="middle">
+          <circle cx="60" cy="90" r="10" className={styles.explorationStart} />
+          <text
+            x="60"
+            y="120"
+            className={`${styles.label} planning-label`}
+            textAnchor="middle"
+          >
             Start
           </text>
 
-          {/* Branch 1 - Upper path (successful) */}
+          {/* Scattered nodes suggesting multiple exploration paths */}
+          <circle cx="140" cy="70" r="7" className={styles.explorationNode} />
+          <circle cx="160" cy="110" r="7" className={styles.explorationNode} />
+          <circle cx="220" cy="60" r="7" className={styles.explorationNode} />
+          <circle cx="200" cy="100" r="7" className={styles.explorationNode} />
+          <circle cx="240" cy="90" r="7" className={styles.explorationNode} />
+          <circle cx="280" cy="75" r="7" className={styles.explorationNode} />
+          <circle cx="300" cy="105" r="7" className={styles.explorationNode} />
+
+          {/* Light connecting lines showing non-linear exploration */}
           <line
-            x1="68"
+            x1="60"
+            y1="90"
+            x2="140"
+            y2="70"
+            className={styles.explorationPathLight}
+          />
+          <line
+            x1="60"
+            y1="90"
+            x2="160"
+            y2="110"
+            className={styles.explorationPathLight}
+          />
+          <line
+            x1="140"
+            y1="70"
+            x2="220"
+            y2="60"
+            className={styles.explorationPathLight}
+          />
+          <line
+            x1="160"
+            y1="110"
+            x2="200"
+            y2="100"
+            className={styles.explorationPathLight}
+          />
+          <line
+            x1="220"
+            y1="60"
+            x2="280"
+            y2="75"
+            className={styles.explorationPathLight}
+          />
+          <line
+            x1="200"
             y1="100"
-            x2="132"
-            y2="78"
-            className={styles.explorationPath}
-            markerEnd="url(#arrowExploration)"
+            x2="240"
+            y2="90"
+            className={styles.explorationPathLight}
           />
-          <circle cx="140" cy="73" r="6" className={styles.explorationNode} />
           <line
-            x1="146"
-            y1="73"
-            x2="212"
-            y2="73"
-            className={styles.explorationPath}
-            markerEnd="url(#arrowExploration)"
+            x1="240"
+            y1="90"
+            x2="300"
+            y2="105"
+            className={styles.explorationPathLight}
           />
-          <circle cx="220" cy="73" r="6" className={styles.explorationNode} />
-          <line
-            x1="226"
-            y1="73"
-            x2="292"
-            y2="73"
-            className={styles.explorationPath}
-            markerEnd="url(#arrowExploration)"
-          />
-          <circle cx="300" cy="73" r="7" className={styles.explorationNodeEnd} />
-
-          {/* Branch 2 - Lower path (exploring) */}
-          <line
-            x1="68"
-            y1="102"
-            x2="132"
-            y2="122"
-            className={styles.explorationPath}
-            markerEnd="url(#arrowExploration)"
-          />
-          <circle cx="140" cy="127" r="6" className={styles.explorationNode} />
-          <line
-            x1="146"
-            y1="127"
-            x2="212"
-            y2="127"
-            className={styles.explorationPath}
-            markerEnd="url(#arrowExploration)"
-          />
-          <circle cx="220" cy="127" r="6" className={styles.explorationNode} />
-
-          {/* Context label */}
-          <text x="180" y="230" className={styles.contextLabel} textAnchor="middle">
-            Solution unclear
-          </text>
-          <text x="180" y="252" className={styles.tradeoffLabel} textAnchor="middle">
-            Higher cost
-          </text>
-          <text x="180" y="272" className={styles.tradeoffLabel} textAnchor="middle">
-            Better solutions
-          </text>
         </g>
 
         {/* CENTER DIVIDER */}
         <g className={styles.dividerGroup}>
-          <line x1="400" y1="60" x2="400" y2="210" className={styles.dividerLine} />
-          <text x="400" y="305" className={styles.dividerText} textAnchor="middle">
-            Context-Dependent Choice
-          </text>
+          <line
+            x1="400"
+            y1="50"
+            x2="400"
+            y2="150"
+            className={styles.dividerLine}
+          />
         </g>
 
-        {/* RIGHT SIDE: Exact Planning - Direct Arrow */}
+        {/* RIGHT SIDE: Exact Planning - Direct Linear Path */}
         <g className={styles.exactGroup}>
           {/* Title */}
-          <text x="620" y="40" className={styles.title} textAnchor="middle">
+          <text
+            x="620"
+            y="35"
+            className={`${styles.title} planning-title`}
+            textAnchor="middle"
+          >
             EXACT
           </text>
 
           {/* Starting point */}
-          <circle cx="480" cy="100" r="8" className={styles.exactNode} />
-          <text x="480" y="130" className={styles.label} textAnchor="middle">
+          <circle cx="480" cy="90" r="10" className={styles.exactStart} />
+          <text
+            x="480"
+            y="120"
+            className={`${styles.label} planning-label`}
+            textAnchor="middle"
+          >
             Start
           </text>
 
-          {/* Direct path to target */}
+          {/* Direct path to goal */}
           <line
-            x1="488"
-            y1="100"
-            x2="732"
-            y2="100"
+            x1="490"
+            y1="90"
+            x2="730"
+            y2="90"
             className={styles.exactPath}
             markerEnd="url(#arrowExact)"
           />
 
-          {/* Intermediate markers on path */}
-          <circle cx="570" cy="100" r="4" className={styles.exactPathMarker} />
-          <circle cx="660" cy="100" r="4" className={styles.exactPathMarker} />
-
-          {/* Target point */}
-          <circle cx="740" cy="100" r="8" className={styles.exactNodeEnd} />
-          <text x="740" y="130" className={styles.label} textAnchor="middle">
+          {/* Goal point */}
+          <circle cx="740" cy="90" r="10" className={styles.exactGoal} />
+          <text
+            x="740"
+            y="120"
+            className={`${styles.label} planning-label`}
+            textAnchor="middle"
+          >
             Goal
-          </text>
-
-          {/* Context label */}
-          <text x="620" y="230" className={styles.contextLabel} textAnchor="middle">
-            Solution known
-          </text>
-          <text x="620" y="252" className={styles.tradeoffLabel} textAnchor="middle">
-            Faster execution
-          </text>
-          <text x="620" y="272" className={styles.tradeoffLabel} textAnchor="middle">
-            Needs certainty
           </text>
         </g>
       </svg>
 
       <div className={styles.description}>
-        Both strategies are valid — choose based on problem clarity and uncertainty
+        <strong>Exploration:</strong> Use when solution is unclear — accepts
+        higher cost for better discovery through iterative learning.
+        <br />
+        <strong>Exact:</strong> Use when solution is known — optimizes for
+        faster execution but requires upfront certainty.
+        <br />
+        <em>
+          Both strategies are valid — choose based on problem clarity and
+          uncertainty.
+        </em>
       </div>
     </div>
   );
