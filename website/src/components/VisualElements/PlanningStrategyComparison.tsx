@@ -16,7 +16,7 @@ export default function PlanningStrategyComparison({
       aria-label="Abstract visualization comparing exploration planning approach with scattered discovery pattern versus exact planning with direct linear path"
     >
       <svg
-        viewBox="0 0 800 240"
+        viewBox="0 0 800 140"
         className={styles.svg}
         xmlns="http://www.w3.org/2000/svg"
       >
