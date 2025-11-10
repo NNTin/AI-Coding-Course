@@ -13,7 +13,28 @@ Here's the fundamental issue: **The agent doesn't know your codebase exists.** I
 
 **Grounding is how you inject reality into the context window.** You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. This lesson covers the engineering techniques that anchor agents in your actual system instead of hypothetical ones.
 
+<!-- doc-only-start -->
 <GroundingComparison />
+<!-- doc-only-end -->
+
+<!-- presentation-only-start -->
+
+**Without Grounding:**
+
+- Works from generic training patterns frozen at Jan 2025
+- Guesses your architecture and libraries
+- Hallucinates plausible implementations that don't match your codebase
+- Misses current security vulnerabilities and API changes
+- Confidently wrong solutions built from statistical patterns
+
+**With Grounding:**
+
+- Works from your actual codebase (ChunkHound retrieves real code)
+- Uses current documentation (ArguSeek fetches latest API docs)
+- Aware of recent security advisories and breaking changes
+- Follows your existing patterns and architecture
+- Solutions that integrate cleanly with your system
+<!-- presentation-only-end -->
 
 ## The Discovery Problem: Agentic Search
 

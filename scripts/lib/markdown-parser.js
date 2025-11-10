@@ -120,9 +120,10 @@ export function extractCodeSummary(code, language) {
 /**
  * Parse MDX/MD file and extract clean text content
  * @param {string} filePath - Path to MDX/MD file
+ * @param {string} mode - Rendering mode: 'doc' (default) or 'presentation'
  * @returns {string} Cleaned text content with code blocks described
  */
-export function parseMarkdownContent(filePath) {
+export function parseMarkdownContent(filePath, mode = 'doc') {
   const content = readFileSync(filePath, 'utf-8');
 
   // Remove frontmatter
@@ -131,6 +132,21 @@ export function parseMarkdownContent(filePath) {
   // Extract and preserve React components (capital letter start = React components)
   // Replace with clear markers so LLM can detect them
   cleaned = cleaned.replace(/<([A-Z][a-zA-Z]*)\s*\/>/g, '[VISUAL_COMPONENT: $1]');
+
+  // Process conditional blocks based on mode
+  if (mode === 'presentation') {
+    // Strip doc-only blocks
+    cleaned = cleaned.replace(/<!--\s*doc-only-start\s*-->[\s\S]*?<!--\s*doc-only-end\s*-->/g, '');
+    // Preserve presentation-only blocks (but remove markers)
+    cleaned = cleaned.replace(/<!--\s*presentation-only-start\s*-->\n?/g, '');
+    cleaned = cleaned.replace(/\n?<!--\s*presentation-only-end\s*-->/g, '');
+  } else {
+    // Strip presentation-only blocks
+    cleaned = cleaned.replace(/<!--\s*presentation-only-start\s*-->[\s\S]*?<!--\s*presentation-only-end\s*-->/g, '');
+    // Preserve doc-only blocks (but remove markers)
+    cleaned = cleaned.replace(/<!--\s*doc-only-start\s*-->\n?/g, '');
+    cleaned = cleaned.replace(/\n?<!--\s*doc-only-end\s*-->/g, '');
+  }
 
   // Remove remaining HTML tags (lowercase = HTML elements)
   cleaned = cleaned.replace(/<[^>]+>/g, '');

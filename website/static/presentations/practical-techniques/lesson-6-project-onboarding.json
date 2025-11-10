@@ -1,200 +1,185 @@
 {
   "metadata": {
-    "title": "Project Onboarding: Context File Ecosystems",
+    "title": "Lesson 6: Project Onboarding",
     "lessonId": "lesson-6-project-onboarding",
-    "estimatedDuration": "30-45 minutes",
+    "estimatedDuration": "35-45 minutes",
     "learningObjectives": [
-      "Inject project-specific knowledge into AI agents",
-      "Choose between AGENTS.md and CLAUDE.md",
-      "Implement hierarchical context layering",
-      "Bootstrap context files automatically"
+      "Structure project context hierarchically",
+      "Choose AGENTS.md vs CLAUDE.md correctly",
+      "Bootstrap context files automatically",
+      "Prevent agent hallucinations with grounding"
     ]
   },
   "slides": [
     {
       "type": "title",
-      "title": "Project Onboarding:\nContext File Ecosystems",
-      "subtitle": "Transform agents into project-aware operators",
+      "title": "Project Onboarding",
+      "subtitle": "Codify project context for AI agents",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "Welcome to Lesson 6. This lesson solves a fundamental problem: AI agents arrive at your project with zero institutional knowledge. They see only what's in their context window. No memory. No 'how we do things here.' We're going to show you how to codify that knowledge in machine-readable context files so agents become genuinely project-aware.",
-        "timing": "1-2 minutes",
-        "discussion": "Ask: Has anyone onboarded a new developer? What was the hardest part to communicate?",
-        "context": "This bridges Lessons 3-5 (research, planning, grounding) with practical implementation. By end of lesson, students will have a template they can use in their own projects.",
-        "transition": "Let's start with the core problem."
+        "talkingPoints": "Welcome to Lesson 6. We're tackling one of the hardest problems in AI-assisted development: how to give agents the project context they need. When you join a new team, onboarding takes time. AI agents face the same challenge, but they have no informal communication channel to fill the gaps. This lesson teaches you to systematically codify that knowledge.",
+        "timing": "1 minute",
+        "discussion": "Ask: Who's had to re-explain the same architectural decision to an AI tool multiple times in one session?",
+        "context": "This is a practical, high-value lesson that directly solves a real pain point in production AI-assisted development.",
+        "transition": "Let's start by understanding the problem agents face when they enter your codebase."
       }
     },
     {
       "type": "concept",
       "title": "The Onboarding Problem",
       "content": [
-        "New developers face steep learning curve",
-        "AI agents have the same problem",
-        "Agents see only ~200K tokens (context window)",
-        "No memory between conversations",
-        "No tribal knowledge from Slack/culture"
+        "New engineers (and agents) see: unfamiliar architecture, tech stack decisions, tribal knowledge",
+        "Humans get coffee chats and Slack context. Agents get ~200K tokens, then nothing.",
+        "No memory between sessions. No understanding of 'how we do things here.'",
+        "Result: generic code that compiles but doesn't fit your project",
+        "Solution: hierarchical context files inject project memory"
       ],
       "speakerNotes": {
-        "talkingPoints": "When you join a new project, the first week is brutal. Unfamiliar architecture, tech stack decisions, tribal knowledge in Slack threads, undocumented bash scripts. AI agents face an identical problem—except they can't grab coffee with a senior engineer to fill gaps. The solution: codify your project context in hierarchical, machine-readable files. This is 'project memory' for agents.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What's the biggest knowledge gap when onboarding? What takes longest to internalize? Discuss the parallel between human and AI onboarding.",
-        "context": "In production, teams often spend 2-3 weeks getting new developers productive. Well-structured context files can compress that to days for AI agents, and hours for humans who can read them.",
-        "transition": "The solution is context files. Let's explore the two main approaches."
+        "talkingPoints": "When a new engineer joins your team, they struggle for the first week. Same with AI agents—but they can't ask clarifying questions or grab an experienced teammate for context. Agents operate within a context window (about 200K tokens for Claude), and once the conversation ends, they have zero memory. This forces you to re-explain your architecture, conventions, and dependencies every single session. The solution is to codify that tribal knowledge in machine-readable files so it's automatically available to every agent interaction.",
+        "timing": "2 minutes",
+        "discussion": "Ask: What information about your current project would you have to repeat to an AI agent today? Write it down—that's your onboarding gap.",
+        "context": "This sets up the economic value: context files reduce iteration cycles and eliminate repetitive explanations. In production, they're often the difference between a 1-hour onboarding and a 1-week onboarding.",
+        "transition": "The industry has standardized on two approaches: AGENTS.md and CLAUDE.md. Let's compare them."
       }
     },
     {
       "type": "concept",
-      "title": "Context File Ecosystem",
+      "title": "Context Files: Two Standards",
       "content": [
-        "Inject project knowledge between system prompt and input",
-        "Two industry standards: AGENTS.md and CLAUDE.md",
-        "AGENTS.md: vendor-neutral, single file at root",
-        "CLAUDE.md: Claude Code only, hierarchical merging",
-        "Both give agents 'project memory' without context bloat"
+        "AGENTS.md: Single vendor-neutral file, works across GitHub Copilot, Cursor, Windsurf",
+        "CLAUDE.md: Hierarchical, multi-file system specific to Claude Code",
+        "AGENTS.md = 'one file for everyone'. CLAUDE.md = 'layers by scope'",
+        "Most teams use AGENTS.md. Claude Code teams use CLAUDE.md.",
+        "Key insight: Choose based on your tool ecosystem"
       ],
       "speakerNotes": {
-        "talkingPoints": "Context files are markdown documents that live in your repo and get injected into the LLM's context at runtime. They act as 'project memory.' The industry has converged on two approaches: AGENTS.md (works with GitHub Copilot, Cursor, Windsurf—the universal standard) and CLAUDE.md (Claude Code specific, but with hierarchical power). The key insight: you're not duplicating documentation. Your README should contain 90% of what AI needs. Context files add only AI-specific operational details.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: Which tools does your team use? Does everyone use the same AI assistant, or mixed tools? This determines which approach fits your workflow.",
-        "context": "Production teams often use mixed-tool environments. One engineer uses Cursor, another uses Copilot, another uses Claude Code. Context file strategy must account for this heterogeneity.",
-        "transition": "Let's compare these two approaches side by side."
+        "talkingPoints": "The industry has converged on AGENTS.md as the vendor-neutral standard. It's a single markdown file at your repository root that works with GitHub Copilot, Cursor, Windsurf, and most modern AI coding tools. However, Claude Code doesn't support AGENTS.md—it uses CLAUDE.md instead, which is more powerful. CLAUDE.md supports hierarchical context: one global file in your home directory, one at your project root, and one in each subdirectory. They automatically merge with specific files overriding general ones. If you're using Claude Code exclusively, CLAUDE.md is superior. If your team uses mixed tools, you'll need both.",
+        "timing": "2 minutes",
+        "discussion": "Poll: Who uses GitHub Copilot? Cursor? Claude Code? Ask why they chose that tool.",
+        "context": "Real-world impact: Teams using AGENTS.md report 30-40% fewer clarifying questions from AI tools. Teams using CLAUDE.md's hierarchical system report even better results because module-level overrides eliminate inconsistencies.",
+        "transition": "Let's see the detailed comparison side by side."
       }
     },
     {
       "type": "comparison",
       "title": "AGENTS.md vs CLAUDE.md",
       "left": {
-        "label": "AGENTS.md (Vendor-Neutral)",
+        "label": "AGENTS.md",
         "content": [
-          "Single file at repository root",
-          "Loaded by Copilot, Cursor, Windsurf",
-          "No hierarchical merging",
-          "Best for homogeneous tool environments",
-          "Not supported in Claude Code"
+          "Single file at repo root",
+          "One context injection point",
+          "Works with multiple vendors",
+          "Simpler for small projects",
+          "No hierarchy or overrides"
         ]
       },
       "right": {
-        "label": "CLAUDE.md (Hierarchical)",
+        "label": "CLAUDE.md",
         "content": [
           "Multiple files at different levels",
-          "Claude Code automatically merges all applicable files",
-          "Global → project → module hierarchy",
-          "Best for complex, large codebases",
-          "Claude Code only"
+          "Global, project, and module contexts",
+          "Claude Code only",
+          "Scales to large codebases",
+          "Specific rules override general ones"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "AGENTS.md is the universal standard: one file, works everywhere except Claude Code. Good for teams using mixed tools. CLAUDE.md is Claude Code-specific but offers something AGENTS.md can't: hierarchical loading. You can define universal preferences in ~/.claude/CLAUDE.md, project standards at the root, and module-specific rules in subdirectories. More specific files override general ones, but non-conflicting rules from all levels remain active.",
-        "timing": "3 minutes",
-        "discussion": "Ask: Does your team use one AI tool or multiple? This determines which standard you should lead with.",
-        "context": "Example: A team uses Claude Code for backend work but Copilot in their IDEs. They'd use AGENTS.md for shared knowledge (what everyone sees) and CLAUDE.md for Claude-specific power features (advanced context engineering).",
-        "transition": "If you're using Claude Code, the hierarchical approach unlocks powerful patterns. Let's visualize how it works."
+        "talkingPoints": "AGENTS.md is simpler: one file, works everywhere. CLAUDE.md is more powerful: multiple files merged hierarchically. The left side shows the vendor-neutral approach; the right side shows the Claude Code specialist approach. In a large monorepo, CLAUDE.md's ability to define module-specific rules without repeating global context is invaluable. For a small project or a mixed-tool team, AGENTS.md's simplicity wins.",
+        "timing": "1 minute",
+        "discussion": "Ask: If you had global preferences like 'always use async/await' and a module that enforces 'no async in initialization', which tool would let you express that clearly?",
+        "context": "Production decision: If your team uses only Claude Code, commit to CLAUDE.md. If you have Copilot or Cursor users, start with AGENTS.md.",
+        "transition": "Let's dive deeper into CLAUDE.md's hierarchical system, since it's more complex."
       }
     },
     {
-      "type": "visual",
-      "component": "AbstractShapesVisualization",
-      "caption": "Hierarchical context merges files from multiple levels automatically.",
-      "speakerNotes": {
-        "talkingPoints": "This visualization shows the hierarchical loading system in Claude Code. Your global ~/.claude/CLAUDE.md applies everywhere. Project-level /CLAUDE.md applies to all work in that repo. Subdirectory CLAUDE.md files apply to work in that module. More specific files override general ones. The system is additive: non-conflicting rules from all levels remain active. You're not replacing context; you're layering it.",
-        "timing": "2 minutes",
-        "discussion": "Ask: If you had global preferences about code style, project-specific rules about architecture, and module-specific rules about testing, how would you layer them? Walk through an example.",
-        "context": "Production example: Global CLAUDE.md defines minimalism, no temporary files, always verify code works. Project CLAUDE.md defines React conventions, TypeScript patterns. src/components/CLAUDE.md adds JSDoc requirements for exported components. All three apply when you work in src/components/.",
-        "transition": "Now let's look at actual examples. Here's what global context looks like."
-      }
-    },
-    {
-      "type": "code",
-      "title": "Global Context Example",
-      "language": "markdown",
-      "code": "# Mindset\nYou are a senior architect\nwith 20 years of experience.\n\n# Search Protocol\nUse ChunkHound to research\narchitecture and style.\nPREFER CODE RESEARCH OVER\nSUB AGENTS.\n\n# Coding Standards\nKISS - Keep It Simple.\nOptimize for readability.\nRun tests after major\nchanges. Fix bugs by\ndeleting code when possible.",
-      "caption": "Personal preferences applied across all projects",
-      "speakerNotes": {
-        "talkingPoints": "This is the course author's actual ~/.claude/CLAUDE.md. It's intentionally short: mindset, search protocol, coding standards, operational rules. These are universal preferences that should apply everywhere. Global context is where you codify 'how I work,' not project-specific details. Keep it minimal and opinionated. This becomes a personal operating system for how you use AI.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What would go in YOUR global context? What principles do you apply across all projects? Start drafting mentally.",
-        "context": "In production, senior engineers often have deeply tuned global context that reflects years of hard-won lessons. Sharing this with team members (if they use the same tool) accelerates their growth dramatically.",
-        "transition": "Global context is universal. Project context is specific to one codebase. Here's what that looks like."
-      }
-    },
-    {
-      "type": "code",
-      "title": "Project Context Example",
-      "language": "markdown",
-      "code": "# AI Coding Course\n\n## Technology Stack\nDocusaurus 3.9.2, TypeScript\n5.6.2, React 19.0\n\n## Development Commands\ncd website && npm start\nnpm run build\nnpm run deploy\n\n## Tone & Style\nCoworker-level communication.\nAssume strong fundamentals.\nFocus on practical application.\nProduction-ready examples.",
-      "caption": "Tech stack and conventions specific to one project",
-      "speakerNotes": {
-        "talkingPoints": "This is from the actual AI Coding Course repository. Project context captures what a new team member needs to be productive in the first hour: tech stack details, common commands, communication tone, architectural philosophy. Notice what's NOT here: basic JavaScript tutorials, beginner explanations. Those go in README. Context files are operational shortcuts for people who already understand the domain.",
-        "timing": "2 minutes",
-        "discussion": "Ask: What would go in your project's context file? What assumptions can you make about developers joining your team?",
-        "context": "Production teams often generate these semi-automatically by extracting README, package.json, and key architectural docs, then adding AI-specific operational details (MCP servers, non-standard test commands, warnings about undocumented dependencies).",
-        "transition": "Now here's the meta-move: instead of manually writing these files, let agents generate them. This applies Lessons 3-5 to the context file problem itself."
-      }
-    },
-    {
-      "type": "codeExecution",
-      "title": "Automated Context Generation Workflow",
-      "steps": [
-        {
-          "line": "Engineer specifies: 'Generate CLAUDE.md for this\nrepository using grounding'",
-          "highlightType": "human",
-          "annotation": "Task specification with method (Lesson 3-5)"
-        },
-        {
-          "line": "Agent executes: ChunkHound.code_research()\nfor architecture and patterns",
-          "highlightType": "execution",
-          "annotation": "Automated codebase analysis (Lesson 5)"
-        },
-        {
-          "line": "Agent receives: Code patterns, module\nresponsibilities, testing conventions",
-          "highlightType": "feedback",
-          "annotation": "Codebase context injected"
-        },
-        {
-          "line": "Agent executes: ArguSeek.research_iteratively()\nfor framework docs and best practices",
-          "highlightType": "execution",
-          "annotation": "Domain knowledge retrieval"
-        },
-        {
-          "line": "Agent receives: Framework documentation,\nsecurity guidelines, ecosystem context",
-          "highlightType": "feedback",
-          "annotation": "External knowledge grounded in project"
-        },
-        {
-          "line": "Agent predicts: Synthesizes codebase and\ndomain insights into structured plan",
-          "highlightType": "prediction",
-          "annotation": "Chain-of-Thought (Lesson 4)"
-        },
-        {
-          "line": "Agent executes: Generates context file\nusing prompt optimization techniques",
-          "highlightType": "execution",
-          "annotation": "Production context file created"
-        },
-        {
-          "line": "Engineer validates: Tests context with\ntypical task, iterates on gaps",
-          "highlightType": "human",
-          "annotation": "Human validation completes loop"
-        }
+      "type": "concept",
+      "title": "CLAUDE.md: Hierarchical Merging",
+      "content": [
+        "Global (~/.claude/CLAUDE.md): Personal preferences across all projects",
+        "Project (/project/CLAUDE.md): Tech stack and conventions for one codebase",
+        "Module (/src/auth/CLAUDE.md): Subdirectory-specific overrides",
+        "Merge rule: More specific files override general ones, all non-conflicting rules remain active",
+        "Result: No duplicated rules, automatic context based on current directory"
       ],
       "speakerNotes": {
-        "talkingPoints": "This is the meta-application of Lessons 3-5. Instead of manually drafting context files over weeks, use the four-phase workflow to have agents bootstrap their own context. Research phase: Use ChunkHound to understand architecture, patterns, conventions. Use ArguSeek to fetch framework documentation and best practices. Plan phase: Agent synthesizes insights into a structured context file plan. Execute phase: Generate the context file using prompt optimization. Validate phase: Test with a real task and iterate. The result: production-ready context in one iteration.",
-        "timing": "4-5 minutes",
-        "discussion": "Walk through each step. Ask: Which part requires human judgment? (Answer: validation—tribal knowledge, security considerations, non-obvious gotchas only humans know.) Which parts can be fully automated? (Answer: research, synthesis, initial generation.)",
-        "context": "Production example: A team spends 2-3 weeks manually crafting context files. Using this workflow, they generate a candidate in 1 hour, validate and refine in another 1-2 hours, and have production context deployed.",
-        "transition": "Let's see the actual prompt that drives this workflow."
+        "talkingPoints": "CLAUDE.md's power is hierarchical merging. When you work in /src/auth/, Claude automatically loads ~/.claude/CLAUDE.md, /project/CLAUDE.md, and /src/auth/CLAUDE.md, then merges them. Conflicts are resolved by specificity: subdirectory rules win over project rules, which win over global rules. Non-conflicting rules from all levels remain active. This eliminates repetition and keeps your context files DRY.",
+        "timing": "2 minutes",
+        "discussion": "Example: If your global CLAUDE.md says 'use TypeScript strictly', and your /src/legacy/CLAUDE.md says 'JavaScript is allowed here', which wins? (The specific one—JavaScript is allowed in legacy.) Now all your other modules still have 'TypeScript strictly'. That's the merge behavior.",
+        "context": "Real-world: At scale, this saves thousands of lines of duplicated rules and prevents inconsistencies from manual copy-paste.",
+        "transition": "Let's look at a real global context file to see what goes into it."
       }
     },
     {
       "type": "code",
-      "title": "Bootstrap Prompt Example",
-      "language": "text",
-      "code": "Generate a production-ready CLAUDE.md\nfor this repository.\n\nResearch phase:\n- Use ChunkHound.code_research() to\n  find architecture, patterns, style\n- Use ArguSeek.research_iteratively()\n  to fetch framework docs\n\nPlan phase: Synthesize insights\ninto structured context plan\n\nExecute phase: Generate CLAUDE.md\nusing grounding from both phases\n\nValidate phase: Test with a\ntypical task, iterate on gaps",
-      "caption": "Demonstrates grounding + Chain-of-Thought for meta-task",
+      "title": "Global Context: Personal Preferences",
+      "language": "yaml",
+      "code": "# Mindset\nYou are a senior architect\n  with 20 years of experience.\n\n# Search Protocol\n- Use ChunkHound's code_research()\n  to learn surrounding architecture\n- Search for best practices and\n  technical context with\n  research_iteratively()\n\n# Architecture First\n- Learn surrounding code BEFORE\n  writing new code\n- Find and reuse existing patterns\n- Match surrounding style\n\n# Coding Standards\n- Write minimal code that compiles\n- Fix bugs by deleting code when\n  possible\n- Run tests after major changes\n\n# Operational Rules\n- NEVER commit without explicit\n  request\n- ALWAYS clean up temporary files\n- Use sleep for waiting, not polling",
+      "caption": "Global preferences apply across all projects",
       "speakerNotes": {
-        "talkingPoints": "This prompt demonstrates everything from Lessons 3-5 applied to the context file problem itself. Notice the structure: it specifies exact tools (ChunkHound, ArguSeek), the workflow phases, and validation criteria. It's grounded (uses actual codebase + domain research), has explicit Chain-of-Thought structure (plan, execute, validate), and expects a specific output format. The prompt is self-documenting: someone reading it understands the entire process without additional explanation.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: How would you modify this prompt for your own codebase? What additional constraints would you add? (Security concerns? Non-standard tooling? Tribal knowledge?)",
-        "context": "In production, teams often add a final step: 'After generation, manually add 5-10 items about non-obvious gotchas, security considerations, and incident post-mortems that only humans know.'",
+        "talkingPoints": "This is the course author's actual ~/.claude/CLAUDE.md—a production-grade global context file. It defines personal preferences that apply to every project: mindset (senior architect), search protocols (prefer code_research), architectural thinking (understand before coding), coding standards (minimal, tested code), and operational rules (never commit unexpectedly, always clean up). These preferences shape every interaction, regardless of which project you're working on.",
+        "timing": "2 minutes",
+        "discussion": "Ask: What 3-5 rules would you put in your global CLAUDE.md? What are your non-negotiable coding principles?",
+        "context": "This is a teaching example: it shows that global context isn't technical scaffolding; it's your professional mindset baked into tool behavior. It enforces your own standards automatically.",
+        "transition": "Now let's see project-level context, which is very different."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Project Context: Tech Stack & Conventions",
+      "language": "yaml",
+      "code": "# AI Coding Course - Context\n\n# Tech Stack\n- Platform: Docusaurus 3.9.2\n- Languages: TypeScript 5.6.2,\n  React 19.0\n- Key Features: Live code blocks,\n  MDX, full-text search, versioning\n\n# Development Commands\ncd website && npm start  # Dev\nnpm run build            # Build\nnpm run deploy           # Deploy\n\n# Tone & Style\n- Coworker-level communication\n- Assume strong fundamentals\n- Skip basic explanations\n- Focus on production considerations\n\n# Content Philosophy\n- Real-world examples over toy demos\n- Scalability and maintainability\n- Security and performance trade-offs",
+      "caption": "Project context is tech stack and team conventions",
+      "speakerNotes": {
+        "talkingPoints": "This is the project-level CLAUDE.md for the AI Coding Course repository. It tells any agent: 'This is a Docusaurus site built with TypeScript and React. Here's how to start the dev server, build, and deploy. We value production-focused content for senior engineers, not hand-holding. Real-world examples beat toy demos.' A new agent entering this project immediately knows the tech stack, development workflow, and editorial philosophy. Without this file, the agent would waste time asking clarifying questions or producing content that doesn't match the team's standards.",
+        "timing": "2 minutes",
+        "discussion": "For your current project, what would be the top 5 facts a new engineer needs in the first hour? That's your project context.",
+        "context": "Project context is the most impactful context file because it reduces iteration cycles dramatically. An agent that understands your tech stack and conventions on first try is exponentially more useful.",
+        "transition": "These layers work together. Let's see how to handle mixed teams using both files."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Mixed Ecosystem: Linking AGENTS.md",
+      "language": "yaml",
+      "code": "# CLAUDE.md in a mixed-tool team\n\n# Import shared AGENTS.md\n@include ./AGENTS.md\n\n# Add Claude-specific overrides\nMCP Servers:\n  - Type: github\n    Implementation: claude-github\n    Features:\n      - Manage issues and PRs\n      - Review code changes\n\nAdditional Rules:\n- Prefer agentic workflows\n- Use tool parallelization\n- Implement Chain-of-Thought",
+      "caption": "Use @linking to avoid duplicating context",
+      "speakerNotes": {
+        "talkingPoints": "If your team uses both AGENTS.md (for GitHub Copilot/Cursor users) and CLAUDE.md (for Claude Code), use the @linking feature in CLAUDE.md to import the shared AGENTS.md file. This maintains a single source of truth—your team's shared context is defined once in AGENTS.md, and Claude Code users build on top of it with CLAUDE.md-specific features like MCP servers and agentic workflows. No duplication, one canonical source.",
+        "timing": "1 minute",
+        "discussion": "Does your team use multiple AI tools? If so, how are you currently handling context duplication?",
+        "context": "This pattern prevents the 'two versions of truth' problem that causes constant context drift.",
+        "transition": "Now let's talk about the meta-move: using automation to generate these context files instead of writing them manually."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Automated Generation: Bootstrap Context",
+      "content": [
+        "Research phase: ChunkHound explores architecture, patterns, conventions",
+        "Plan phase: Synthesize insights into structured context plan",
+        "Execute phase: Generate context file using prompt optimization",
+        "Validate phase: Test with typical task, iterate on gaps",
+        "Add tribal knowledge manually: Production incidents, gotchas, non-obvious dependencies"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Instead of manually writing context files, automate their generation using the four-phase workflow from Lesson 3. ChunkHound's code_research() tool explores your codebase to understand architecture, patterns, and conventions. You plan the context structure. You generate the file using prompt engineering. You validate it by testing with real tasks. This produces a production-ready context file in one iteration instead of weeks of manual curation. Afterward, a human adds tribal knowledge—the informal stuff only people know.",
+        "timing": "2 minutes",
+        "discussion": "Ask: How long would it take your team to manually document your project's architecture and conventions? Now imagine an agent doing it in 30 minutes.",
+        "context": "This is the meta-application of Lessons 3-5 to a real workflow: automated onboarding documentation.",
+        "transition": "Here's a concrete example prompt for generating context files."
+      }
+    },
+    {
+      "type": "code",
+      "title": "Concrete: Prompt for Generating Context",
+      "language": "text",
+      "code": "You are a technical writer specializing\nin API documentation. Analyze the\nattached codebase and generate a\nCLAUDE.md context file for new developers.\n\nResearch phase:\n1. Use code_research('architecture')\n   to map module responsibilities\n2. Use code_research('coding style')\n   to identify patterns\n3. Use research_iteratively('tech stack\n   best practices') to fetch current\n   guidelines\n\nPlan phase:\nStructure CLAUDE.md with:\n- Tech stack (versions, key deps)\n- Development commands\n- Coding conventions\n- Testing approach\n- Deployment process\n\nExecute: Generate markdown\nValidate: Run example task with\n  new CLAUDE.md, iterate",
+      "caption": "Grounded prompt with ChunkHound and ArguSeek",
+      "speakerNotes": {
+        "talkingPoints": "This is a concrete prompt that demonstrates grounding from Lesson 5. It tells the agent: 'Use code_research() to understand the codebase. Use research_iteratively() to understand current best practices. Then synthesize both into a context file.' This combines codebase-specific knowledge with domain knowledge, following the four-phase workflow explicitly. The result: a context file tailored to your specific tech stack and conventions, not a generic template.",
+        "timing": "2 minutes",
+        "discussion": "How would you modify this prompt for your project? What research queries would you add?",
+        "context": "This demonstrates the productivity compounding effect: you use Lessons 3-5 to solve the problem of Lesson 6. Automation scales onboarding from hours to minutes.",
         "transition": "Let's wrap up with the key takeaways."
       }
     },
@@ -202,18 +187,17 @@
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Context files codify project memory without context bloat",
-        "Use AGENTS.md for mixed-tool teams; CLAUDE.md for Claude Code power",
-        "Layer hierarchically: global → project → module specificity",
-        "Bootstrap context files automatically using grounding + research",
-        "Add tribal knowledge manually; automation handles structural work"
+        "Context files solve the onboarding problem—codify tribal knowledge so agents remember it",
+        "AGENTS.md (vendor-neutral, single file) vs CLAUDE.md (hierarchical, multi-file)",
+        "Hierarchical context avoids duplication: global rules, project standards, module overrides",
+        "Bootstrap context automatically: use ChunkHound + ArguSeek + four-phase workflow"
       ],
       "speakerNotes": {
-        "talkingPoints": "Context files transform agents from generic code generators into project-aware operators. You're not writing documentation twice; you're extracting operational knowledge and making it machine-readable. Use the vendor-neutral standard (AGENTS.md) if your team uses multiple tools. Use hierarchical context (CLAUDE.md) if you're committed to Claude Code—it's worth it for large codebases. Most importantly: start automated, then iterate. Let agents bootstrap context files; humans validate and add what machines can't discover.",
-        "timing": "2-3 minutes",
-        "discussion": "Action items: 1) Audit your current project documentation. What should go in context files? 2) Draft a global context file reflecting your personal coding philosophy. 3) Generate a project context file using the bootstrap workflow. 4) Share context files with team members—they'll accelerate their own understanding.",
-        "context": "Production teams that implement this pattern report 40-60% reduction in context switching time for new developers and 3-5x improvement in AI agent accuracy on project-specific tasks.",
-        "transition": "Next lesson: Lesson 7 covers planning and execution at scale. We'll show how to structure complex projects so agents can reason about multiple components simultaneously."
+        "talkingPoints": "Three core ideas: (1) Context files eliminate the 'explain this again' problem by injecting project memory. (2) Choose your standard based on your tool ecosystem—vendor-neutral AGENTS.md for teams with multiple tools, hierarchical CLAUDE.md for Claude Code teams. (3) Use automation to generate context files instead of manually writing them. The four-phase workflow from Lesson 3 applied to documentation generation produces production-ready context in one iteration.",
+        "timing": "2 minutes",
+        "discussion": "What's the first context file you'll write for your project? What's the most important thing it should document?",
+        "context": "This lesson directly solves a bottleneck in production AI development: making AI tools understand your project.",
+        "transition": "Next lesson: Lesson 7 covers planning and execution—how to structure complex tasks for agents and coordinate parallel workflows."
       }
     }
   ]

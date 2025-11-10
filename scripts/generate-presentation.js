@@ -923,8 +923,8 @@ async function generatePresentation(filePath, manifest, config) {
   console.log(`\n📄 Generating presentation: ${relativePath}`);
 
   try {
-    // Parse content
-    const content = parseMarkdownContent(filePath);
+    // Parse content in presentation mode
+    const content = parseMarkdownContent(filePath, 'presentation');
 
     if (content.length < 100) {
       console.log(`  ⚠️  Skipping - content too short`);
