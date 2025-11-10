@@ -30,6 +30,8 @@ Give agents access however works: paste grep output, pipe script output, upload 
 
 When you do control logging, add targeted diagnostic statements preemptively when investigating bugs. Fifteen minutes writing specific log output beats hours of speculation. The agent can guide what to log based on its hypothesis—then analyze the new output immediately.
 
+This insight transforms the debugging economics: AI makes it trivial to add diagnostic logs at dozens of strategic points—far more volume than humans would ever instrument manually—because the agent can generate and place them in minutes. Once the bug is verified fixed, the same agent systematically removes all temporary diagnostic statements, restoring code hygiene and baseline logging practices. What would be prohibitively tedious instrumentation for humans (add logs, analyze, remove logs) becomes a routine part of AI-assisted investigation, shifting debugging from "minimal instrumentation" to "evidence-rich exploration."
+
 ## Reproduction Scripts: Code is Cheap
 
 When code inspection and log analysis aren't sufficient—when you need bulletproof evidence or must reproduce complex state/timing conditions—reproduction scripts become invaluable. This is where AI agents' massive code generation capabilities shine: environments that take humans hours to set up (K8s, Docker configs, database snapshots, mock services, state initialization) take AI minutes to generate.

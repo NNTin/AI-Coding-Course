@@ -10,6 +10,18 @@ This is the **Validate** phase from [Lesson 3's four-phase workflow](../methodol
 
 The key insight: **review in a fresh context, separate from where the code was written.** This prevents confirmation bias and leverages the stateless nature of agents from [Lessons 1](../understanding-the-tools/lesson-1-intro.md) and [2](../understanding-the-tools/lesson-2-understanding-agents.md). An agent reviewing its own work in the same conversation will defend its decisions. An agent in a fresh context analyzes objectively, without attachment to prior choices.
 
+:::info Agent-Only vs Mixed Codebases: A Critical Distinction
+
+The same engineering standards—DRY, YAGNI, architecture, maintainability, readability—apply to all codebases. What differs is coding style optimization and the review process:
+
+**Agent-only codebases** are maintained exclusively by AI with minimal human intervention at the code level. Optimize coding style slightly toward AI clarity: more explicit type annotations, slightly more verbose documentation, detailed architectural context files ([Lesson 6](./lesson-6-project-onboarding.md)). Review question: "Will an agent understand this 6 months from now?"
+
+**Mixed codebases** balance human and AI collaboration where both work directly with code. Optimize coding style for human brevity while maintaining AI navigability. **Most production codebases fall into this category.**
+
+**Critical difference in mixed codebases:** Add a manual review step where you fully read and audit AI-generated code before committing to ensure human readability. This is non-negotiable—without explicit project rules guiding style, agents generate code following patterns from their training data that may not match your team's readability standards. Tune your project rules ([Lesson 6](./lesson-6-project-onboarding.md)) to guide agents toward the writing style humans expect, then verify the output meets those expectations.
+
+:::
+
 ## The Review Prompt Template
 
 This template integrates techniques from [Lesson 4: Prompting 101](../methodology/lesson-4-prompting-101.md). Understanding **why** each element exists lets you adapt this pattern for other review tasks (security audits, performance analysis, architectural review).

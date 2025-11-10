@@ -164,6 +164,16 @@ Watch for these phrases during plan review—they signal the agent is inventing 
 - "Build error handling logic..." (What about existing error patterns?)
 - "Add validation for..." (Check for existing validation schemas first)
 
+## Checkpointing: Your Safety Net
+
+Agents make mistakes frequently—especially while you're learning effective grounding and prompting patterns. The good news: as your skills improve, the need for rollbacks decreases dramatically. You'll naturally write better prompts, catch issues during plan review, and guide agents more effectively. But even experienced practitioners value checkpointing as a safety net. The difference between a frustrating session and a productive one comes down to how quickly you can roll back when things go wrong. Agentic coding is probabilistic—you need the ability to revert both conversation context and code changes when execution diverges from your intent.
+
+Establish a checkpoint rhythm: create a restore point before risky operations, let the agent execute, validate results, then keep or revert. Modern AI coding tools (Claude Code, Cursor, VS Code Copilot, etc) include built-in checkpointing features that make rollback seamless—this lets you experiment aggressively without gambling on irreversible changes. If your tool lacks checkpointing, commit far more frequently than traditional development: after each successful increment, before risky operations, when changing direction, after manual corrections. This creates a safety net of verified checkpoints where each commit represents a known-good state you can return to instantly. The validation phase (covered in [Lesson 9](./lesson-9-reviewing-code.md)) determines whether you keep or discard changes—checkpointing makes that decision reversible.
+
+:::tip Claude Code Checkpoints
+Press ESC twice to create a checkpoint in Claude Code. This saves both conversation context and code state, letting you experiment aggressively and revert instantly if needed.
+:::
+
 ## Autonomous Execution: Parallel Workflows and Tool Setup
 
 Once the plan is reviewed and grounding is solid, you can let the agent execute autonomously. For complex features, parallel execution across multiple agent instances dramatically accelerates development.
@@ -256,6 +266,8 @@ Pragmatism beats purism. These are all just tools—choose based on efficiency, 
 - **Review the plan's strategy and reasoning, not just the output** - Before autonomous execution, check: How was this plan derived? Was grounding thorough? Did it miss security, performance, or architectural considerations?
 
 - **Watch for invention over reuse during plan review** - Agents default to generating plausible code from training patterns instead of discovering existing code. Red flags: "create new utility," "implement helper." Intervention: Force discovery first with evidence requirements before allowing implementation.
+
+- **Checkpoint before execution, commit after validation** - Use built-in checkpointing features when available (Claude Code, Copilot, Cursor). Without them, commit far more frequently than traditional development—after each successful increment, before risky operations. Agents make frequent mistakes; checkpointing makes iteration fast and reversible.
 
 - **Git worktrees enable true parallel agent workflows** - Multiple working directories, separate branches, isolated agent contexts. Run 3 agent instances on different features simultaneously with zero interference.
 
