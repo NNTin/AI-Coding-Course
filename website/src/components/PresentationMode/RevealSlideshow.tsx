@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import Reveal from 'reveal.js';
+import RevealHighlight from 'reveal.js/plugin/highlight/highlight';
 import 'reveal.js/dist/reveal.css';
 import 'reveal.js/dist/theme/black.css';
+import 'reveal.js/plugin/highlight/monokai.css';
 import styles from './RevealSlideshow.module.css';
 
 // Import visual components that might be used in presentations
@@ -28,7 +30,7 @@ interface CodeExecutionStep {
 }
 
 interface Slide {
-  type: 'title' | 'concept' | 'code' | 'comparison' | 'visual' | 'takeaway' | 'marketingReality' | 'codeExecution';
+  type: 'title' | 'concept' | 'code' | 'comparison' | 'codeComparison' | 'visual' | 'takeaway' | 'marketingReality' | 'codeExecution';
   title: string;
   subtitle?: string;
   content?: string[];
@@ -38,6 +40,8 @@ interface Slide {
   component?: string;
   left?: { label: string; content: string[] };
   right?: { label: string; content: string[] };
+  leftCode?: { label: string; language: string; code: string };
+  rightCode?: { label: string; language: string; code: string };
   metaphor?: { label: string; content: string[] };
   reality?: { label: string; content: string[] };
   steps?: CodeExecutionStep[];
@@ -102,7 +106,7 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
       loop: false,
 
       // Plugins
-      plugins: [],
+      plugins: [RevealHighlight],
     });
 
     deck.initialize().then(() => {
@@ -227,6 +231,35 @@ export default function RevealSlideshow({ presentation, onClose }: RevealSlidesh
                       <li key={i} className="fragment">{item}</li>
                     ))}
                   </ul>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+
+      case 'codeComparison':
+        return (
+          <section key={key} data-notes={formatSpeakerNotes(slide.speakerNotes)}>
+            <h2>{slide.title}</h2>
+            <div className={styles.comparison}>
+              {slide.leftCode && (
+                <div className={styles.comparisonLeft}>
+                  <h3 className={styles.ineffective}>{slide.leftCode.label}</h3>
+                  <pre className={styles.codeBlockSmall}>
+                    <code className={`language-${slide.leftCode.language || 'text'}`}>
+                      {slide.leftCode.code}
+                    </code>
+                  </pre>
+                </div>
+              )}
+              {slide.rightCode && (
+                <div className={styles.comparisonRight}>
+                  <h3 className={styles.effective}>{slide.rightCode.label}</h3>
+                  <pre className={styles.codeBlockSmall}>
+                    <code className={`language-${slide.rightCode.language || 'text'}`}>
+                      {slide.rightCode.code}
+                    </code>
+                  </pre>
                 </div>
               )}
             </div>
