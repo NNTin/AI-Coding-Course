@@ -39,3 +39,4 @@ scripts/output/
 *.png
 *.jpg
 *.jpeg
+package-lock.json
