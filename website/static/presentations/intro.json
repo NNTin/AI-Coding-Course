@@ -1,204 +1,177 @@
 {
   "metadata": {
-    "title": "Introduction: Operating AI Coding Agents",
+    "title": "AI Coding Agents: Operator Training Introduction",
     "lessonId": "intro",
-    "estimatedDuration": "25-35 minutes",
+    "estimatedDuration": "30-45 minutes",
     "learningObjectives": [
-      "Shift mental model from teammate to tool",
-      "Understand plan-execute-validate methodology",
-      "Identify when agents add real value",
-      "Know prerequisites and course structure"
+      "Shift from teammate to tool mental model",
+      "Understand operator training methodology",
+      "Identify personal skill gaps to address",
+      "Plan systematic agent integration"
     ]
   },
   "slides": [
     {
       "type": "title",
-      "title": "Operating AI Coding Agents",
-      "subtitle": "Production-Grade Orchestration for\nSenior Engineers",
+      "title": "AI Coding Agents: Operator Training",
+      "subtitle": "Learn to orchestrate autonomous code execution",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "This course is operator training. By the end, you'll think about AI agents the way aircraft pilots think about autopilot—a powerful tool with specific operating rules, not a substitute for judgment. We're not teaching AI theory or prompt templates. We're teaching the systematic workflow used in production environments where agents move features from design to deployment.",
+        "talkingPoints": "Welcome to operator training for AI coding agents. This isn't theory or templates—it's the systematic approach used in production to 10x output. The technology works, but most developers hit a frustration wall because they're using the wrong mental model. You'll learn to operate agents like CNC machines, not manage them like junior developers.",
         "timing": "1 minute",
-        "discussion": "Ask: How many of you have used AI coding assistants? How long before you hit a frustration wall?",
-        "context": "Opening frame: Most developers treat agents like junior developers, which fails. They're tools that need proper operating procedures.",
-        "transition": "Let's start with the brutal reality: why most AI integration fails."
+        "discussion": "Ask students: Who's used an AI coding assistant? What frustrated you most? Keep these responses in mind as we cover solutions.",
+        "context": "This course is built for senior engineers (3+ years experience) who know how to code and want to integrate agents into their workflow systematically.",
+        "transition": "Let's start by identifying the core problem that most developers face."
       }
     },
     {
       "type": "concept",
-      "title": "The Frustration Wall",
+      "title": "The Operating Model Problem",
       "content": [
-        "AI assistants ship features 2-5x faster—initially",
-        "Developers hit quality/context issues within weeks",
-        "Response: Tighter prompts, less delegation",
-        "Root cause: Wrong operating model",
-        "Solution: Systematic orchestration approach"
+        "Wrong mental model: AI agents as junior developers",
+        "You're waiting for understanding, fixing line-by-line, fighting context",
+        "Right mental model: AI agents as CNC machines for code",
+        "You specify the task precisely, delegate autonomously, validate output"
       ],
       "speakerNotes": {
-        "talkingPoints": "The tools actually work. Companies are shipping production features with AI agents today. But individual engineers get frustrated because they're applying the wrong mental model. They treat agents like junior developers—waiting for them to understand, fixing bugs line-by-line, trying to stay within token limits. That approach doesn't scale. The problem isn't the tools. It's how people operate them.",
+        "talkingPoints": "Most developers treat AI like a junior dev—checking every line, re-explaining concepts, managing mistakes. That's exhausting and defeats the purpose. Agents aren't teammates; they're tools that execute deterministically based on your specification. Like a CNC machine, if you program it correctly, it produces exactly what you asked for. If the output is wrong, the specification was wrong.",
         "timing": "2-3 minutes",
-        "discussion": "Ask: What's the main difference between waiting for a junior developer to understand context versus giving an agent one clear task with everything it needs?",
-        "context": "In production: Teams that succeed compartmentalize work (agent reads architecture, designs schema, writes tests) rather than trying to keep everything in one conversation.",
-        "transition": "To fix this, you need a fundamentally different mental model."
-      }
-    },
-    {
-      "type": "marketingReality",
-      "title": "Marketing vs Operating Reality",
-      "metaphor": {
-        "label": "Marketing Narrative",
-        "content": [
-          "\"AI teammates that understand your codebase\"",
-          "\"Chat with your code, get instant answers\"",
-          "\"10x productivity with less coding\""
-        ]
-      },
-      "reality": {
-        "label": "Technical Reality",
-        "content": [
-          "AI agents lack persistent understanding—ground each task",
-          "Chat encourages bad practices—use agents for specific operations",
-          "10x requires systematic workflow—planning, delegation, validation"
-        ]
-      },
-      "speakerNotes": {
-        "talkingPoints": "Marketing frames AI as a team member. That's seductive but wrong. In reality, agents are stateless execution engines. Each task needs explicit context, clear scope, and validation. You don't chat with a CNC machine—you load a program, specify tolerances, and inspect the output. Same principle applies here.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What breaks when you treat an agent like it has persistent memory of your codebase?",
-        "context": "Real scenario: Engineer asks agent to 'refactor the auth module.' Agent hallucinates architecture. Engineer blames the tool. What actually happened: no grounding (existing code), no validation (tests didn't run), no scope (too big for one operation).",
-        "transition": "This reframing—from teammate to tool—changes everything about how you operate."
+        "discussion": "Ask: How do you typically interact with AI assistants? Do you review every line? Do you explain yourself multiple times? Why? What changes if you think of it as a tool instead?",
+        "context": "In production, companies shipping 2x faster aren't rewriting agent output—they're specifying tasks precisely upfront. The better your specification, the less rework.",
+        "transition": "This course teaches you the operator mental model. Let's see what you'll actually learn."
       }
     },
     {
       "type": "concept",
-      "title": "AI Agents as CNC Machines",
+      "title": "What This Course IS",
       "content": [
-        "Stateless execution engines, not team members",
-        "Require: explicit program, complete context, clear tolerances",
-        "Operate best with: single focused task, validation gates",
-        "Your job: planning, grounding, review—not chat"
+        "Operator training for AI coding agents",
+        "Systematic methodology: Plan → Execute → Validate",
+        "Production-focused workflows for speed and quality",
+        "Practical techniques for unfamiliar codebases and debugging"
       ],
       "speakerNotes": {
-        "talkingPoints": "A CNC machine doesn't understand the blueprint—it executes precise instructions. An AI agent doesn't understand your codebase—it executes based on the context you provide. You feed in: architecture overview, example code patterns, specific file locations, acceptance criteria. The agent produces output. You validate against tests and code review. That's the operating model.",
+        "talkingPoints": "This is hands-on operator training. You'll learn three core phases: Plan (break work into agent tasks, research architecture), Execute (craft precise prompts, run operations in parallel), and Validate (use tests as guardrails, review critically). These aren't tips—they're systematic approaches that scale.",
         "timing": "2 minutes",
-        "discussion": "Ask: If an agent is a CNC machine, what's your role? (Answer should include: tooling engineer, setting up the program, validating output, adjusting tolerances)",
-        "context": "Production example: Feature request → engineer outlines architecture → agent researches codebase → agent implements schema → engineer reviews tests → agent writes business logic → engineer validates. That's orchestration, not collaboration.",
-        "transition": "Now let's look at the systematic methodology that makes this work."
+        "discussion": "What problem would you want to solve first if you had better agent orchestration? Onboarding to unfamiliar code? Refactoring? Debugging?",
+        "context": "Unlike marketing pitches, this methodology is validated through real production use and through the fact that this course itself was built using these exact techniques.",
+        "transition": "Before we dive into methodology, let's be clear about what we're NOT teaching."
       }
     },
     {
       "type": "concept",
-      "title": "The Plan-Execute-Validate Framework",
+      "title": "What This Course ISN'T",
       "content": [
-        "Plan: Break work into agent-sized tasks,\nresearch architecture, ground in context",
-        "Execute: Precise prompts, specialized\nsub-agents, parallel operations",
-        "Validate: Tests as guardrails, critical\ncode review, require evidence"
+        "Not AI theory or token prediction details",
+        "Not prompt templates or copy-paste solutions",
+        "Not a replacement for software fundamentals",
+        "Not for developers without production experience"
       ],
       "speakerNotes": {
-        "talkingPoints": "This three-phase approach is what separates effective agent usage from frustration. Planning is where most engineers fail—they skip grounding and jump to prompts. Execution requires treating agents as specialized tools (one for research, one for implementation, one for testing). Validation means using tests as your safety net, not trust.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: Which phase do you skip most often in your current workflow? (Most will answer 'planning')",
-        "context": "Real timing: 40% planning, 30% execution, 30% validation. If you spend 5 minutes planning and 25 minutes debugging, your ratio is inverted.",
-        "transition": "Let's clarify exactly what this course covers and what it doesn't."
-      }
-    },
-    {
-      "type": "comparison",
-      "title": "What This Course Is (and Isn't)",
-      "left": {
-        "label": "NOT This Course",
-        "content": [
-          "AI theory or deep learning fundamentals",
-          "Prompt template cookbook",
-          "Replacement for software engineering basics",
-          "Accelerator for beginners or non-engineers"
-        ]
-      },
-      "right": {
-        "label": "THIS Course",
-        "content": [
-          "Operator training for production workflows",
-          "Principles of systematic prompting",
-          "How to apply agents to real codebases",
-          "Decision-making framework: when to use agents"
-        ]
-      },
-      "speakerNotes": {
-        "talkingPoints": "We're not teaching machine learning or linguistics. We're assuming you already know software architecture, design patterns, and system design. We're teaching the operational layer: how to break work down, what context agents need, how to validate their output. If you're looking for prompt templates or theory, this isn't your course.",
-        "timing": "2 minutes",
-        "discussion": "Ask: Who in this room has 3+ years of production engineering experience? (Should be most/all of the audience)",
-        "context": "Prerequisites matter because we'll discuss trade-offs (test-driven vs exploratory, parallel vs sequential, monolith refactoring) that require production experience to evaluate.",
-        "transition": "Let's talk about who this is actually for."
+        "talkingPoints": "This isn't a theoretical deep dive into how LLMs work—we cover internals only when they affect operation. We're not giving you templates because copying prompts doesn't build skill; understanding principles does. You still need to know architecture and design patterns. And if you haven't shipped production code, this course won't make sense.",
+        "timing": "1-2 minutes",
+        "discussion": "Does anyone come from a non-production background? Good—you'll want to strengthen fundamentals first. Everyone else: you're in the right place.",
+        "context": "Many AI courses fall into the trap of being too theoretical or too template-focused. We're not doing that.",
+        "transition": "So who is this course actually for? Let me tell you if you're the right audience."
       }
     },
     {
       "type": "concept",
-      "title": "Target Audience Check",
+      "title": "Who Should Take This Course",
       "content": [
-        "3+ years professional engineering experience",
-        "Already experimented with AI assistants",
-        "Want speed without sacrificing quality",
-        "Need codebases understood, features planned,\nproduction issues debugged",
-        "Willing to unlearn 'AI as teammate' mindset"
+        "3+ years of professional engineering experience",
+        "Already tried AI assistants and hit frustration points",
+        "Want faster delivery without sacrificing code quality",
+        "Need to understand unfamiliar codebases or debug issues",
+        "Care about production-readiness, not demos"
       ],
       "speakerNotes": {
-        "talkingPoints": "If you check these boxes, this course will save you months of trial-and-error. If you're new to engineering or learning your first language, focus on fundamentals first—agents won't help until you can evaluate their output. If you're looking for a shortcut around software engineering, this isn't it. But if you're an experienced engineer who wants to move faster without the frustration cycle, you're in exactly the right place.",
+        "talkingPoints": "You're the right fit if you have real production experience and you've already hit walls with AI assistants. You're frustrated because you know good code should be maintainable and well-tested—you're not a beginner getting excited about demos. You want to integrate agents into actual work, not just explore the technology.",
+        "timing": "1-2 minutes",
+        "discussion": "Raise your hand if you've used AI assistants. What was the specific frustration? Context limits? Low-quality code? Not understanding what you asked for? All of these are solvable with the right operator approach.",
+        "context": "By the end of this course, you should be comfortable delegating entire features to agents while maintaining architectural integrity and code quality.",
+        "transition": "Now let's talk about the specific methodology you'll learn."
+      }
+    },
+    {
+      "type": "visual",
+      "title": "The Three-Phase Operating Model",
+      "component": "AbstractShapesVisualization",
+      "caption": "Systematic operator workflow breaks complex tasks into autonomous agent execution.",
+      "speakerNotes": {
+        "talkingPoints": "The entire course revolves around three phases. Plan: you break down work, research the codebase, ground the agent in context. Execute: you craft precise prompts, delegate to sub-agents, parallelize work. Validate: you use tests as guardrails, review code critically, require evidence of correctness. These phases repeat for every feature, refactor, and bug fix.",
         "timing": "2 minutes",
-        "discussion": "Ask: Raise your hand if you've been doing this for 3+ years AND tried AI assistants AND hit a wall.",
-        "context": "Self-selection is important. Experienced engineers benefit immediately. Beginners struggle because they can't distinguish hallucinations from correct code.",
-        "transition": "Assuming you're in, let's look at the three-module structure."
+        "discussion": "Which phase do you think most developers skip? (Usually planning and validation—they jump to execution and pay the price later.)",
+        "context": "This is the production workflow. Every successful agent deployment follows this cycle. Skipping any phase causes 5+ iterations instead of 1-2.",
+        "transition": "Let's be concrete about what you'll be able to do after mastering these three phases."
       }
     },
     {
       "type": "concept",
-      "title": "Course Structure",
+      "title": "What You'll Gain (Learning Outcomes)",
       "content": [
-        "Module 1: Understanding the Tools\nMental models, token windows, agent architecture",
-        "Module 2: Methodology\nPrompting principles, context grounding, workflow design",
-        "Module 3: Practical Techniques\nOnboarding, planning, testing, code review, debugging"
+        "Onboard to unfamiliar codebases 5-10x faster using agentic research",
+        "Refactor complex features reliably with test-driven validation",
+        "Debug production issues by delegating analysis to agents",
+        "Know when to use agents and when to code yourself"
       ],
       "speakerNotes": {
-        "talkingPoints": "Sequential consumption is mandatory. Each module builds on the previous. Module 1 teaches you how agents actually work (enough to operate them, not engineer them). Module 2 teaches the systematic framework. Module 3 teaches application to real scenarios. You can't skip to 'practical techniques' without understanding the mental models first—you'll just end up back at the frustration wall.",
+        "talkingPoints": "After this course, you won't just use agents faster—you'll think about delegation differently. You'll onboard to a new codebase in hours instead of days. You'll refactor fearlessly because you're using tests as guardrails. You'll debug issues faster by delegating log analysis to agents. Most importantly, you'll have the judgment to know when agents are the right tool and when you need to think through the problem yourself.",
         "timing": "2 minutes",
-        "discussion": "Ask: Why would skipping Module 1 and jumping to Module 3 be a mistake?",
-        "context": "Each module includes hands-on exercises on real codebases. The exercises aren't toy examples—they're the same techniques you'll use at work.",
-        "transition": "Here's what you'll actually be able to do after this course."
+        "discussion": "Which of these four outcomes would have the biggest impact on your work right now? Onboarding speed? Debugging? Feature velocity?",
+        "context": "In production environments, the bottleneck isn't code writing—it's understanding, testing, and validation. Agents excel at code; humans excel at judgment.",
+        "transition": "Before you start, make sure you have the right foundation."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Prerequisites for Success",
+      "content": [
+        "3+ years professional software engineering experience",
+        "Access to CLI-based coding agent (Claude Code, Copilot, etc)",
+        "Willingness to unlearn 'AI as teammate' thinking"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "You need production experience because the course assumes you understand architecture and design patterns. You need a CLI agent, not just a chat interface—that's how you scale operations. And you need to commit to the mental model shift. If you're expecting AI to 'understand' your codebase and hand-hold you, you'll be disappointed. If you're ready to operate a tool precisely, you'll see massive gains.",
+        "timing": "1 minute",
+        "discussion": "Who has access to a CLI agent? If not, get setup with Claude Code or Copilot before the next session. If you're not sure about the mental model shift, that's the first thing to work through.",
+        "context": "The CLI agent is critical because it lets you parallelize work, script operations, and maintain context across multiple tasks. Chat interfaces don't give you that control.",
+        "transition": "Now let's talk about how to use this course effectively."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "How to Use This Course",
+      "content": [
+        "Sequential learning: foundational concepts build on each other",
+        "Module 1: Tools and mental models (context and architecture)",
+        "Module 2: Methodology (prompting, grounding, workflows)",
+        "Module 3: Practical techniques (planning, testing, debugging)",
+        "Hands-on exercises on real codebases are mandatory"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Don't skip ahead. Module 1 teaches you how agents actually work and why context matters. Module 2 teaches the systematic methodology. Module 3 applies both to real-world scenarios. And you must work through exercises on actual codebases, not the examples. That's where the skill actually builds.",
+        "timing": "2 minutes",
+        "discussion": "What codebase would you want to apply these techniques to first? Onboarding to a new project? Refactoring a legacy module? That's your first exercise.",
+        "context": "Most people learn frameworks by reading, then fail when they try to apply them. We're flipping that: you learn by doing on real problems.",
+        "transition": "Before we close, I want to show you something important about how this course was built."
       }
     },
     {
       "type": "takeaway",
-      "title": "What You'll Gain",
-      "content": [
-        "Onboard to unfamiliar codebases 5-10x faster",
-        "Refactor complex features reliably using tests",
-        "Debug production issues by delegating analysis",
-        "Review code critically with AI assistance",
-        "Know when to use agents vs write code yourself"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "These aren't aspirational. These are concrete capabilities developed in Module 3 with hands-on exercises. The last one—knowing when NOT to use agents—is the hardest and most valuable. Agents aren't always the right tool. Experienced operators know the difference between 'This saves 30 minutes' and 'This introduces risk we don't need.' That judgment separates 10x engineers from frustrated ones.",
-        "timing": "2 minutes",
-        "discussion": "Ask: Which of these would have the biggest impact on your current work?",
-        "context": "Production metric: Teams that complete this course reduce code review cycles by 40% and onboarding time by 60%. Individual variance is high (depends on how rigorously you validate), but the floor is significant.",
-        "transition": "Before we start, one last important context."
-      }
-    },
-    {
-      "type": "concept",
       "title": "This Course Practices What It Teaches",
       "content": [
-        "Entire curriculum developed using agentic workflows",
-        "Content planning, research, drafting, refinement—all agent-assisted",
-        "Podcast versions generated with Claude Code and Gemini",
-        "Validation through technical review and classroom testing",
-        "This is not theory—it's proof of concept"
+        "Curriculum developed entirely using AI-assisted workflows",
+        "Planned with systematic methodology, researched, validated critically",
+        "Podcast audio generated using Claude Code + Gemini",
+        "Proof that these techniques work on their own application"
       ],
       "speakerNotes": {
-        "talkingPoints": "We didn't just write about this methodology. We used it to build this course. The structure, lesson progression, code examples, even the podcast scripts—all developed using the exact techniques you'll learn. The AI voices you hear (Alex and Sam) are generated. This might feel gimmicky, but it's intentional. If these workflows can produce production-grade training material, they're robust enough for your codebase.",
-        "timing": "1-2 minutes",
-        "discussion": "Ask: Does knowing this course was built with agents change how you think about what's possible?",
-        "context": "Transparency matters. We're not hiding the AI involvement. We're showing it because it's the best validation of the methodology.",
-        "transition": "Let's start with Module 1: Understanding the Tools."
+        "talkingPoints": "We didn't just write about operator training—we used operator training to build this course. The content structure, lesson progression, code examples, and documentation all came from the methodology you'll learn. The podcast versions with Alex and Sam? AI-generated voices and scripts, generated with the same techniques. This isn't marketing. It's validation. If these approaches can produce production-grade training material, they're robust enough for your codebase.",
+        "timing": "2 minutes",
+        "discussion": "What does it tell you about these techniques if we used them to build the course itself? Does that make you more confident in the methodology?",
+        "context": "Transparency matters. We're not claiming magic; we're showing you what's actually possible when you operate agents systematically.",
+        "transition": "You're ready. Let's move to Module 1 and start building your operating skills."
       }
     }
   ]

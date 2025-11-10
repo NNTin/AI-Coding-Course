@@ -1,287 +1,258 @@
 {
   "metadata": {
-    "title": "Planning and Execution: Active Grounding in Agent Workflows",
+    "title": "Planning and Execution: From Context to Code",
     "lessonId": "lesson-7-planning-execution",
     "estimatedDuration": "40-50 minutes",
     "learningObjectives": [
-      "Ground agents with actual codebase patterns",
-      "Review plans before autonomous execution",
-      "Catch invention-over-reuse at planning stage",
-      "Execute safely with checkpoints and parallelization"
+      "Master active context engineering",
+      "Review plans before execution",
+      "Enable parallel agent workflows",
+      "Force grounding with evidence"
     ]
   },
   "slides": [
     {
       "type": "title",
       "title": "Planning and Execution",
-      "subtitle": "Active grounding turns agents from generators into reliable producers",
+      "subtitle": "From Context to Code",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "This lesson is about what happens AFTER you have context loaded into the window. We covered how to gather context in Lesson 5. Now we focus on the critical tactical techniques that transform agents from code generators into reliable code-producing machines. The shift from gathering context to using context is what makes agents reliable in production.",
+        "talkingPoints": "This lesson bridges the gap between gathering context (Lesson 5) and using it effectively. We shift from passive context loading to active context engineering—deliberate techniques that keep agents grounded in your codebase rather than defaulting to training data patterns. The core challenge: agents are good at pattern completion, not reasoning. Your job is to enforce grounding through planning review and evidence requirements.",
         "timing": "1 minute",
-        "discussion": "Ask: What's the difference between an agent that can write code and an agent you'd trust with production? The answer lies in grounding and planning.",
-        "context": "By this point, students have learned RAG and semantic search. Now they're ready to learn how to actively manage that context during execution and how to review agent plans before letting them run autonomously.",
-        "transition": "Let's start with the most powerful technique for keeping agents grounded: active context engineering."
+        "discussion": "Ask students: 'How many of you have seen an agent suggest code that doesn't match your codebase patterns?' This frames the problem we're solving.",
+        "context": "By the end of this lesson, students will have tactical techniques for reviewing agent plans, requiring evidence-based reasoning, and orchestrating parallel workflows—skills that transform agents from code generators into reliable development partners.",
+        "transition": "Let's start with the most fundamental principle: why context engineering matters."
       }
     },
     {
       "type": "concept",
-      "title": "Active Context Engineering",
+      "title": "Context Engineering vs Passive Loading",
       "content": [
-        "Show agents actual patterns, not generic docs",
-        "Questions load context for subsequent steps",
-        "Evidence requirements force grounding",
-        "Your logic validates agent reasoning"
+        "Grounding is continuous, not one-time",
+        "Load context → review plan → execute → validate",
+        "Agent defaults to training data patterns",
+        "Your codebase specifics must override statistics"
       ],
       "speakerNotes": {
-        "talkingPoints": "Context engineering isn't a one-time upfront activity. It's continuous throughout execution. You load context, review the plan, let it execute, then validate. The key insight is that grounding happens in layers. Start with concrete patterns from your codebase, use questions strategically to load related context, and require evidence to prevent hallucinations.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask students: When you ask an AI assistant 'How does X work?', what are you really doing? Not testing knowledge—you're triggering a sequence that loads context into the window.",
-        "context": "This is the core realization that separates effective from ineffective agent use. Most people treat agents like documentation queries. Expert practitioners treat them as context-loading tools.",
-        "transition": "Let's look at concrete techniques, starting with grounding in actual code patterns."
+        "talkingPoints": "Grounding isn't something you do upfront and forget. It's a feedback loop: you load relevant context, the agent plans based on that context, you review before execution, and you validate. The critical insight is that agents don't 'think'—they complete patterns. Without explicit grounding, they fall back to training data, which means generic solutions that don't fit your specific architecture.",
+        "timing": "2 minutes",
+        "discussion": "Poll: 'How do you currently prevent agents from suggesting duplicate code?' Most answers will be reactive (reviewing PRs). This lesson shows proactive techniques.",
+        "context": "Real production scenario: agent suggests a new Redis client connection in every middleware function instead of discovering your existing RedisService singleton. This happens because the agent pattern-completed a reasonable Redis implementation from training data instead of searching your codebase.",
+        "transition": "Let's look at the first active technique: always ground implementations in actual code, not abstractions."
       }
     },
     {
       "type": "codeComparison",
-      "title": "Grounding in Code: Abstract vs Concrete",
+      "title": "Grounding: Concrete vs Abstract",
       "leftCode": {
-        "label": "Abstract (Fails)",
+        "label": "Abstract (Leads to Generic Code)",
         "language": "text",
-        "code": "Add rate limiting\nmiddleware to the API"
+        "code": "Add rate limiting middleware to the\nAPI"
       },
       "rightCode": {
-        "label": "Concrete (Grounds)",
+        "label": "Concrete (Grounds in Your Patterns)",
         "language": "text",
-        "code": "Search for existing\nmiddleware patterns,\nespecially authentication.\nCheck our Redis configuration.\nThen propose rate limiting\nthat follows the same error\nhandling, export structure,\nand Redis client usage you\nfound."
+        "code": "Search existing middleware patterns,\nespecially authentication. Check Redis\nconfig. Propose rate limiting following\nthe same error handling, export\nstructure, and Redis client usage."
       },
       "speakerNotes": {
-        "talkingPoints": "The difference is specificity. The abstract prompt forces the agent to guess based on training patterns. The concrete prompt forces discovery. When you ask agents to search first, analyze patterns, then implement following those patterns, you're grounding them in your actual codebase conventions. The agent reads your middleware, understands your error handling style, sees how you structure exports, and then proposes something that fits. Concrete always beats abstract.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Has anyone asked an agent to implement something standard (auth, caching, validation) only to get something that 'works but looks different' from the rest of your codebase? That's abstract prompting. The fix is forcing discovery first.",
-        "context": "In production systems with established patterns, this is the difference between 1-2 iteration cycles (grounded) and 5+ cycles (discovering issues with each attempt).",
-        "transition": "One way to force discovery is asking 'How does X work?' before asking for implementation."
+        "talkingPoints": "The concrete prompt forces the agent to search for and ground itself in your actual patterns. The abstract prompt leaves the agent guessing based on what 'looks right' from training data. You're not being verbose—you're being specific about where to find grounding.",
+        "timing": "2 minutes",
+        "discussion": "Have students share a prompt they'd normally write. Rewrite it together to be concrete. What specific files or patterns should the agent look for first?",
+        "context": "In production: concrete prompts reduce iteration from 5+ rounds to 1-2. The agent isn't second-guessing your codebase conventions because it already found them.",
+        "transition": "Next principle: questions aren't for verification—they're tools for loading context into the window."
       }
     },
     {
-      "type": "code",
+      "type": "concept",
       "title": "Questions as Context Engineering",
-      "language": "text",
-      "code": "Engineer: \"Explain how our\nauthentication middleware\nworks.\"\n\nAgent searches middleware,\nreads error handling,\nanalyzes patterns.\n\nSynthesis loads into context\nwindow.\n\nFollow-up: \"Add rate limiting\nfollowing the same pattern.\"\n\nAgent already has patterns\nloaded—no second search\nneeded.",
-      "caption": "Questions prime the context window for more reliable implementation.",
+      "content": [
+        "Question triggers: search → read → synthesis",
+        "Synthesis loads information into context window",
+        "Follow-up prompts have 'warm start' with context",
+        "Safe to execute autonomously (read-only operations)"
+      ],
       "speakerNotes": {
-        "talkingPoints": "This is a mental model shift. When you ask 'How does X work?', you're not testing the agent's knowledge. You're triggering a sequence: search → read → analyze → synthesize. That synthesis now lives in the context window. When you follow up with implementation, the relevant patterns are already there. The agent doesn't hallucinate; it builds on context it just loaded.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Why is this better than packing everything into one massive prompt? Because you get feedback on grounding quality (the explanation) before implementation. If it's wrong, you refine and try again. The agent never executes code based on bad assumptions.",
-        "context": "Questions are safe to execute autonomously—they're read-only operations. You can set agents to approval-required mode and safely run these before moving to implementation steps.",
-        "transition": "But questions alone aren't always enough. Sometimes you need to be more explicit about evidence."
+        "talkingPoints": "When you ask 'How does our authentication middleware work?', you're not testing knowledge. You're triggering a sequence: agent searches for auth files, reads implementations, analyzes patterns, and synthesizes findings. That synthesis now lives in the context window. When you follow up with 'Add rate limiting following the same pattern,' the agent already has middleware structure, error handling conventions, and export patterns loaded. You've essentially pre-loaded the context.",
+        "timing": "2 minutes",
+        "discussion": "Strategic question framing: 'What would you ask an agent before asking it to implement a major feature?' Guide toward: 'How do we currently handle X?' or 'What's our pattern for Y?'",
+        "context": "Real workflow: Engineer asks 'Walk me through how our authentication flow works' → agent searches, reads auth.ts, oauth.ts, session stores, synthesizes findings → 15 relevant files now loaded in context. Then: 'Add OAuth callback rate limiting following existing error patterns' → agent has all grounding already.",
+        "transition": "But questions are only half the story. Sometimes the agent will generate plausible answers from training data. We need to force evidence."
       }
     },
     {
       "type": "codeComparison",
-      "title": "Requiring Evidence Forces Grounding",
+      "title": "Forcing Grounding with Evidence Requirements",
       "leftCode": {
         "label": "Without Evidence",
         "language": "text",
-        "code": "Why is the API returning\na 500 error on login?"
+        "code": "Why is the authentication endpoint\nreturning 500 errors?"
       },
       "rightCode": {
-        "label": "With Evidence",
+        "label": "With Evidence Requirements",
         "language": "text",
-        "code": "Why is the API returning\na 500 error on login?\nProvide evidence: file paths,\nline numbers, actual values,\nstack traces from logs."
+        "code": "Why is the authentication endpoint\nreturning 500 errors? Provide evidence:\n- File paths with line numbers\n- Actual values from config/logs\n- Stack traces or log entries\n- Explain the connection between each"
       },
       "speakerNotes": {
-        "talkingPoints": "Without the evidence requirement, agents can pattern-complete plausible-sounding answers based on training data. 'Probably a database timeout or null pointer exception.' Sounds reasonable, but it's a guess. With evidence requirements, the agent MUST read your actual code. It can't provide evidence without retrieving it. This converts hallucinated responses into grounded ones. Evidence forces search, read, and analysis of your real code.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What happens when you require 'file paths, line numbers, actual values'? The agent can't make anything up. It has to find those specifics in code. This is a simple but powerful grounding technique.",
-        "context": "Good evidence includes: src/auth/jwt.ts:45-67 (specific), actual config values like port: 8080 (not 'a port number'), exact function names like validateJWT() (not 'the validation function'), full stack traces (not 'an error occurred').",
-        "transition": "Evidence works independently or combined with Chain-of-Thought instructions. For complex debugging, use both."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "You Validate the Logic",
-      "content": [
-        "Agents complete patterns, not logic",
-        "Your mental model catches inconsistencies",
-        "'If X is true, how can Y happen?'",
-        "Challenge statements without evidence",
-        "Make agents justify with specific data"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "LLMs are pattern completion machines, not logic engines. They excel at syntax, code structure, and boilerplate. They're bad at reasoning. Your engineering skills are still required. When something doesn't fit your mental model, point it out. 'You said port 3000, but logs show 8080. Explain this discrepancy.' This forces the agent to re-examine assumptions and ground responses in actual data.",
+        "talkingPoints": "Without evidence requirements, the agent will pattern-complete a plausible answer: 'probably a database timeout.' With evidence requirements, the agent must read your actual code, trace execution, and cite specifics. This converts guessing into grounded analysis. The agent cannot provide evidence without retrieving it.",
         "timing": "2 minutes",
-        "discussion": "Have students share an example where an agent's answer sounded right but didn't match reality. That's pattern completion failing. How would they have caught it sooner? By asking for evidence and using their mental model to validate.",
-        "context": "This is why senior engineers are so much more effective with agents than juniors. They have mental models of how systems should behave. They know when something smells wrong, even if it sounds plausible.",
-        "transition": "Now let's move to the planning phase—before the agent executes code autonomously, you need to review its plan."
+        "discussion": "Show what good evidence looks like: 'src/api/auth.ts:67 where user.profile.email is accessed. Profile is null for OAuth users (src/services/oauth.ts:134). Stack trace: TypeError: Cannot read property email of null.' That's grounded. 'Probably a database issue' is not.",
+        "context": "Production example: you ask 'Is our cache expiration correct?' With evidence requirement, agent must check Redis config, trace TTL values, cite actual settings. Without evidence, agent guesses. Evidence requirements shift from opinion to observation.",
+        "transition": "Now let's look at how you use these techniques during plan review—before the agent executes any code."
       }
     },
     {
       "type": "concept",
-      "title": "Review Plans Before Execution",
+      "title": "Plan Review: Before Execution",
       "content": [
-        "Check strategy and reasoning quality",
-        "Was grounding thorough before planning?",
-        "What important considerations were missed?",
-        "Catch architectural mismatches early",
-        "This is high-level validation, not code review"
+        "Check strategy and reasoning, not just output",
+        "Was grounding thorough? (Files read, constraints understood?)",
+        "Did agent miss considerations? (Security, compat, edge cases?)",
+        "Pattern adherence: does this fit your architecture?",
+        "Scope fit: right modules, appropriate scale?"
       ],
       "speakerNotes": {
-        "talkingPoints": "Before you let the agent execute autonomously, review the plan. Not the code—the plan. This is where you catch architectural mismatches, missing considerations, and logic errors before they become code. Review the 'why' behind the plan, not just the 'what.' If the agent says 'Implement feature X using approach Y,' ask yourself: Did it ground this decision in my codebase? Did it consider alternatives? Does the reasoning hold up?",
-        "timing": "2-3 minutes",
-        "discussion": "Give a concrete example: Agent proposes caching sessions in Redis with 24-hour TTL. Surface-level, that looks good. But the question is: Did it check your existing session implementation? Did it consider GDPR compliance? Did it account for cache invalidation when users change passwords? Shallow grounding leads to shallow plans.",
-        "context": "Plan review is applying Lesson 4's constraint principles in practice. You're validating that the agent's approach is sufficiently constrained and grounded before execution.",
-        "transition": "Let me show you what you're actually looking for in a good plan."
+        "talkingPoints": "Before autonomous execution, review the plan. This is high-level architectural fit, not line-by-line code review. You're ensuring the agent understood your codebase and is proposing an approach that matches your established patterns. Key questions: How was this plan derived? Did it read relevant files? Did it understand constraints? Does the reasoning hold?",
+        "timing": "3 minutes",
+        "discussion": "Common failure mode: 'Agent proposes creating a new validation library instead of using our existing Zod schemas.' This is a grounding failure. At plan review, you catch it and correct before execution.",
+        "context": "Real scenario: Agent plans to add email validation by creating src/lib/validators/email.ts. But you already have src/validation/ with Zod schemas. Plan review catches this before code generation. You stop and clarify: 'We use Zod schemas in src/validation/. Show me our existing approach before proposing additions.'",
+        "transition": "Plan review is where you catch a specific pattern: agents inventing instead of discovering what already exists."
       }
     },
     {
-      "type": "comparison",
-      "title": "Good Plans vs Grounding Failures",
-      "left": {
-        "label": "Shallow Grounding",
-        "content": [
-          "No mention of existing patterns",
-          "Plausible but generic solution",
-          "Creates new validation library",
-          "No consideration of GDPR or edge cases",
-          "Feels right but doesn't fit actual codebase"
-        ]
-      },
-      "right": {
-        "label": "Deep Grounding",
-        "content": [
-          "References specific existing patterns",
-          "Uses established error handling approach",
-          "Integrates with existing validation (Zod)",
-          "Acknowledges constraints and compliance",
-          "Plan reads like evolution, not invention"
-        ]
-      },
+      "type": "concept",
+      "title": "Watch For: Invention vs Reuse",
+      "content": [
+        "AI-generated code has 8x more duplication",
+        "Red flags: 'create new utility', 'build helper'",
+        "Agent pattern-completes instead of code-discovers",
+        "Force discovery-first with evidence requirements",
+        "Enforce DRY during plan review, not after"
+      ],
       "speakerNotes": {
-        "talkingPoints": "When you see a plan that references no existing code, creates new utilities instead of extending existing ones, or solves a problem generically instead of within your architectural patterns—that's a grounding failure. The agent is pattern-completing from training data, not discovering from your codebase. Catching this at the planning stage is much faster than rewriting generated code.",
+        "talkingPoints": "Research shows AI-generated code contains 8x more duplicated blocks than human-written code. Why? Because agents pattern-complete from training data instead of searching your codebase. During plan review, watch for these phrases: 'create new utility function', 'implement a helper', 'build error handling logic.' Each signals the agent is inventing rather than discovering. Stop and require evidence: 'Search for existing utilities for this. Show me what exists before proposing new code.'",
         "timing": "2 minutes",
-        "discussion": "Ask: Have you reviewed an agent's plan only to realize it's trying to solve the wrong problem or in the wrong place? That's what shallow grounding looks like. How did you catch it? Probably because you know your codebase and the plan didn't match.",
-        "context": "This validates why Lesson 5's grounding (RAG, semantic search) is a prerequisite. If the agent doesn't know your patterns, it can't incorporate them into plans.",
-        "transition": "There's one critical grounding failure to watch for: agents inventing instead of reusing."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Watch For: Invention Over Reuse",
-      "content": [
-        "'Create a new utility for...' (search first?)",
-        "'Implement a helper to...' (does it exist?)",
-        "'Build error handling logic...' (your pattern?)",
-        "AI code has 8x more duplicates than human",
-        "Red flags = intervention opportunity"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "This is the most common pattern I see in agent-generated plans: default to invention rather than discovery. When agents don't find existing code quickly, they default to generating plausible alternatives from training patterns. It compiles, it works, but it duplicates logic. Research shows AI-generated code contains 8-fold more duplicated blocks than human-written code. Watch for these phrases in plans: 'Create a new utility,' 'Implement a helper,' 'Build error handling logic.' These often signal the agent generated something instead of discovering what exists.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Why do agents default to invention? Because invention is statistically easier than discovery in training data. There are way more examples of 'people writing new things' than 'people searching a codebase and finding existing patterns.' When you see these red flags, the intervention is simple: force discovery first with explicit evidence requirements.",
-        "context": "This is why 'require evidence' is so powerful. It prevents agents from inventing in the first place. They can't invent evidence that something already exists in your codebase; they have to search and find it.",
-        "transition": "Once the plan is solid and grounding is deep, you can let the agent execute. But first: establish a checkpoint."
+        "discussion": "Hands-on: show a plan that says 'Create error logging utility.' Ask: what are the red flags? How would you intervene? Expected answer: require agent to search existing logging, show what's already there.",
+        "context": "Real codebase example: agent proposes new parseJSON utility. But you have a src/utils/parsing.ts with 12 helper functions including parseJSON. The agent didn't search; it pattern-completed from training data. Plan review catches this.",
+        "transition": "Now let's talk about safety during this process: checkpointing."
       }
     },
     {
       "type": "concept",
       "title": "Checkpointing: Your Safety Net",
       "content": [
-        "Agents make mistakes—that's normal",
-        "Checkpoints make mistakes reversible",
-        "Create before risky operations",
-        "Validate results, keep or revert",
-        "Skills improve = fewer rollbacks needed"
+        "Agents make mistakes frequently (early in learning)",
+        "Checkpoint before risky operations",
+        "Validate results, then keep or revert",
+        "Claude Code: Press ESC twice to checkpoint",
+        "Without built-in checkpoints: commit after each success"
       ],
       "speakerNotes": {
-        "talkingPoints": "Agents are probabilistic. They make mistakes frequently, especially while you're learning effective grounding. The good news: your skills improve quickly, and mistake rate drops with better prompts and grounding. But even experienced practitioners value checkpoints. A checkpoint saves both code state and conversation context. You can experiment aggressively without gambling on irreversible changes. Modern AI coding tools (Claude Code, Cursor, VS Code Copilot) include checkpointing features. Use them.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: How many of you have had an agent-assisted session go sideways? How long did it take to recover? Checkpoints make that recovery instant. In Claude Code, press ESC twice to checkpoint. In Cursor, use version history.",
-        "context": "The checkpoint rhythm: create restore point → agent executes → validate results → keep or revert. Without checkpoints, you're stuck manually undoing changes or reverting the entire working tree.",
-        "transition": "Now let's talk about execution at scale—running multiple agents in parallel."
-      }
-    },
-    {
-      "type": "code",
-      "title": "Git Worktrees for Parallel Workflows",
-      "language": "bash",
-      "code": "# Create isolated working directories\ngit worktree add ../feature-auth\ncd ../feature-auth && git checkout -b auth-refactor\n\n# Now run agent in one terminal,\n# continue main work in another.",
-      "caption": "Each worktree = isolated branch, separate agent context, zero conflicts.",
-      "speakerNotes": {
-        "talkingPoints": "For complex features, run multiple agent instances in parallel on different tasks. Git worktrees allow multiple working directories from a single repo, each with a different branch checked out. This eliminates conflicts and context-switching pain. Set up an agent working on feature A in one worktree while you work on feature B in another. The only coordination point is main branch when merging.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: How many of you have tried to run multiple agents on different features and dealt with git conflicts? Worktrees eliminate that problem entirely. This is how teams scale agent use—not one agent per developer, but multiple agents per developer on parallel tasks.",
-        "context": "Modern development is parallel. Code review, testing, deployment all happen in parallel streams. Agent workflows should too. Worktrees are the infrastructure that makes it possible.",
-        "transition": "Managing multiple worktrees requires good terminal setup and CLI tools. Let's look at that infrastructure."
+        "talkingPoints": "Agentic coding is probabilistic. Agents will make mistakes—especially while you're learning effective prompting. Checkpointing is your safety net. Create a restore point before risky operations, let the agent execute, validate results, and keep or revert. Claude Code has built-in checkpointing: press ESC twice. Without it, commit frequently after each successful increment. This creates a timeline of known-good states you can revert to.",
+        "timing": "2 minutes",
+        "discussion": "Poll: 'How often do you commit?' Most developers commit maybe every 30 minutes. With agents, consider checkpointing every 5-10 minutes during risky operations. The validation phase (Lesson 9) determines keep/discard—checkpointing makes that decision reversible.",
+        "context": "Real workflow: checkpoint before 'Refactor all error handling to use ErrorContext pattern.' Let agent execute. If tests fail or logic breaks, revert to checkpoint instantly. No manual rollback needed.",
+        "transition": "Once your plan is solid and grounding is confirmed, you can execute autonomously. For complex features, parallel execution accelerates development dramatically."
       }
     },
     {
       "type": "concept",
-      "title": "Terminal Infrastructure for Multi-Agent Work",
+      "title": "Git Worktrees: Parallel Agent Workflows",
       "content": [
-        "Terminal becomes mission-critical, not auxiliary",
-        "GPU-accelerated: Ghostty, Kitty, WezTerm",
-        "Session management and keybindings matter",
-        "Modern CLI tools reduce friction (eza, lazygit)",
-        "Invest in setup like you would an IDE"
+        "One repo, multiple working directories",
+        "Each worktree: different branch, isolated context",
+        "Run 3 agents simultaneously on different features",
+        "Zero conflicts, zero synchronization overhead",
+        "Faster development cycles on complex projects"
       ],
       "speakerNotes": {
-        "talkingPoints": "Multi-agent workflows mean managing multiple concurrent sessions, context-switching between agent instances, and monitoring long-running processes. Your terminal becomes mission-critical infrastructure. Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, notification systems. Tools like Ghostty, Kitty, and WezTerm are worth exploring. Complement them with modern CLI tools: eza for better ls output, lazygit for visual git management, fzf for fuzzy file finding. These tools reduce friction when working across multiple worktrees and agent sessions.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: How much time do you spend in your terminal daily? For agent workflows, it's significant. Investing in terminal setup pays dividends. Have anyone used any of these modern terminals or CLI tools? What was the learning curve?",
-        "context": "The philosophy here is pragmatism. Use the best tool for each task. IDE for code navigation and viewing large files. CLI for quick edits, parallel git operations, and managing multiple sessions.",
-        "transition": "Speaking of using the right tool—let's talk about pragmatism in your overall toolkit."
+        "talkingPoints": "Git worktrees enable true parallelization. Instead of switching branches, you create separate working directories from a single repository. Each worktree is a complete checkout with its own branch. This means you can run 3 agent instances on different tasks simultaneously—one on feature A, one on feature B, one on bugfix C—with zero interference. No context-switching, no merge conflicts.",
+        "timing": "2 minutes",
+        "discussion": "Ask: 'How many of you context-switch between branches frequently?' That's the problem worktrees solve. Show the workflow: main branch, create worktree for feature, agent executes in that directory, completely isolated.",
+        "context": "Real scenario: main branch is testing. You create worktree-auth for authentication refactor, worktree-cache for caching optimization, worktree-api for API expansion. Three agent instances run in parallel. You integrate results back to main incrementally.",
+        "transition": "Running parallel worktrees efficiently requires good terminal setup. Let's talk about that."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Terminal Customization for Multi-Agent Workflows",
+      "content": [
+        "Modern terminals: GPU acceleration, layouts, scripting",
+        "Options: Ghostty, Kitty, WezTerm, Alacritty",
+        "Invest in keybindings for rapid context switching",
+        "Notification systems for long-running processes",
+        "Terminal becomes mission-critical infrastructure"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "When you manage multiple worktrees and agent sessions, your terminal becomes critical infrastructure. Modern terminals offer IDE-level features: GPU acceleration for smooth rendering, programmable layouts to manage multiple panes, rich scripting for automation, and notification systems for alerts. Investing in terminal customization pays dividends every session. Set up keybindings for rapid context-switching between agent instances, configure notifications to alert when long processes complete, and organize your layout for monitoring multiple worktrees.",
+        "timing": "2 minutes",
+        "discussion": "Poll: 'What terminal do you use?' Introduce modern alternatives if most use iTerm or basic terminals. Discuss: what would make managing 3 concurrent agent sessions easier?",
+        "context": "Real workflow in a terminal like WezTerm or Kitty: left pane shows main branch, center pane shows worktree-auth (agent session), right pane shows lazygit for branch management. Custom keybindings switch panes instantly. Notifications alert when agent completes work.",
+        "transition": "Next: the specific CLI tools that make multi-agent workflows efficient."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Essential CLI Tools for Workflows",
+      "content": [
+        "micro: Terminal editor (Ctrl+S save, Ctrl+Q quit)",
+        "eza: Modern ls with git integration and colors",
+        "fzf: Fuzzy finder for files, history, branches",
+        "lazygit: Git UI for branches, staging, commits",
+        "Combines with agent workflows for efficiency"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "These tools reduce friction in multi-agent workflows. micro is a lightweight terminal editor—faster than switching to IDE for one-line changes. eza replaces ls with better formatting and git status. fzf lets you fuzzy-find files across worktrees instantly. lazygit manages branching visually. Together, they create a cohesive CLI environment for managing parallel agent sessions.",
+        "timing": "2 minutes",
+        "discussion": "Live demo concept: show how to navigate to a worktree, fuzzy-find a file with fzf, quick edit in micro, commit with lazygit—all without touching the IDE. Fast context-switching.",
+        "context": "Real workflow: You have 3 agent sessions running. One agent finishes. You switch terminals (keybinding), use lazygit to review commits, use eza to navigate the directory, use fzf to find test files, use micro to tweak a validation rule, commit.",
+        "transition": "But pragmatism matters: CLI is powerful but not a religion. Let's talk about mixing CLI and UI tools."
       }
     },
     {
       "type": "comparison",
-      "title": "Tools: Use the Best for Each Task",
+      "title": "CLI vs IDE: Pragmatic Tool Use",
       "left": {
-        "label": "CLI Only (Purist)",
+        "label": "Over-Index on CLI",
         "content": [
-          "All work in terminal",
-          "Maximizes keyboard speed",
-          "Poor for code navigation",
-          "Frustrating for large files",
-          "Ideological, not practical"
+          "Everything in terminal (dogmatism)",
+          "Fighting tools that aren't optimal",
+          "Symbol search is slow, complex logic is hard",
+          "Large file navigation becomes painful"
         ]
       },
       "right": {
-        "label": "Pragmatic Mix (Effective)",
+        "label": "Use Best Tool for Task",
         "content": [
-          "IDE for symbol search, navigation",
-          "CLI for quick edits, git operations",
-          "Use what works for each task",
-          "Switch rapidly between tools",
-          "Speed beats purity"
+          "IDE for navigation, symbol search, go-to-definition",
+          "CLI for quick edits, git ops, multi-worktree mgmt",
+          "Large files in IDE (better folding, syntax)",
+          "Small changes in terminal (faster than IDE context-switch)"
         ]
       },
       "speakerNotes": {
-        "talkingPoints": "Don't be dogmatic. IDEs remain the best tools for code navigation, symbol search, and viewing large files. CLI excels at quick edits and managing parallel sessions. Use the best tool for each task. Code exploration in VS Code because go-to-definition and call hierarchies are superior. One-line edits in the agent context using micro or vim because that's faster than switching editors. Git operations across worktrees using lazygit because visual branch management beats command-line flags. This is pragmatism.",
+        "talkingPoints": "Don't be dogmatic. IDEs remain the best tools for symbol search, go-to-definition, viewing large files, and understanding call hierarchies. CLI excels at quick edits, git operations across worktrees, and rapid task-switching. Use the best tool for each task. Open your IDE for complex navigation; use micro for one-line changes in a terminal. This pragmatism beats purism every time.",
         "timing": "2 minutes",
-        "discussion": "Ask: Do you have a preferred tool? What's one task where that tool isn't optimal? That's where the other tool excels. Expert developers switch tools smoothly.",
-        "context": "This connects to the course philosophy: focus on effectiveness, not dogma. The best workflow for agent-assisted development is hybrid—use what works.",
-        "transition": "Let's wrap up with the key takeaways from this lesson."
+        "discussion": "Scenario: You're reviewing 500-line middleware file. IDE (symbol search, folding). You need to change one config value. Terminal (micro, fast). Which is faster?",
+        "context": "Real development: you keep IDE open for exploration, CLIs in separate terminals for git/editing. Not either/or—both, optimized.",
+        "transition": "Now let's synthesize everything into key takeaways."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Ground agents in code patterns, not descriptions",
-        "Questions are context engineering—use strategically",
-        "Require evidence to prevent hallucinations",
-        "Review plans for strategy, not just output",
-        "Catch invention-over-reuse before code generation",
-        "Checkpoint before execution, commit after validation",
-        "Use git worktrees for true parallel workflows",
-        "Mix tools pragmatically—use the best for each task"
+        "Active context engineering prevents hallucinations—ground in code, not abstractions",
+        "Questions load context for follow-up execution, not for verification",
+        "Evidence requirements force agents to search your codebase, not guess",
+        "Plan review catches grounding failures and invention-vs-reuse patterns before code",
+        "Checkpoints + worktrees enable safe, parallel agent workflows at production scale"
       ],
       "speakerNotes": {
-        "talkingPoints": "The core of this lesson is the shift from gathering context to actively using it. Grounding isn't a one-time upfront activity. It's continuous throughout execution. You validate the agent's assumptions, challenge logic without evidence, catch grounding failures at the planning stage, and execute safely with checkpoints and parallel workflows. By the end of this lesson, you should have a practical framework for managing agent-assisted development in production.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What's one technique from this lesson you'll try first? Grounding in code patterns? Requiring evidence? Reviewing plans before execution? Start with whichever resonates most and build from there.",
-        "context": "These techniques compound. Each one improves agent reliability. Combined, they transform agents from tools that generate code into tools that generate correct, maintainable code that fits your actual architecture.",
-        "transition": "Next lesson we cover Tests as Guardrails—how to use tests to catch agent mistakes at scale and validate correctness before code reaches production."
+        "talkingPoints": "These five principles form the foundation of effective agent-driven development. Active context engineering is about being deliberate: when you prompt, you're either explicitly grounding the agent or letting it fall back to training data. Questions are a tool—they load context for subsequent steps. Evidence forces grounding. Plan review catches architecture mismatches early. And infrastructure (checkpoints, worktrees, terminal setup) makes iteration fast and safe.",
+        "timing": "2 minutes",
+        "discussion": "Synthesis: 'Which of these five will change how you work with agents?' Typically, students identify evidence requirements and plan review as immediately applicable.",
+        "context": "By mastering these techniques, you shift from 'agent as code generator' (luck-dependent, high iteration) to 'agent as reliable development partner' (systematic, low iteration). The difference is measurable in productivity and code quality.",
+        "transition": "Next lesson covers validation and testing—how to ensure agent-generated code meets requirements and maintains quality standards."
       }
     }
   ]

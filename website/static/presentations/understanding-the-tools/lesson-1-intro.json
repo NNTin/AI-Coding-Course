@@ -1,252 +1,302 @@
 {
   "metadata": {
-    "title": "Introduction to AI Agents",
+    "title": "Understanding AI Agents: First Principles",
     "lessonId": "lesson-1-intro",
-    "estimatedDuration": "30-45 minutes",
+    "estimatedDuration": "45-60 minutes",
     "learningObjectives": [
-      "Understand agents as tool systems",
-      "Recognize LLM token prediction mechanics",
-      "Avoid anthropomorphizing AI behavior",
-      "Establish operator mindset foundation"
+      "Understand AI agents as tools",
+      "Learn token prediction mechanics",
+      "Recognize three operator errors",
+      "Adopt operator mindset for effectiveness"
     ]
   },
   "slides": [
     {
       "type": "title",
-      "title": "Introduction to AI Agents",
-      "subtitle": "Operating Precision Instruments, Not Managing Teammates",
+      "title": "Understanding AI Agents",
+      "subtitle": "First Principles for Senior Engineers",
       "content": [],
       "speakerNotes": {
-        "talkingPoints": "Welcome to the course. We're here to teach you how to operate AI agents that autonomously execute complex development tasks. But before we jump into what agents can do, we need to establish what they actually are - because marketing terminology makes them sound far more magical than the reality.",
-        "timing": "1-2 minutes",
-        "discussion": "Ask students: How many of you have already used AI coding assistants? What surprised you most about how they work?",
-        "context": "This is the foundation lesson. Everything that follows depends on understanding that agents are tools, not teammates.",
-        "transition": "Let's start by understanding the paradigm shift happening in software engineering."
+        "talkingPoints": "Welcome to the AI Coding Course. This lesson establishes the foundational mental model for operating AI agents. We're not learning magic—we're learning to operate sophisticated tools. The goal is to shift your mindset from 'AI does things for me' to 'I operate AI tools effectively.' This course teaches you to orchestrate agents that autonomously execute tasks, freeing you to focus on architecture, verification, and decision-making.",
+        "timing": "1 minute",
+        "discussion": "Before we start: Who here has used GitHub Copilot or ChatGPT for coding? What surprised you most about what it could (or couldn't) do?",
+        "context": "This is the first lesson in the 'Understanding the Tools' section. It sets the mental model for everything that follows.",
+        "transition": "Let's start by looking at why this paradigm shift matters in software engineering—by drawing parallels to manufacturing."
       }
     },
     {
       "type": "concept",
       "title": "The Paradigm Shift",
       "content": [
-        "Manufacturing: Manual craftsmanship → Automated machine programming",
-        "CNC machines transformed operator role, not eliminated it",
-        "Software: Line-by-line coding → Agent orchestration",
-        "Same transformation: bandwidth, repeatability, precision",
-        "Gain in creativity through configuration, not loss of control"
+        "Software engineering undergoing transformation similar to CNC/3D printers in manufacturing",
+        "Shift from hands-on craftsmanship to orchestration and verification",
+        "Engineers move from writing every line to configuring automated execution",
+        "Gain in bandwidth, repeatability, and precision through proper tooling"
       ],
       "speakerNotes": {
-        "talkingPoints": "This course is about a fundamental transformation in how we build software. It's not unprecedented - manufacturing went through this 50 years ago. CNC machines didn't put machinists out of work; they transformed their role from manual implementation to design, programming, and verification. We're seeing the exact same pattern in software engineering right now.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What do you think changed about a machinist's job after CNC? How is that similar to your job evolving with AI agents?",
-        "context": "This analogy is crucial for reframing the relationship with AI. You're not losing control; you're gaining leverage. A skilled CNC operator can produce more parts, with better precision, because they focus on specification and verification instead of manual execution.",
-        "transition": "Let's look at what this transformation means specifically for software engineers."
-      }
-    },
-    {
-      "type": "comparison",
-      "title": "Traditional vs Agent-Driven Development",
-      "left": {
-        "label": "Traditional",
-        "content": [
-          "Engineers write code line-by-line",
-          "Focus on syntax and implementation",
-          "Bandwidth limited by typing speed",
-          "Manual testing and verification"
-        ]
-      },
-      "right": {
-        "label": "Agent-Driven",
-        "content": [
-          "Engineers orchestrate AI agents",
-          "Focus on architecture and specification",
-          "Bandwidth expanded through delegation",
-          "Systematic testing as architectural guardrail"
-        ]
-      },
-      "speakerNotes": {
-        "talkingPoints": "In traditional development, you're the doer. You write code, you run tests, you debug. With agents, you become the director. You specify what needs to happen, you verify the output, you maintain control through architecture and constraints. This isn't lazy - it's a fundamental shift in where your expertise creates value.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Which role are you already doing? When do you catch yourself typing out obvious boilerplate instead of designing systems?",
-        "context": "Many engineers feel uncomfortable with this shift initially. They worry they're 'not doing the work.' The reality is that the work has changed. Configuration and verification are harder problems than implementation.",
-        "transition": "Now let's understand what AI agents actually are, starting with the brain: the LLM."
+        "talkingPoints": "Before CNC machines, lathe operators manually shaped every part. After CNC, they designed parts, programmed machines, and verified output. The same shift is happening in software. You're moving from writing every line to orchestrating agents. This isn't loss of control—it's a gain in bandwidth. A CNC operator doesn't lose control; they gain leverage.",
+        "timing": "2 minutes",
+        "discussion": "How does your role change if you're orchestrating instead of implementing? What new responsibilities emerge?",
+        "context": "Production teams that embraced CNC didn't lose jobs—they became more valuable. Same principle applies here.",
+        "transition": "Let's make this concrete by breaking down what AI agents actually are."
       }
     },
     {
       "type": "concept",
-      "title": "LLM: The Brain (Token Prediction Engine)",
+      "title": "What is an AI Agent?",
       "content": [
-        "Predicts next probable token in sequence",
-        "Processes ~200K tokens of context (working memory)",
-        "Samples from learned probability distributions",
-        "Zero consciousness, intent, or comprehension"
+        "LLM (brain) = Token prediction engine, ~200K tokens context",
+        "Agent software (body) = File ops, bash, code search, API calls",
+        "LLM predicts next action, agent software executes deterministically",
+        "No consciousness, intent, or learning during use—just probability"
       ],
       "speakerNotes": {
-        "talkingPoints": "A Large Language Model is a statistical pattern matcher. It's built on transformer architecture and trained to predict the next most probable token given a sequence of previous tokens. That's it. No magic. It's incredibly sophisticated autocomplete - one that's read most of the internet and can generate convincing continuations of any pattern it's learned.",
+        "talkingPoints": "An AI agent is two components working together. The LLM is the brains—a statistical pattern matcher that predicts the next most probable token in a sequence. It's sophisticated autocomplete. The agent software is the body—deterministic tools that read files, execute commands, and fetch data. The LLM generates predictions; the software executes them. This separation is critical for understanding how agents work and what can go wrong.",
         "timing": "3-4 minutes",
-        "discussion": "Ask: Can someone explain what 'token' means? (Sub-word unit, roughly 4 characters). Ask: If it just predicts the next token, how does it generate complex code? (Sequential predictions that build on each other, guided by context and constraints.)",
-        "context": "This is where most misunderstandings come from. People see the output - coherent, sometimes brilliant code - and assume understanding happened. What actually happened is probability calculation. The LLM saw similar patterns in training data and produced statistically likely continuations.",
-        "transition": "But the LLM alone can't do anything. It only generates text. We need the execution layer."
-      }
-    },
-    {
-      "type": "marketingReality",
-      "title": "Marketing vs Reality: LLM Capabilities",
-      "metaphor": {
-        "label": "Marketing Speak",
-        "content": [
-          "\"The agent thinks\"",
-          "\"The agent understands code\"",
-          "\"The agent learns from you\"",
-          "\"The agent reasons through problems\""
-        ]
-      },
-      "reality": {
-        "label": "Technical Reality",
-        "content": [
-          "LLM generates token predictions via attention layers",
-          "Pattern matching produces contextually probable output",
-          "Statistical weights fixed at training time (not updated in conversation)",
-          "Sequential predictions build on each other"
-        ]
-      },
-      "speakerNotes": {
-        "talkingPoints": "This is critical. Marketing language makes LLMs sound conscious and learning. They're not. They're sophisticated probability machines. The LLM can't learn from you during a conversation - it learned patterns from training data, and now it's pattern-matching against your input. It can't 'understand' code the way a human does. It can produce contextually probable continuations based on patterns it's seen.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: Why does the LLM sometimes write invalid code if it 'understands'? (It's optimizing for probability, not correctness. It's generating what's likely, not what's right.)",
-        "context": "This distinction is operationally important. It explains why agents hallucinate, why they sometimes miss obvious bugs, and why YOUR verification systems matter. You're the intelligence. The agent is a sophisticated execution tool.",
-        "transition": "Now let's look at the execution layer - the body that makes the agent actually do things."
-      }
-    },
-    {
-      "type": "concept",
-      "title": "Agent Software: The Body (Execution Layer)",
-      "content": [
-        "File operations: Read, Write, Edit",
-        "Command execution: Bash, git, npm, pytest",
-        "Code search: Grep, Glob",
-        "API calls: Fetch docs, external resources",
-        "LLM predicts → Agent executes deterministically"
-      ],
-      "speakerNotes": {
-        "talkingPoints": "The LLM brain alone can only generate text. The agent framework is the body - it wraps the LLM and enables action. When an agent 'implements a feature,' it's really a loop: LLM predicts what should happen next, agent executes that prediction deterministically, agent returns the result to the LLM. Rinse, repeat.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What happens if the LLM predicts an invalid command? (The agent executes it anyway - you need validation and error handling.)",
-        "context": "This is where control lives. The agent software enforces constraints, handles errors, and verifies outputs. You configure these guardrails. The LLM is just the planning layer.",
-        "transition": "Let's visualize how this loop actually works in practice."
+        "discussion": "If the LLM is just predicting tokens, how does it produce coherent code? (Answer: Because code patterns are common in training data, and token-by-token prediction preserves coherence.)",
+        "context": "Understanding this separation prevents anthropomorphizing. You're not talking to a developer; you're operating a tool.",
+        "transition": "Let's look at the first component: what an LLM actually is."
       }
     },
     {
       "type": "codeExecution",
-      "title": "Agent Execution Loop: How It Actually Works",
+      "title": "Marketing vs Reality: What We Say vs What Happens",
       "steps": [
         {
-          "line": "Engineer specifies:\n'Add authentication middleware\nto src/app.ts'",
+          "line": "We say: 'The agent thinks'",
           "highlightType": "human",
-          "annotation": "Explicit task specification with location"
+          "annotation": "Metaphorical language we use"
         },
         {
-          "line": "LLM predicts:\n'I should read existing auth\npatterns'",
+          "line": "Reality: LLM generates token predictions through multi-head attention layers",
           "highlightType": "prediction",
-          "annotation": "Token prediction drives next action"
+          "annotation": "Actual mechanism: statistical pattern matching"
         },
         {
-          "line": "Agent executes:\nRead(src/middleware/auth.ts)",
-          "highlightType": "execution",
-          "annotation": "Deterministic tool execution"
+          "line": "We say: 'The agent understands'",
+          "highlightType": "human",
+          "annotation": "Implies comprehension"
         },
         {
-          "line": "File content returned to context:\n[200 lines of existing auth code]",
+          "line": "Reality: Pattern matching against training data produces contextually probable output",
           "highlightType": "feedback",
-          "annotation": "Operation result available to LLM"
+          "annotation": "No understanding, just probability"
         },
         {
-          "line": "LLM analyzes patterns and\npredicts:\n'I'll use JWT approach\nwith middleware pattern'",
+          "line": "We say: 'The agent learns'",
+          "highlightType": "human",
+          "annotation": "Implies real-time learning"
+        },
+        {
+          "line": "Reality: Weights updated during training (not during your conversation)",
+          "highlightType": "feedback",
+          "annotation": "Learning happened before you started"
+        },
+        {
+          "line": "We say: 'The agent reasons'",
+          "highlightType": "human",
+          "annotation": "Implies logical thinking"
+        },
+        {
+          "line": "Reality: Breaking down problems into sequential token predictions that build on each other",
+          "highlightType": "prediction",
+          "annotation": "Sequential generation, not logical reasoning"
+        }
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Marketing language makes LLMs sound magical. But understanding the reality is liberating. The LLM doesn't think—it predicts tokens. It doesn't understand—it matches patterns. It doesn't learn from your conversation—weights are frozen after training. It doesn't reason—it generates sequences of probable tokens. This might sound reductive, but it's the key to using these tools effectively. Once you stop expecting magic, you can build systems that work.",
+        "timing": "4-5 minutes",
+        "discussion": "Can you think of a time you expected the agent to 'understand' something and it failed? What was actually missing?",
+        "context": "This is the most important mental model shift. Senior engineers often over-attribute capability. Recognize the tool's actual mechanism.",
+        "transition": "Now that we understand the LLM, let's talk about the agent software that wraps it."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Agent Software: The Execution Layer",
+      "content": [
+        "LLM generates predictions; agent software executes them deterministically",
+        "File operations: Read, Write, Edit files with precision",
+        "Command execution: Bash, git, npm, pytest for automation",
+        "Code search: Grep, Glob for context gathering",
+        "External resources: API calls, documentation fetching"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "The LLM is the brains, but it's trapped in text. It can only output text predictions. The agent software is the body—it translates those text predictions into deterministic actions. When the LLM generates 'I should read the auth middleware,' the agent software executes Read(src/auth.ts). When the LLM generates code changes, the agent executes Edit. This separation is clean: the LLM predicts, the software executes. You control what tools the agent has access to, which constrains what it can do.",
+        "timing": "3 minutes",
+        "discussion": "What tools have you used recently that match this pattern? (IDE autocomplete, git hooks, CI/CD pipelines all follow this pattern.)",
+        "context": "This is why agent architecture matters. You're not giving the agent superpowers; you're designing which tools it can invoke.",
+        "transition": "Let's see this in action with a real execution loop."
+      }
+    },
+    {
+      "type": "codeExecution",
+      "title": "Agent Execution Loop: Real Example",
+      "steps": [
+        {
+          "line": "Engineer specifies: 'Add JWT authentication middleware to express app'",
+          "highlightType": "human",
+          "annotation": "Clear task with context"
+        },
+        {
+          "line": "LLM predicts: 'I should first understand the existing auth patterns'",
+          "highlightType": "prediction",
+          "annotation": "Token prediction identifies what to do next"
+        },
+        {
+          "line": "Agent executes: Read(src/middleware/auth.ts)",
+          "highlightType": "execution",
+          "annotation": "Deterministic file read"
+        },
+        {
+          "line": "File content returned to context (~500 tokens)",
+          "highlightType": "feedback",
+          "annotation": "Operation result available for next prediction"
+        },
+        {
+          "line": "LLM analyzes patterns: 'I see we use session-based auth. I'll implement JWT as a new approach'",
           "highlightType": "prediction",
           "annotation": "Prediction incorporates new context"
         },
         {
-          "line": "Agent executes:\nEdit(src/app.ts, old, new)",
+          "line": "Agent executes: Read(package.json) to check dependencies",
           "highlightType": "execution",
-          "annotation": "Code modification based on prediction"
+          "annotation": "Gather more context to inform implementation"
         },
         {
-          "line": "Agent executes:\nBash('npm test')",
-          "highlightType": "execution",
-          "annotation": "Verification step"
-        },
-        {
-          "line": "Test results returned to context",
-          "highlightType": "feedback",
-          "annotation": "LLM receives verification signal"
-        },
-        {
-          "line": "LLM predicts:\n'Tests pass, task complete'",
+          "line": "LLM predicts: 'I'll use jsonwebtoken library and add middleware to app.ts'",
           "highlightType": "prediction",
-          "annotation": "Or predicts fixes if tests fail"
+          "annotation": "Decision made with full context"
         },
         {
-          "line": "Loop continues until task\nsucceeds or max iterations",
-          "highlightType": "summary",
-          "annotation": "Engineer maintains control through iteration limits"
+          "line": "Agent executes: Edit(src/app.ts, old_import, new_import)",
+          "highlightType": "execution",
+          "annotation": "Code modification"
+        },
+        {
+          "line": "Agent executes: Bash('npm test') to verify",
+          "highlightType": "execution",
+          "annotation": "Automated verification"
+        },
+        {
+          "line": "Test output returned: '4 new tests passing, middleware integrated'",
+          "highlightType": "feedback",
+          "annotation": "Verification result"
         }
       ],
       "speakerNotes": {
-        "talkingPoints": "This is the core mental model. The LLM doesn't have agency - it just predicts what should happen next. The agent software executes that prediction, returns the result, and the LLM makes the next prediction. Notice how verification (tests) are part of the loop. The LLM doesn't know if the code is correct until we run tests and feed the results back.",
-        "timing": "4-5 minutes",
-        "discussion": "Ask: What happens if we skip the test step? (The agent can't verify correctness, so it might keep iterating on broken code.) Ask: What happens if the LLM predicts something impossible? (The agent executes it and returns an error, the LLM predicts a fix.)",
-        "context": "This loop is why context management matters. The LLM only sees ~200K tokens. If your task is longer than that, you need to provide it incrementally. It's also why constraints matter - if you don't specify what 'done' means, the loop might run until max iterations.",
-        "transition": "Now let's talk about the three critical errors operators make when they forget this model."
+        "talkingPoints": "This is the actual loop: engineer provides task, LLM predicts action, agent executes, result fed back to LLM. No magic—just probability-driven tool invocation. The LLM doesn't 'know' the codebase; it sees current context. It doesn't 'care' about tests; it generates code based on patterns. Notice how each step adds context that informs the next prediction. This is why context management matters—more context means better predictions.",
+        "timing": "5-6 minutes",
+        "discussion": "Where could this loop fail? (Vague task → bad prediction, missing context → hallucinated code, no verification → broken output.)",
+        "context": "This loop repeats thousands of times in a real agent session. Understanding it is fundamental.",
+        "transition": "Now let's talk about the three critical mistakes engineers make when operating agents."
       }
     },
     {
       "type": "concept",
       "title": "Three Critical Operator Errors",
       "content": [
-        "Error 1: Assuming agent 'knows' things (it only sees current context)",
-        "Error 2: Expecting agent to 'care' about outcomes (executes literal instructions)",
-        "Error 3: Treating it like a teammate (it's a precision instrument)",
-        "Fix: Provide explicit context, precise constraints, verification systems"
+        "Error 1: Assuming the agent 'knows' things (it only sees ~200K tokens of context)",
+        "Error 2: Expecting the agent to 'care' about outcomes (it executes literal instructions)",
+        "Error 3: Treating it like a teammate instead of a tool (it speaks English but isn't human)",
+        "Fix: Provide explicit context, precise constraints, and architectural guardrails"
       ],
       "speakerNotes": {
-        "talkingPoints": "Most problems with agents stem from three misconceptions. First: assuming the agent has knowledge beyond what's in the current context. It doesn't. Second: expecting the agent to interpret your loose instructions charitably. It won't - it executes what you literally ask. Third: treating it like a junior developer who should 'get it.' It's not a person, it's a tool that speaks English.",
-        "timing": "3-4 minutes",
-        "discussion": "Ask: Can anyone share a time when an agent did something that seemed obviously wrong? (Usually it's because they made one of these three assumptions.)",
-        "context": "These errors are normal. We're wired to anthropomorphize intelligent-seeming systems. But this anthropomorphization kills your effectiveness as an operator. The moment you accept that it's a tool, not a teammate, you start using it better.",
-        "transition": "Understanding these limitations actually reveals the real power of AI agents."
+        "talkingPoints": "These three errors stem from anthropomorphizing the tool. You wouldn't expect a CNC machine to 'know' what part you want if you gave vague coordinates. You'd provide exact specifications. Same with LLMs. These three errors are costly because they lead to iterations, hallucinations, and broken code.",
+        "timing": "2 minutes",
+        "discussion": "Which of these three have you experienced? What happened?",
+        "context": "These errors are the primary source of frustration when using AI agents. Recognizing them prevents most problems.",
+        "transition": "Let's examine each error in detail."
       }
     },
     {
       "type": "concept",
-      "title": "Power and Limitation of \"Fancy Autocomplete\"",
+      "title": "Error 1: Assuming the Agent Knows",
       "content": [
-        "Power: Incredible at generating patterns it's seen in training",
-        "Limitation: No model of correctness, only probability",
-        "Implication: You must build verification systems (tests, types, lints)",
-        "You're operating a code generation tool, not managing a developer"
+        "Agent only sees current context window (~200K tokens / ~50K lines of code)",
+        "If your codebase is larger, most of it is invisible to the agent",
+        "Agent can't 'look something up' unless you explicitly provide it",
+        "Fix: Grounding principle—provide relevant context before asking",
+        "Example: 'In our UserService at src/services/user.ts, we validate emails with regex X. Add similar validation to newUser() method.'"
       ],
       "speakerNotes": {
-        "talkingPoints": "This reframes the entire relationship. Yes, LLMs are 'just fancy autocomplete,' but that's incredibly powerful. They're good at generating code patterns because they've learned from billions of examples. The limitation is that they optimize for probability, not correctness. They'll generate code that looks right even when it's subtly wrong. That's why your job shifts: you're not managing a developer, you're maintaining architectural guardrails.",
-        "timing": "2-3 minutes",
-        "discussion": "Ask: What's an example of code that's syntactically correct but functionally wrong? (Off-by-one errors, race conditions, etc.) That's where agents excel at generating wrong code.",
-        "context": "This is liberating. It means you don't need to worry about the agent's 'motivation' or 'understanding.' You need to worry about your test coverage, your type system, your linting rules. Those are your control mechanisms.",
-        "transition": "Let's wrap up with the key takeaways from this lesson."
+        "talkingPoints": "The agent operates with tunnel vision. It sees only the context you provide. If you ask it to 'follow our existing patterns' without showing those patterns, it will hallucinate something that sounds reasonable but doesn't match your codebase. This is the most common source of 'the agent didn't understand our architecture' complaints. The fix is simple: show it what you want it to follow before asking.",
+        "timing": "3 minutes",
+        "discussion": "How does this change how you phrase requests? What additional context do you need to provide?",
+        "context": "Production teams that struggle with agents usually skip this step. Grounding is not optional.",
+        "transition": "The second error is about operator responsibility."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Error 2: Expecting the Agent to Care",
+      "content": [
+        "Agent executes your literal instruction to completion—nothing more, nothing less",
+        "It doesn't have 'goals' or 'intent'—it generates tokens based on probability",
+        "If you say 'add validation' without constraints, it adds validation somewhere",
+        "Fix: Include explicit constraints in every request",
+        "Example: 'Add validation to the POST /users endpoint (no GET changes). Validate email format and age > 18. Return 400 with specific error messages.'"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "This error manifests as 'the agent over-engineered the solution' or 'it changed things I didn't ask for.' The agent isn't trying to be helpful; it's completing your prompt. If your prompt is vague about scope, the agent's probability distributions will generate changes you didn't expect. Precision in requests isn't pedantry—it's necessary for correct behavior.",
+        "timing": "3 minutes",
+        "discussion": "How would you rewrite a vague request to be constrained and testable?",
+        "context": "This is why the Prompting 101 lesson focuses on specificity. It's not a style preference; it's operational necessity.",
+        "transition": "The third error is about mental framing."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "Error 3: Treating Like a Teammate",
+      "content": [
+        "Agent doesn't understand context clues or implied requirements",
+        "It doesn't infer your actual goal from hints or story",
+        "It generates the most probable continuation of your text, not what you meant",
+        "Fix: Use tool mindset—explicit instructions, measurable outcomes, verification",
+        "Example: Instead of 'make the auth better,' write 'implement JWT authentication. Add tests for token expiration. Verify no plaintext passwords are logged.'"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "You wouldn't tell a CNC machine 'make this look nice' and expect beautiful results. You'd provide exact dimensions and tolerances. Same with agents. They need explicit, measurable outcomes. This doesn't make them inflexible—it makes them precise. A teammate can infer 'we probably want error handling.' An agent won't unless you ask.",
+        "timing": "3 minutes",
+        "discussion": "What's the difference between a 'teammate prompt' and an 'operator prompt' for a real task you're working on?",
+        "context": "Senior engineers often resist being this explicit because they've trained juniors to infer intent. You're not training this tool; you're configuring it.",
+        "transition": "Now let's look at the power and limitation of this system."
+      }
+    },
+    {
+      "type": "concept",
+      "title": "The Power and Limitation",
+      "content": [
+        "Power: Token prediction engines are incredibly good at generating code patterns",
+        "Limitation: No model of correctness—only probability distributions",
+        "Implication: You must build verification systems that catch probabilistic errors",
+        "Your role: Architect guardrails (tests, types, lints) that catch mistakes",
+        "Analogy: You're not managing a junior—you're operating a code generation tool"
+      ],
+      "speakerNotes": {
+        "talkingPoints": "Here's the liberating insight: You don't need to trust the agent's judgment. You need to verify its output. The power is that it generates code fast. The limitation is that generation isn't verification. Your job as an operator is to design systems that catch mistakes. Tests, type checking, linting—these aren't optional. They're your verification layer. This shifts your mental model from 'trust the agent' to 'trust the process.'",
+        "timing": "3-4 minutes",
+        "discussion": "How does this change the importance of testing and type safety? What guardrails matter most in your domain?",
+        "context": "Teams that succeed with agents are those with strong testing practices. Teams that struggle usually have weak verification.",
+        "transition": "Let's wrap up with the key takeaways."
       }
     },
     {
       "type": "takeaway",
       "title": "Key Takeaways",
       "content": [
-        "Agents = LLM (token prediction engine) + Software (execution layer)",
-        "LLM has no comprehension, consciousness, or learning during conversation",
-        "Your role shifts from coder to operator: specify, verify, maintain guardrails",
-        "Three errors kill effectiveness: assuming knowledge, expecting intent, anthropomorphizing"
+        "AI agents = LLM (brains) + agent software (body). The LLM predicts; the software executes",
+        "Understand token prediction, not magic. No consciousness, intent, or learning during use",
+        "Avoid three critical operator errors: assuming knowledge, expecting care, teammate mentality",
+        "Build verification systems (tests, types, lints). You're operating a tool, not managing a person",
+        "Bandwidth gain comes from orchestration, not magic. Your role evolves; you don't disappear"
       ],
       "speakerNotes": {
-        "talkingPoints": "You're learning to operate precision tools. The mental model matters more than the specific tools. If you understand that agents are token prediction engines wrapped in execution software, you'll stop making the three operator errors. You'll start building better specifications, you'll anticipate hallucinations, and you'll architect systems that verify correctness instead of trusting the agent.",
-        "timing": "2 minutes",
-        "discussion": "Ask: Which of the three errors have you made? How would you fix it?",
-        "context": "This is the foundation. Everything in the next lessons builds on this understanding. You can't optimize prompts effectively until you understand what the LLM actually does. You can't architect agent workflows until you understand the execution loop.",
-        "transition": "Next lesson we'll dive into agent architecture and how to structure workflows for complex tasks."
+        "talkingPoints": "You're not learning to use magic. You're learning to operate sophisticated tools that speak English. Everything we covered—token prediction, the three errors, verification—follows from understanding what these tools actually are. The next lesson dives deeper into agent architecture and how execution workflows differ from traditional development.",
+        "timing": "2-3 minutes",
+        "discussion": "Based on this mental model, what questions do you have before we move to agent architecture?",
+        "context": "This foundation is critical. If anyone in the class is skeptical, this is the moment to address it.",
+        "transition": "Next lesson: Lesson 2 covers agent architecture and execution workflows. We'll see how this mental model applies to real agent behavior."
       }
     }
   ]
