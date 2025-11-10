@@ -337,13 +337,15 @@
 
 /* Code Execution Flow Styles */
 .executionFlow {
-  composes: gpuOptimized;
+  will-change: transform;
+  transform: translateZ(0);
   text-align: left;
   max-width: 90%;
-  margin: 0 auto;
+  margin: 1em auto;
   padding: 0.5em;
-  height: 100%;
+  max-height: 60vh;
   overflow-y: auto;
+  scroll-margin-top: 1em;
 }
 
 .executionStep {
