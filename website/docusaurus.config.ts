@@ -106,13 +106,13 @@ const config: Config = {
   themeConfig: {
     // Social media preview card (Open Graph, Twitter Card)
     image: 'img/social-card.png',
-    announcementBar: {
-      id: 'under_construction',
-      content: '🚧 Course Under Development - Content is still changing',
-      backgroundColor: 'var(--announcement-bg)',
-      textColor: 'var(--announcement-text)',
-      isCloseable: false,
-    },
+    // announcementBar: {
+    //   id: 'under_construction',
+    //   content: '🚧 Course Under Development - Content is still changing',
+    //   backgroundColor: 'var(--announcement-bg)',
+    //   textColor: 'var(--announcement-text)',
+    //   isCloseable: false,
+    // },
     colorMode: {
       respectPrefersColorScheme: true,
     },
