@@ -123,11 +123,14 @@
   overflow-y: auto;
   overflow-x: auto;
   height: 100%;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
-.codeBlock code {
+:global(.reveal) .codeBlock code {
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .codeBlockSmall {
@@ -142,11 +145,14 @@
   overflow-y: auto;
   overflow-x: auto;
   max-height: 400px;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
-.codeBlockSmall code {
+:global(.reveal) .codeBlockSmall code {
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .caption {
