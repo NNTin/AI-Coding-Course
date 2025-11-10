@@ -54,7 +54,7 @@
 .objectives {
   margin-top: 1.5em;
   text-align: left;
-  max-width: 90%;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -67,14 +67,15 @@
 .objectives ul {
   list-style: none;
   padding: 0;
+  max-width: 100%;
 }
 
 .objectives li {
   margin: 0.4em 0;
-  padding-left: 1.5em;
+  padding-left: 1.2em;
   position: relative;
   line-height: 1.5;
-  font-size: clamp(0.9rem, 1.6vw, 1em);
+  font-size: clamp(0.85rem, 1.5vw, 0.95em);
 }
 
 .objectives li::before {
