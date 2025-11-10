@@ -295,6 +295,7 @@ CRITICAL: Captions must be EXACTLY ONE SHORT SENTENCE capturing the core essence
 Example:
 {
   "type": "visual",
+  "title": "Context and Agent Behavior",
   "component": "AbstractShapesVisualization",
   "caption": "Clean context prevents agent hallucinations"
 }
@@ -566,6 +567,23 @@ INCORRECT: Putting the better option on the left will show it with RED ✗ styli
   ]
 }
 
+KEY TAKEAWAYS GENERATION (TWO-STEP PROCESS):
+
+When creating the "takeaway" slide at the end of the presentation:
+
+STEP 1: First, review the lesson and mentally list ALL significant takeaways
+- Identify every important concept, pattern, or insight from the lesson
+- Don't filter yet—just enumerate everything worth remembering
+
+STEP 2: Then, condense to the 3-5 MOST critical takeaways
+- Prioritize by impact and generality (what will matter most in production?)
+- Combine related points into higher-level insights when possible
+- Remove redundant or overly specific points
+- Ensure each takeaway is actionable and memorable
+
+IMPORTANT: The final takeaway slide MUST have exactly 3-5 items, even if the source material lists more.
+Quality over quantity—choose the most impactful insights.
+
 CRITICAL REQUIREMENTS:
 
 1. The output MUST be valid JSON - no preamble, no explanation, just the JSON object
@@ -573,7 +591,7 @@ CRITICAL REQUIREMENTS:
 3. Include 8-15 slides (no more, no less)
 4. Every slide MUST have speakerNotes with all fields
 5. Code examples must be actual code from the lesson, not pseudocode
-6. Content arrays must have 3-5 items (except title slide)
+6. Content arrays MUST have 3-5 items (except title slide) - THIS IS STRICTLY ENFORCED
 7. PROMPT EXAMPLES: Use "code" or "codeComparison" slide types, NEVER bullet points
 
 BEFORE YOU GENERATE - CHECKLIST:
@@ -843,6 +861,85 @@ function validateComparisonSemantics(presentation) {
 }
 
 /**
+ * Validate that content arrays have 3-5 items maximum
+ * @param {object} presentation - Generated presentation object
+ * @returns {object} Validation result with issues
+ */
+function validateContentArrayLengths(presentation) {
+  const issues = [];
+  const MIN_ITEMS = 3;
+  const MAX_ITEMS = 5;
+
+  // Slide types that must have content arrays with 3-5 items
+  const slidesWithContent = presentation.slides.filter(slide => {
+    // Skip title slide (different rules)
+    if (slide.type === 'title') return false;
+
+    // Check slides with content arrays
+    return slide.content && Array.isArray(slide.content);
+  });
+
+  for (const slide of slidesWithContent) {
+    const contentLength = slide.content.length;
+
+    if (contentLength < MIN_ITEMS || contentLength > MAX_ITEMS) {
+      issues.push({
+        slide: slide.title || slide.type,
+        type: slide.type,
+        count: contentLength,
+        reason: contentLength < MIN_ITEMS
+          ? `Only ${contentLength} item(s), need at least ${MIN_ITEMS}`
+          : `Has ${contentLength} item(s), maximum is ${MAX_ITEMS}`
+      });
+    }
+  }
+
+  // Check comparison slides (left/right content)
+  const comparisonSlides = presentation.slides.filter(s =>
+    s.type === 'comparison' || s.type === 'marketingReality'
+  );
+
+  for (const slide of comparisonSlides) {
+    const leftContent = slide.left?.content || slide.metaphor?.content;
+    const rightContent = slide.right?.content || slide.reality?.content;
+
+    if (leftContent && Array.isArray(leftContent)) {
+      const leftLength = leftContent.length;
+      if (leftLength < MIN_ITEMS || leftLength > MAX_ITEMS) {
+        issues.push({
+          slide: `${slide.title} (LEFT)`,
+          type: slide.type,
+          count: leftLength,
+          reason: leftLength < MIN_ITEMS
+            ? `Only ${leftLength} item(s), need at least ${MIN_ITEMS}`
+            : `Has ${leftLength} item(s), maximum is ${MAX_ITEMS}`
+        });
+      }
+    }
+
+    if (rightContent && Array.isArray(rightContent)) {
+      const rightLength = rightContent.length;
+      if (rightLength < MIN_ITEMS || rightLength > MAX_ITEMS) {
+        issues.push({
+          slide: `${slide.title} (RIGHT)`,
+          type: slide.type,
+          count: rightLength,
+          reason: rightLength < MIN_ITEMS
+            ? `Only ${rightLength} item(s), need at least ${MIN_ITEMS}`
+            : `Has ${rightLength} item(s), maximum is ${MAX_ITEMS}`
+        });
+      }
+    }
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    totalSlidesChecked: slidesWithContent.length + comparisonSlides.length
+  };
+}
+
+/**
  * Validate that prompt examples are preserved as code blocks
  * @param {string} content - Parsed markdown content
  * @param {object} presentation - Generated presentation object
@@ -985,6 +1082,24 @@ async function generatePresentation(filePath, manifest, config) {
       console.log(`  ℹ️  Remember: LEFT = ineffective/worse (RED ✗), RIGHT = effective/better (GREEN ✓)`);
     } else if (semanticValidation.totalComparisons > 0) {
       console.log(`  ✅ All ${semanticValidation.totalComparisons} comparison slide(s) follow correct convention`);
+    }
+
+    // Validate content array lengths (3-5 items)
+    // CRITICAL: This validation is intentionally strict and throws an error because
+    // slides with too many bullets become unreadable and overflow the layout.
+    // The two-step condensation process in the prompt should prevent this.
+    const contentValidation = validateContentArrayLengths(presentation);
+    if (!contentValidation.valid) {
+      console.log(`  ❌ BUILD FAILURE: ${contentValidation.issues.length} content array violation(s):`);
+      contentValidation.issues.forEach(issue => {
+        console.log(`      - Slide "${issue.slide}" (${issue.type}): ${issue.reason}`);
+      });
+      console.log(`  ℹ️  All content arrays MUST have 3-5 items (except title slide)`);
+      console.log(`  ℹ️  For takeaway slides: use the two-step condensation process`);
+      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
+      throw new Error('Content array validation failed - slides have too many or too few items');
+    } else if (contentValidation.totalSlidesChecked > 0) {
+      console.log(`  ✅ All ${contentValidation.totalSlidesChecked} content array(s) have 3-5 items`);
     }
 
     // Validate prompt examples are preserved as code
