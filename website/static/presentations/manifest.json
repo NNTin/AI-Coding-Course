@@ -64,10 +64,10 @@
   },
   "understanding-the-tools/lesson-1-intro.md": {
     "presentationUrl": "/presentations/understanding-the-tools/lesson-1-intro.json",
-    "slideCount": 12,
+    "slideCount": 11,
     "estimatedDuration": "45-60 minutes",
-    "title": "Understanding AI Agents: First Principles",
-    "generatedAt": "2025-11-10T13:39:06.292Z"
+    "title": "Understanding the Tools: AI Agents as Precision Instruments",
+    "generatedAt": "2025-11-10T16:03:10.414Z"
   },
   "understanding-the-tools/lesson-2-understanding-agents.md": {
     "presentationUrl": "/presentations/understanding-the-tools/lesson-2-understanding-agents.json",
