@@ -291,7 +291,7 @@ export default function RevealSlideshow({
             data-notes={formatSpeakerNotes(slide.speakerNotes)}
           >
             <h2>{slide.title}</h2>
-            <div className={styles.comparison}>
+            <div className={`${styles.comparison} ${styles.comparisonCode}`}>
               {slide.leftCode && (
                 <div className={styles.comparisonLeft}>
                   <h3 className={styles.ineffective}>{slide.leftCode.label}</h3>
