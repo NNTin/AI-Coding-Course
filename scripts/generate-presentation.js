@@ -1440,15 +1440,15 @@ async function generatePresentation(filePath, manifest, config) {
     const presentationUrl = `/presentations/${join(dirname(relativePath), outputFileName)}`;
     manifest[relativePath] = {
       presentationUrl,
-      slideCount: processedPresentation.slides.length,
-      estimatedDuration: processedPresentation.metadata.estimatedDuration,
-      title: processedPresentation.metadata.title,
+      slideCount: presentation.slides.length,
+      estimatedDuration: presentation.metadata.estimatedDuration,
+      title: presentation.metadata.title,
       generatedAt: new Date().toISOString()
     };
 
     console.log(`  ✅ Generated: ${presentationUrl}`);
-    console.log(`  📊 Slides: ${processedPresentation.slides.length}`);
-    console.log(`  ⏱️  Duration: ${processedPresentation.metadata.estimatedDuration}`);
+    console.log(`  📊 Slides: ${presentation.slides.length}`);
+    console.log(`  ⏱️  Duration: ${presentation.metadata.estimatedDuration}`);
 
     return outputPath;
 
