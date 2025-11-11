@@ -124,12 +124,12 @@
       "leftCode": {
         "label": "Exploration Planning",
         "language": "text",
-        "code": "Our Express API has inconsistent error handling—some\nendpoints return raw errors, others JSON, and stack\ntraces leak to production. Use ChunkHound to search for\n\"error handling patterns\" and \"error response format\"\nin our codebase. Use ArguSeek to research Express error\nhandling best practices and RFC 7807. Analyze what you\nfind, propose 2-3 standardization approaches with\ntrade-offs, and recommend one."
+        "code": "Our Express API has inconsistent error handling—some endpoints return raw errors, others JSON, and stack traces leak to production. Use ChunkHound to search for \"error handling patterns\" and \"error response format\" in our codebase. Use ArguSeek to research Express error handling best practices and RFC 7807. Analyze what you find, propose 2-3 standardization approaches with trade-offs, and recommend one."
       },
       "rightCode": {
         "label": "Exact Planning",
         "language": "text",
-        "code": "Add rate limiting middleware to /api/* using Redis.\nFollow the pattern in src/middleware/auth.ts.\nAuthenticated users: 1000 req/hour, anonymous: 100\nreq/hour, admins unlimited. Return 429 with Retry-After\nheader. Fail open if Redis is down - log warning but\nallow request through."
+        "code": "Add rate limiting middleware to /api/* using Redis.\nFollow the pattern in src/middleware/auth.ts.\nAuthenticated users: 1000 req/hour, anonymous: 100req/hour, admins unlimited. Return 429 with Retry-After header. Fail open if Redis is down - log warning but allow request through."
       },
       "speakerNotes": {
         "talkingPoints": "Left side: discovery mode. You're not dictating the solution; you're framing the problem space and asking the agent to research and explore. Notice it tells the agent what research tools to use and asks for trade-offs. Right side: exact mode. You've already decided the approach—Redis, specific limits per user type, explicit patterns to follow, clear failure mode. No exploration needed.",
