@@ -146,7 +146,7 @@
     },
     {
       "type": "visual",
-      "title": "Context Window Illusion: Advertised vs Effective",
+      "title": "Context Window: The U Attention Curve",
       "component": "UShapeAttentionCurve",
       "caption": "Strong attention at beginning and end, middle gets ignored",
       "speakerNotes": {
