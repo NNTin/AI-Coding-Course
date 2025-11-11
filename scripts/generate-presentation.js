@@ -1369,6 +1369,10 @@ async function generatePresentation(filePath, manifest, config) {
       console.log(`  ✅ All ${semanticValidation.totalComparisons} comparison slide(s) follow correct convention`);
     }
 
+    // Collect validation errors instead of throwing immediately
+    // This allows us to write the presentation file even when validation fails
+    const validationErrors = [];
+
     // Validate content array lengths (3-5 items)
     // CRITICAL: This validation is intentionally strict and throws an error because
     // slides with too many bullets become unreadable and overflow the layout.
@@ -1381,8 +1385,7 @@ async function generatePresentation(filePath, manifest, config) {
       });
       console.log(`  ℹ️  All content arrays MUST have 3-5 items (except title slide)`);
       console.log(`  ℹ️  For takeaway slides: use the two-step condensation process`);
-      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
-      throw new Error('Content array validation failed - slides have too many or too few items');
+      validationErrors.push('Content array validation failed - slides have too many or too few items');
     } else if (contentValidation.totalSlidesChecked > 0) {
       console.log(`  ✅ All ${contentValidation.totalSlidesChecked} content array(s) have 3-5 items`);
     }
@@ -1398,8 +1401,7 @@ async function generatePresentation(filePath, manifest, config) {
         console.log(`      - ${issue}`);
       });
       console.log(`  ℹ️  Prompt examples MUST use "code" or "codeComparison" slide types, NOT bullet points`);
-      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
-      throw new Error('Prompt validation failed - prompt examples were converted to bullet points instead of code blocks');
+      validationErrors.push('Prompt validation failed - prompt examples were converted to bullet points instead of code blocks');
     } else if (promptValidation.hasPromptExamples) {
       console.log(`  ✅ All prompt examples preserved as code blocks (${promptValidation.codeSlideCount} code slide(s))`);
     }
@@ -1415,8 +1417,7 @@ async function generatePresentation(filePath, manifest, config) {
       });
       console.log(`  ℹ️  All code in slides MUST exist verbatim in the source markdown`);
       console.log(`  ℹ️  DO NOT generate hypothetical implementations to demonstrate prompts`);
-      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
-      throw new Error('Code source validation failed - slides contain fabricated code not in source');
+      validationErrors.push('Code source validation failed - slides contain fabricated code not in source');
     } else if (codeSourceValidation.codeSlidesChecked > 0) {
       console.log(`  ✅ All ${codeSourceValidation.codeSlidesChecked} code slide(s) verified against source`);
     }
@@ -1434,8 +1435,7 @@ async function generatePresentation(filePath, manifest, config) {
       });
       console.log(`  ℹ️  All takeaway items MUST be 5 words or fewer for memorability`);
       console.log(`  ℹ️  Examples: "Tests ground agent code quality" (5) ✓ | "Tests are critical for agent workflows" (6) ✗`);
-      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
-      throw new Error('Takeaway validation failed - items exceed 5-word limit');
+      validationErrors.push('Takeaway validation failed - items exceed 5-word limit');
     } else if (takeawayValidation.totalTakeawaysChecked > 0) {
       console.log(`  ✅ All ${takeawayValidation.totalTakeawaysChecked} takeaway item(s) are 5 words or fewer`);
     }
@@ -1453,13 +1453,12 @@ async function generatePresentation(filePath, manifest, config) {
       });
       console.log(`  ℹ️  All learning objectives MUST be 5 words or fewer for clarity`);
       console.log(`  ℹ️  Examples: "Master active context engineering" (4) ✓ | "Learn how to master active context" (6) ✗`);
-      console.log(`  ℹ️  The presentation was not saved. Fix the generation and try again.`);
-      throw new Error('Learning objectives validation failed - items exceed 5-word limit');
+      validationErrors.push('Learning objectives validation failed - items exceed 5-word limit');
     } else if (objectivesValidation.totalObjectivesChecked > 0) {
       console.log(`  ✅ All ${objectivesValidation.totalObjectivesChecked} learning objective(s) are 5 words or fewer`);
     }
 
-    // Write presentation to output file
+    // Write presentation to output file (even if validation failed)
     writeFileSync(outputPath, JSON.stringify(presentation, null, 2), 'utf-8');
 
     // Copy to static directory for deployment
@@ -1477,9 +1476,15 @@ async function generatePresentation(filePath, manifest, config) {
       generatedAt: new Date().toISOString()
     };
 
-    console.log(`  ✅ Generated: ${presentationUrl}`);
+    console.log(`  ${validationErrors.length > 0 ? '⚠️' : '✅'} Generated: ${presentationUrl}`);
     console.log(`  📊 Slides: ${presentation.slides.length}`);
     console.log(`  ⏱️  Duration: ${presentation.metadata.estimatedDuration}`);
+
+    // Throw validation errors after writing files
+    if (validationErrors.length > 0) {
+      console.log(`  ℹ️  The presentation was saved despite validation failures for inspection.`);
+      throw new Error(`Validation failed with ${validationErrors.length} error(s):\n  - ${validationErrors.join('\n  - ')}`);
+    }
 
     return outputPath;
 

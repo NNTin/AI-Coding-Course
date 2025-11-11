@@ -38,15 +38,15 @@
     "presentationUrl": "/presentations/practical-techniques/lesson-6-project-onboarding.json",
     "slideCount": 10,
     "estimatedDuration": "35-45 minutes",
-    "title": "Project Onboarding Context",
-    "generatedAt": "2025-11-11T07:34:11.922Z"
+    "title": "Project Onboarding with Context Files",
+    "generatedAt": "2025-11-10T20:39:53.491Z"
   },
   "practical-techniques/lesson-7-planning-execution.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-7-planning-execution.json",
-    "slideCount": 14,
-    "estimatedDuration": "40-50 minutes",
-    "title": "Planning & Execution",
-    "generatedAt": "2025-11-10T21:21:54.387Z"
+    "slideCount": 12,
+    "estimatedDuration": "35-45 minutes",
+    "title": "Planning and Execution",
+    "generatedAt": "2025-11-11T09:02:15.308Z"
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
     "presentationUrl": "/presentations/practical-techniques/lesson-8-tests-as-guardrails.json",
