@@ -590,6 +590,21 @@ INCORRECT: Putting the better option on the left will show it with RED ✗ styli
       },
       "speakerNotes": { ... }
     },
+
+CODE COMPARISON SLIDE (codeComparison):
+
+Like regular comparison slides, codeComparison also supports the "neutral" flag:
+
+1. EVALUATIVE (default, neutral=false or omitted):
+   - LEFT side → RED background, RED heading (ineffective/worse code)
+   - RIGHT side → GREEN background, GREEN heading (effective/better code)
+   - Use when one code example is clearly inferior
+
+2. NEUTRAL (neutral=true):
+   - BOTH sides → PURPLE background, PURPLE heading (both valid approaches)
+   - Use when comparing valid code alternatives with different trade-offs
+   - Examples: "Imperative vs Functional", "Optimized for Speed vs Readability"
+
     {
       "type": "codeComparison",
       "title": "Prompt Example: Ineffective vs Effective",
@@ -602,6 +617,22 @@ INCORRECT: Putting the better option on the left will show it with RED ✗ styli
         "label": "Effective",          // MANDATORY: RIGHT = better prompt (GREEN ✓)
         "language": "text",
         "code": "Write a TypeScript function that validates email addresses.\nHandle edge cases:\n- Invalid @ symbols\n- Missing domain\n\nReturn { valid: boolean }"
+      },
+      "speakerNotes": { ... }
+    },
+    {
+      "type": "codeComparison",
+      "title": "Code Style Trade-offs: Imperative vs Functional",
+      "neutral": true,                 // OPTIONAL: Use neutral=true for valid alternatives (PURPLE neutral styling)
+      "leftCode": {
+        "label": "Imperative Style",   // Both styles valid - neutral styling
+        "language": "javascript",
+        "code": "const result = [];\nfor (let i = 0; i < items.length; i++) {\n  if (items[i] > 10) {\n    result.push(items[i] * 2);\n  }\n}\nreturn result;"
+      },
+      "rightCode": {
+        "label": "Functional Style",   // Both styles valid - neutral styling
+        "language": "javascript",
+        "code": "return items\n  .filter(x => x > 10)\n  .map(x => x * 2);"
       },
       "speakerNotes": { ... }
     },

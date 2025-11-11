@@ -312,8 +312,18 @@ export default function RevealSlideshow({
             <h2>{slide.title}</h2>
             <div className={`${styles.comparison} ${styles.comparisonCode}`}>
               {slide.leftCode && (
-                <div className={styles.comparisonLeft}>
-                  <h3 className={styles.ineffective}>{slide.leftCode.label}</h3>
+                <div
+                  className={
+                    slide.neutral ? styles.neutralLeft : styles.comparisonLeft
+                  }
+                >
+                  <h3
+                    className={
+                      slide.neutral ? styles.neutralHeading : styles.ineffective
+                    }
+                  >
+                    {slide.leftCode.label}
+                  </h3>
                   <pre className={styles.codeBlockSmall}>
                     <code
                       className={`language-${slide.leftCode.language || 'text'}`}
@@ -324,8 +334,18 @@ export default function RevealSlideshow({
                 </div>
               )}
               {slide.rightCode && (
-                <div className={styles.comparisonRight}>
-                  <h3 className={styles.effective}>{slide.rightCode.label}</h3>
+                <div
+                  className={
+                    slide.neutral ? styles.neutralRight : styles.comparisonRight
+                  }
+                >
+                  <h3
+                    className={
+                      slide.neutral ? styles.neutralHeading : styles.effective
+                    }
+                  >
+                    {slide.rightCode.label}
+                  </h3>
                   <pre className={styles.codeBlockSmall}>
                     <code
                       className={`language-${slide.rightCode.language || 'text'}`}
