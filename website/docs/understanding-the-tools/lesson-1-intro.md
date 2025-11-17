@@ -37,6 +37,18 @@ A Large Language Model is a statistical pattern matcher built on [transformer ar
 - **Samples from probability distributions** learned from training data
 - **Has zero consciousness, intent, or feelings**
 
+:::tip[What's a Token?]
+A **token** is the atomic unit of an LLM - the "pixel" of text processing. Averages ~3-4 characters, but varies widely: common short words are single tokens (`"the"`, `"is"`), while longer or rare words split into subwords using algorithms like [Byte-Pair Encoding](https://en.wikipedia.org/wiki/Byte-pair_encoding).
+
+**Why it matters:**
+
+- **Cost:** LLM providers bill per token (input + output)
+- **Context limits:** The ~200K token window is your working memory budget
+- **Performance:** Token-efficient prompts = faster responses and lower costs
+
+Rule of thumb: 1 token ≈ 0.75 words in English. This paragraph is ~150 tokens. A typical source file runs 3K-15K tokens.
+:::
+
 Think of it like an incredibly sophisticated autocomplete - one that's read most of the internet and can generate convincing continuations of any text pattern it's seen before.
 
 **Technical reality vs. marketing speak:**
