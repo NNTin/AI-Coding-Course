@@ -36,6 +36,12 @@ Here's the fundamental issue: **The agent doesn't know your codebase exists.** I
 - Solutions that integrate cleanly with your system
 <!-- presentation-only-end -->
 
+:::info Full Disclosure
+Both [ChunkHound](https://chunkhound.github.io/) and [ArguSeek](https://github.com/ArguSeek/arguseek) are open source projects built by the course author. They're featured throughout because they implement the exact patterns this course teaches—sub-agent isolation, semantic search, context management.
+
+The principles apply universally. Alternatives exist and are documented. Use what fits your workflow; the methodology stays consistent regardless of tooling.
+:::
+
 ## The Discovery Problem: Agentic Search
 
 When you assign "Fix the authentication bug," the agent starts with zero codebase knowledge. It doesn't know where auth code lives, what libraries you use, or how it's structured.
