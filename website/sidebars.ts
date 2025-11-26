@@ -44,6 +44,7 @@ const sidebars: SidebarsConfig = {
         'practical-techniques/lesson-8-tests-as-guardrails',
         'practical-techniques/lesson-9-reviewing-code',
         'practical-techniques/lesson-10-debugging',
+        'practical-techniques/lesson-11-agent-friendly-code',
       ],
     },
   ],
