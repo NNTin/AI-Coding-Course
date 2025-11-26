@@ -97,5 +97,14 @@
     "chunks": 4,
     "generatedAt": "2025-11-08T14:38:04.386Z",
     "scriptSource": "methodology/lesson-5-grounding.md"
+  },
+  "practical-techniques/lesson-11-agent-friendly-code.md": {
+    "audioUrl": "/audio/practical-techniques/lesson-11-agent-friendly-code.wav",
+    "size": 21401416,
+    "format": "audio/wav",
+    "tokenCount": 1452,
+    "chunks": 2,
+    "generatedAt": "2025-11-26T07:40:08.172Z",
+    "scriptSource": "practical-techniques/lesson-11-agent-friendly-code.md"
   }
 }
