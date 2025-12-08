@@ -28,11 +28,11 @@
   },
   "practical-techniques/lesson-7-planning-execution.md": {
     "audioUrl": "/audio/practical-techniques/lesson-7-planning-execution.wav",
-    "size": 62089714,
+    "size": 23502422,
     "format": "audio/wav",
-    "tokenCount": 3789,
-    "chunks": 5,
-    "generatedAt": "2025-11-10T08:43:24.919Z",
+    "tokenCount": 2268,
+    "chunks": 3,
+    "generatedAt": "2025-12-07T19:26:32.112Z",
     "scriptSource": "practical-techniques/lesson-7-planning-execution.md"
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {

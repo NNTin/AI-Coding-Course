@@ -111,6 +111,18 @@ const config: Config = {
       },
     ],
     [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'developer-tools',
+        path: 'developer-tools',
+        routeBasePath: 'developer-tools',
+        sidebarPath: './sidebarsDeveloperTools.ts',
+        editUrl: 'https://github.com/ofriw/AI-Coding-Course/tree/main/website/',
+        showLastUpdateTime: false,
+        showLastUpdateAuthor: false,
+      },
+    ],
+    [
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         hashed: true,
@@ -156,6 +168,13 @@ const config: Config = {
           position: 'left',
           label: 'Prompts',
           docsPluginId: 'prompts',
+        },
+        {
+          type: 'doc',
+          docId: 'terminals',
+          position: 'left',
+          label: 'Developer Tools',
+          docsPluginId: 'developer-tools',
         },
         {
           type: 'docsVersionDropdown',

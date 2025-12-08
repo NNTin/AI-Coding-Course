@@ -178,11 +178,11 @@ Press ESC twice to create a checkpoint in Claude Code. This saves both conversat
 
 Once the plan is reviewed and grounding is solid, you can let the agent execute autonomously. For complex features, parallel execution across multiple agent instances dramatically accelerates development.
 
-### Git Worktree: Enable True Parallelization
+### Git Worktrees: Enabling True Parallelization
 
 Git worktrees allow multiple working directories from a single repository, each with a different branch checked out. This enables running multiple agent instances on different tasks simultaneously without conflicts.
 
-**How it works:**
+**Basic setup:**
 
 ```bash
 # Main repo in ~/project (on main branch)
@@ -197,35 +197,9 @@ git worktree add ../project-bugfix bugfix/login-error
 # ~/project-bugfix (bugfix/login-error branch)
 ```
 
-### Terminal Customization for Multi-Agent Workflows
+**Agent-assisted setup:**
 
-**Invest in customizing and tailoring your terminal environment just like you would with your IDE.** Multi-agent workflows mean managing multiple concurrent sessions, context-switching between agent instances, and monitoring long-running processes. Your terminal becomes mission-critical infrastructure, not just a command prompt. Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, notification systems, and extensive customization. Taking time to configure your terminal pays dividends across every development session.
-
-Modern terminal options worth exploring: [**Ghostty**](https://ghostty.org) (fast, GPU-accelerated, native), [**Kitty**](https://sw.kovidgoyal.net/kitty/) (GPU-based, extensive graphics support), [**WezTerm**](https://wezterm.org) (Lua-configured, cross-platform), and [**Alacritty**](https://alacritty.org) (minimalist, OpenGL-accelerated). Each offers different customization approaches—compare based on your workflow needs.
-
-**Use ArguSeek to learn terminal customization.** Research best practices for your chosen terminal, especially around session management, keybindings for rapid context switching, notification configuration, and visual indicators for different agent contexts. Example prompt:
-
-```markdown
-Use ArguSeek to research Kitty terminal customization for managing multiple
-development sessions with different contexts and long-running processes.
-```
-
-### Modern CLI Tools for Efficient Workflows
-
-Complement agent workflows with modern CLI tools that improve navigation, editing, and git operations:
-
-- **[`micro`](https://micro-editor.github.io/)** - Terminal text editor with intuitive keybindings (Ctrl+S to save, Ctrl+Q to quit), ideal for quick edits without switching to your IDE.
-- **[`eza`](https://eza.rocks/)** - Modern `ls` replacement with better formatting, file type colors, and git integration—easier to scan directories across multiple worktrees.
-- **[`fzf`](https://junegunn.github.io/fzf/)** - Fuzzy finder for files, command history, and git branches; quickly locate files in large codebases or recall commands from previous sessions.
-- **[`lazygit`](https://github.com/jesseduffield/lazygit)** - Terminal UI for git with visual branch management, interactive staging, and commit navigation—especially useful when managing multiple worktrees.
-
-These tools reduce friction when working across multiple worktrees and agent sessions. Install and configure them once, benefit throughout your workflow.
-
-### Ask Your Agent to Help with CLI Execution
-
-Agents can assist with CLI operations, especially when you're unfamiliar with a tool or workflow. Ground with ArguSeek first for external tools, then ask the agent to generate commands or explain usage.
-
-**Example:**
+Agents can help generate worktree commands, especially when setting up multiple parallel environments. Ground with ArguSeek first for best practices, then ask the agent to generate commands.
 
 ```
 Use ArguSeek to research git worktree best practices for parallel development.
@@ -240,20 +214,11 @@ Output:
 - Recommended directory structure following best practices
 ```
 
-The agent will research worktree workflows, propose a clean directory layout, and generate the exact `git worktree add` commands. This is faster than reading documentation manually and ensures commands match your specific context.
+The agent will research worktree workflows, propose a clean directory layout, and generate the exact commands. This is faster than reading documentation manually and ensures commands match your specific context.
 
-### Mix CLI and UI Tools: Use What Works
-
-Don't be dogmatic about terminal-only or GUI-only workflows. IDEs remain the best tools for code navigation, symbol search, and viewing large files. CLI excels at quick edits, git operations, and managing parallel sessions.
-
-**Use the best tool for each task:**
-
-- **Code navigation and exploration:** IDE (VS Code, IntelliJ, etc.) - superior symbol search, go-to-definition, call hierarchies
-- **Quick edits in agent context:** CLI ([`micro`](https://micro-editor.github.io/), [`vim`](https://www.vim.org/)) - faster than switching to IDE for one-line changes
-- **Git operations across worktrees:** CLI ([`lazygit`](https://github.com/jesseduffield/lazygit), raw git commands) - better visibility into multiple branches
-- **Reading large files or complex logic:** IDE - better syntax highlighting, folding, and navigation
-
-Pragmatism beats purism. These are all just tools—choose based on efficiency, not ideology.
+:::tip Workflow Tooling for Parallel Development
+Managing multiple worktrees and agent sessions requires efficient tooling. See **[Developer Tools](/developer-tools/terminals)** for terminal recommendations (Ghostty, Kitty, WezTerm) and **[CLI Tools](/developer-tools/cli-tools)** for modern git/file navigation tools (lazygit, eza, fzf). Mix CLI and IDE tools pragmatically—use what's most efficient for each task.
+:::
 
 ## Key Takeaways
 
@@ -269,9 +234,7 @@ Pragmatism beats purism. These are all just tools—choose based on efficiency, 
 
 - **Checkpoint before execution, commit after validation** - Use built-in checkpointing features when available (Claude Code, Copilot, Cursor). Without them, commit far more frequently than traditional development—after each successful increment, before risky operations. Agents make frequent mistakes; checkpointing makes iteration fast and reversible.
 
-- **Git worktrees enable true parallel agent workflows** - Multiple working directories, separate branches, isolated agent contexts. Run 3 agent instances on different features simultaneously with zero interference.
-
-- **Mix CLI and UI tools pragmatically** - IDEs for navigation, viewing and quick edits, CLI for refactors and parallel session management. Use the best tool for each task, not ideology.
+- **Git worktrees enable true parallelization** - Multiple working directories from a single repository let you run concurrent agent instances on different branches without conflicts. Use agents to generate worktree setup commands grounded in best practices.
 
 ---
 

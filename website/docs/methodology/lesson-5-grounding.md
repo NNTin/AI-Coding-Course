@@ -42,6 +42,10 @@ Both [ChunkHound](https://chunkhound.github.io/) and [ArguSeek](https://github.c
 The principles apply universally. Alternatives exist and are documented. Use what fits your workflow; the methodology stays consistent regardless of tooling.
 :::
 
+## Grounding: Anchoring Agents in Reality
+
+**Grounding is how you inject reality into the context window.** You retrieve relevant external information—your codebase patterns, current docs, best practices—and feed it to the agent before generation. This lesson covers the engineering techniques that anchor agents in your actual system instead of hypothetical ones.
+
 ## The Discovery Problem: Agentic Search
 
 When you assign "Fix the authentication bug," the agent starts with zero codebase knowledge. It doesn't know where auth code lives, what libraries you use, or how it's structured.
@@ -202,8 +206,7 @@ Your codebase size determines which grounding approach works. Here's how to choo
 Use [`cloc`](https://github.com/AlDanial/cloc) to measure your codebase: `cloc .` returns language-by-language breakdown. Focus on the "Code" column for accurate LOC counts.
 :::
 
-<details>
-<summary>Deep Dive: ChunkHound Architecture</summary>
+### Deep Dive: ChunkHound Architecture
 
 [ChunkHound](https://chunkhound.github.io)—structured pipeline for code research at scale.
 
@@ -229,8 +232,6 @@ Use [`cloc`](https://github.com/AlDanial/cloc) to measure your codebase: `cloc .
 **Use for:** Feature implementation prep, complex debugging, refactoring analysis, code archaeology, when Explore returns incomplete results.
 
 **Alternatives:** [Claude Context](https://github.com/zilliztech/claude-context)—semantic search via RAG. [Serena](https://github.com/oraios/serena)—LSP bridge instead of full semantic search (faster, lighter, but limited to language server symbol scope). Neither implements structured multi-hop traversal.
-
-</details>
 
 ## Web Grounding: Same Pattern, Different Sources
 
@@ -287,8 +288,7 @@ Total research: 53 sources processed
 Total cost to your orchestrator: 9,300 tokens instead of 42,000+ from raw fetching
 ```
 
-<details>
-<summary>Deep Dive: ArguSeek Architecture</summary>
+### Deep Dive: ArguSeek Architecture
 
 [ArguSeek](https://github.com/ArguSeek/arguseek)—structured pipeline for web research with semantic state management.
 
@@ -308,8 +308,6 @@ Total cost to your orchestrator: 9,300 tokens instead of 42,000+ from raw fetchi
 **Use for:** Best practices research, competing approaches, security advisories, new tech learning, bias verification.
 
 **Alternatives:** [Perplexity](https://perplexity.ai) (Bing), [OpenAI Deep Research](https://platform.openai.com/docs/guides/deep-research), [Consensus](https://consensus.app), [Elicit](https://elicit.com). Most lack Google API + semantic subtraction combo.
-
-</details>
 
 ## Production Pattern: Multi-Source Grounding
 

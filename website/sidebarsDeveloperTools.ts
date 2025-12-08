@@ -1,0 +1,23 @@
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
+
+/**
+ * Sidebar configuration for Developer Tools
+ *
+ * Reference documentation for tools, environments, and workflows
+ * that support AI-assisted development.
+ */
+const sidebars: SidebarsConfig = {
+  developerToolsSidebar: [
+    'terminals',
+    'mcp-servers',
+    'cli-tools',
+    // Future expansion:
+    // {
+    //   type: 'category',
+    //   label: 'AI Coding Assistants',
+    //   items: ['agent-comparison', 'claude-code', 'cursor', 'copilot'],
+    // },
+  ],
+};
+
+export default sidebars;
