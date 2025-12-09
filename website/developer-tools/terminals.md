@@ -7,6 +7,8 @@ sidebar_position: 2
 
 **Invest in customizing and tailoring your terminal environment just like you would with your IDE.** Multi-agent workflows mean managing multiple concurrent sessions, context-switching between agent instances, and monitoring long-running processes. Your terminal becomes mission-critical infrastructure, not just a command prompt.
 
+The terminal is the foundation—pairing it with [modern CLI tools](/developer-tools/cli-tools) creates a complete development environment with IDE-level capabilities. While this page covers terminal selection and configuration, the CLI tools page details the ecosystem that transforms your terminal into a full-featured workspace.
+
 ## Why Modern Terminals Matter
 
 Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, and extensive customization—that legacy terminals can't match. For multi-agent workflows, these capabilities translate directly to productivity: smooth handling of rapid output streams, programmable session management, and visual customization for tracking different contexts.
@@ -74,4 +76,7 @@ development sessions with different contexts and long-running processes.
 
 ---
 
-**Related:** [Lesson 7: Planning & Execution](/docs/practical-techniques/lesson-7-planning-execution)
+**Related:**
+
+- [Developer Tools: Modern CLI Tools](/developer-tools/cli-tools) - The ecosystem that completes your terminal-based development environment
+- [Lesson 7: Planning & Execution](/docs/practical-techniques/lesson-7-planning-execution) - Multi-worktree workflows leveraging modern terminals
