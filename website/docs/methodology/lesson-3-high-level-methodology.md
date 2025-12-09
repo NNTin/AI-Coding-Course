@@ -35,15 +35,15 @@ Before diving into the workflow, let's be explicit about the role shift. When wo
 
 **Operator workflow:**
 
-- Understand the system (mental model)
-- Research context and patterns
-- Plan the change architecturally
+- Map the system (modules, boundaries, data flow)
+- Research existing patterns and constraints
+- Plan the change at the architecture level
 - Direct the agent with precise context
-- Validate outcomes against requirements
+- Validate behavior against your mental model
 
-Notice what's missing from the second list: writing implementation code, reading every line, debugging syntax errors. The agent handles those. Your cognitive load shifts entirely to architectural thinking—understanding how pieces fit together, what patterns to follow, what constraints matter, and what risks exist.
+Notice what's missing from the second list: writing implementation code, reading every line, debugging syntax errors. The agent handles those. Your cognitive load shifts entirely to system-level thinking—module boundaries and responsibilities, inputs and outputs, state management, and the contracts between components.
 
-This doesn't mean you never read code. It means you read _selectively_. When an agent generates 50 files, you don't review them line by line. You review the architecture: Does it follow our patterns? Does it handle the security boundaries? Does it integrate correctly? You spot-check where your mental model says "this is risky" or "this is too complex."
+This doesn't mean you never read code. It means you read _selectively_. When an agent generates 50 files, you don't review them line by line. You review at the system level: Are module responsibilities correct? Do inputs and outputs match expectations? Is state managed where it should be? Do the integration points work? You spot-check where your mental model says "this is risky" or "this is too complex."
 
 Here's the counterintuitive reality: **properly prompted AI-generated code is often easier to read than hand-written code**. LLMs follow patterns with mechanical precision across thousands of lines. When you provide quality patterns and clear constraints, they replicate them perfectly. You're not sacrificing quality by delegating to agents—you're achieving structural consistency at a scale individual craftsmanship can't match. Your job shifts from ensuring every implementation detail is correct to ensuring the patterns themselves are correct.
 
