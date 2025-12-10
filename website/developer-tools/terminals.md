@@ -13,6 +13,10 @@ The terminal is the foundation—pairing it with [modern CLI tools](/developer-t
 
 Modern terminals offer IDE-level features—GPU acceleration, programmable layouts, rich scripting, and extensive customization—that legacy terminals can't match. For multi-agent workflows, these capabilities translate directly to productivity: smooth handling of rapid output streams, programmable session management, and visual customization for tracking different contexts.
 
+:::tip Research Customization
+Use ArguSeek to research best practices for your chosen terminal—session management, keybindings, and visual indicators for different agent contexts.
+:::
+
 ## Ghostty
 
 [**Ghostty**](https://ghostty.org) is a native, GPU-accelerated terminal written in Zig by Mitchell Hashimoto (HashiCorp co-founder), publicly released in December 2024. It follows a "zero configuration philosophy" while providing extensive customization through simple key-value config files.
@@ -53,6 +57,16 @@ Modern terminals offer IDE-level features—GPU acceleration, programmable layou
 
 **Trade-offs:** No built-in tabs, splits, or multiplexing—requires external tools. No inline image support or graphics protocol. Configuration limited to text files (no scripting). Minimalism means more manual setup for advanced workflows. Widely adopted as the performance benchmark among modern terminals, with mature ecosystem (2017) and active maintenance.
 
+## iTerm2
+
+[**iTerm2**](https://iterm2.com) is a feature-rich terminal emulator for macOS, widely regarded as the most popular third-party terminal on the platform. While not GPU-accelerated, it offers extensive functionality that has made it the default choice for macOS developers for over a decade.
+
+**Key differentiators:** Multi-pane management with simultaneous input across all panes. Recent AI Chat feature for explaining command output and adding annotations. Shell integration with semantic history—click filenames to open in editors. Extensive theming with color schemes, fonts, transparency, and background images. Robust SSH integration with configurable profiles and direct file downloads.
+
+**Best suited for:** macOS developers wanting a mature, battle-tested terminal. Teams that prioritize stability and extensive documentation over cutting-edge features. Engineers already invested in the macOS ecosystem who don't need cross-platform compatibility.
+
+**Trade-offs:** macOS-only—no Linux or Windows support. Not GPU-accelerated, though performance is adequate for most workflows. Larger resource footprint than minimalist terminals like Alacritty. Mature project (2006) with extensive community adoption and active development.
+
 ## Warp
 
 [**Warp**](https://www.warp.dev) is a Rust-based, GPU-accelerated terminal with native AI integration. Built for modern development workflows with built-in collaboration features and AI-powered assistance. Cross-platform (macOS, Windows, Linux).
@@ -63,16 +77,25 @@ Modern terminals offer IDE-level features—GPU acceleration, programmable layou
 
 **Trade-offs:** Freemium/commercial model—free tier limited to 75 AI credits/month; paid plans start at $20/month (Build: 1,500 credits) scaling to $50+/user/month for Business/Enterprise features. Closed source—proprietary codebase; company stated "likely never be open source" (2025). Cannot audit security or self-patch. Privacy concerns—optional telemetry and cloud storage for AI features; terminal content, AI inputs/outputs may be stored on GCP servers when using cloud features (SOC 2 compliant with encryption at rest/transit). Login optional as of November 2024, but required for cloud features (AI, Drive, history sync). Internet dependency for AI features—limited offline functionality compared to traditional terminals. Active development with growing community adoption, particularly among developers integrating AI into workflows.
 
-## Researching Customization Options
+## Windows Terminal
 
-**Use ArguSeek to learn terminal customization.** Research best practices for your chosen terminal, especially around session management, keybindings for rapid context switching, notification configuration, and visual indicators for different agent contexts.
+[**Windows Terminal**](https://aka.ms/terminal) is Microsoft's modern, GPU-accelerated terminal application for Windows. Pre-installed on Windows 11 and Windows Server 2025, it serves as the default modern terminal experience for the Windows ecosystem.
 
-**Example prompt:**
+**Key differentiators:** Multi-shell support hosting Command Prompt, PowerShell, Azure Cloud Shell, and WSL distributions in a unified interface. Tab tearout for dragging tabs between windows. GPU-accelerated text rendering. Extensive customization including themes, background images, and keybindings. Native Windows integration with Settings app and WinGet package manager.
 
-```markdown
-Use ArguSeek to research Kitty terminal customization for managing multiple
-development sessions with different contexts and long-running processes.
-```
+**Best suited for:** Windows developers and system administrators. Teams working with WSL for Linux development on Windows. Engineers in Microsoft-centric environments needing PowerShell, Azure CLI, and CMD access.
+
+**Trade-offs:** Windows-only—no macOS or Linux support. Fewer advanced features than cross-platform alternatives (no built-in multiplexing beyond tabs). Update cycle tied to Windows releases, though available via Microsoft Store. Mature project with active development and extensive adoption as the standard Windows terminal.
+
+## Wave Terminal
+
+[**Wave Terminal**](https://www.waveterm.dev) is an open-source, AI-native terminal emulator with GPU acceleration. Cross-platform (macOS, Windows, Linux), it offers AI-powered features without the privacy trade-offs of closed-source alternatives.
+
+**Key differentiators:** Integrated AI chat supporting multiple models (OpenAI, Anthropic, local models via Ollama). Command Blocks for isolating, monitoring, and auto-closing individual commands. Built-in editor for local and remote files. File preview for Markdown, images, and video. Inline web browser. No login required—operates entirely with user-provided API keys.
+
+**Best suited for:** Developers wanting AI-native workflows without Warp's closed-source and privacy concerns. Teams requiring open-source tooling for compliance or auditability. Engineers who prefer bringing their own API keys rather than subscription models.
+
+**Trade-offs:** Newer project (2024) with smaller community than established terminals. AI features require external API keys and associated costs. More complex interface than traditional terminals—steeper learning curve. Active development with growing adoption among privacy-conscious developers.
 
 ---
 
