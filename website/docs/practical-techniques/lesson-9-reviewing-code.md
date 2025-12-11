@@ -110,7 +110,7 @@ This prompt demonstrates multiple techniques from [Lesson 4 (Prompting 101)](../
 
 The instruction "Using the sub task tool to conserve context" spawns a separate agent for git history exploration, preventing the main orchestrator's context from filling with commit diffs. The sub-agent returns only synthesized findings. Without this, exploring 20-30 changed files consumes 40K+ tokens, pushing critical constraints into the U-shaped attention curve's ignored middle.
 
-This sub-agent capability is unique to Claude Code CLI. Other tools (Codex, GitHub Copilot) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
+This sub-agent capability is unique to [Claude Code CLI](/developer-tools/cli-coding-agents#claude-code). Other tools (Codex, GitHub Copilot) require splitting this into multiple sequential prompts: explore first, then draft based on findings.
 
 **Multi-source grounding ([Lesson 5](../methodology/lesson-5-grounding.md#production-pattern-multi-source-grounding)):** ArguSeek researches PR best practices while ChunkHound grounds descriptions in your actual codebase architecture and coding style.
 
@@ -119,7 +119,7 @@ This sub-agent capability is unique to Claude Code CLI. Other tools (Codex, GitH
 **Evidence requirements ([Lesson 7](./lesson-7-planning-execution.md#require-evidence-to-force-grounding)):** The prompt forces grounding through "explore the changes" and "learn the architecture"—the agent cannot draft accurate descriptions without reading actual commits and code.
 
 :::tip Reference
-See the complete prompt template with workflow integration tips: [Dual-Optimized PR Description](/prompts/pull-requests/dual-optimized-pr)
+See the complete prompt template with workflow integration tips: [PR Description Generator](/prompts/pull-requests/dual-optimized-pr)
 :::
 
 ### Reviewing PRs with AI Assistants

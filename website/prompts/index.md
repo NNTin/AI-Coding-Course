@@ -16,7 +16,7 @@ Production-ready prompt templates for common SDLC workflows.
 | **Implementation** | [Evidence-Based Debug](/prompts/debugging/evidence-based-debug)        | When debugging issues or unexpected behavior     |
 | **Testing**        | [Test Failure Diagnosis](/prompts/testing/test-failure-diagnosis)      | When tests fail during development or CI/CD      |
 | **Review**         | [Comprehensive Code Review](/prompts/code-review/comprehensive-review) | Before committing changes or submitting PRs      |
-| **Pull Requests**  | [Dual-Optimized PR](/prompts/pull-requests/dual-optimized-pr)          | When creating pull requests for review           |
+| **Pull Requests**  | [PR Description Generator](/prompts/pull-requests/dual-optimized-pr)   | When creating pull requests for review           |
 | **Pull Requests**  | [AI-Assisted PR Review](/prompts/pull-requests/ai-assisted-review)     | When reviewing pull requests submitted by others |
 
 ## Usage
