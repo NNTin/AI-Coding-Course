@@ -8,9 +8,10 @@ import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
  */
 const sidebars: SidebarsConfig = {
   developerToolsSidebar: [
+    'cli-coding-agents',
     'terminals',
-    'mcp-servers',
     'cli-tools',
+    'mcp-servers',
     // Future expansion:
     // {
     //   type: 'category',

@@ -181,7 +181,7 @@ const config: Config = {
         },
         {
           type: 'doc',
-          docId: 'terminals',
+          docId: 'cli-coding-agents',
           position: 'left',
           label: 'Developer Tools',
           docsPluginId: 'developer-tools',
