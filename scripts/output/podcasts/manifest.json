@@ -1,74 +1,74 @@
 {
   "methodology/lesson-4-prompting-101.md": {
     "scriptPath": "methodology/lesson-4-prompting-101.md",
-    "size": 13153,
-    "tokenCount": 3216,
-    "generatedAt": "2025-11-08T08:32:09.277Z"
+    "size": 10964,
+    "tokenCount": 2667,
+    "generatedAt": "2025-12-12T08:16:21.162Z"
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "scriptPath": "methodology/lesson-3-high-level-methodology.md",
-    "size": 10394,
-    "tokenCount": 2521,
-    "generatedAt": "2025-12-09T08:56:15.283Z"
+    "size": 12117,
+    "tokenCount": 2949,
+    "generatedAt": "2025-12-12T08:03:08.688Z"
   },
   "practical-techniques/lesson-10-debugging.md": {
     "scriptPath": "practical-techniques/lesson-10-debugging.md",
-    "size": 9853,
-    "tokenCount": 2391,
-    "generatedAt": "2025-11-09T18:04:31.219Z"
+    "size": 10894,
+    "tokenCount": 2646,
+    "generatedAt": "2025-12-12T08:46:28.642Z"
   },
   "methodology/lesson-5-grounding.md": {
     "scriptPath": "methodology/lesson-5-grounding.md",
-    "size": 13419,
-    "tokenCount": 3280,
-    "generatedAt": "2025-11-08T14:21:41.584Z"
+    "size": 15657,
+    "tokenCount": 3837,
+    "generatedAt": "2025-12-12T08:28:36.376Z"
   },
   "practical-techniques/lesson-6-project-onboarding.md": {
     "scriptPath": "practical-techniques/lesson-6-project-onboarding.md",
-    "size": 12911,
-    "tokenCount": 3150,
-    "generatedAt": "2025-11-08T09:11:35.965Z"
+    "size": 8264,
+    "tokenCount": 1992,
+    "generatedAt": "2025-12-12T09:02:24.950Z"
   },
   "practical-techniques/lesson-7-planning-execution.md": {
     "scriptPath": "practical-techniques/lesson-7-planning-execution.md",
-    "size": 11291,
-    "tokenCount": 2745,
-    "generatedAt": "2025-12-07T19:20:22.116Z"
+    "size": 9737,
+    "tokenCount": 2359,
+    "generatedAt": "2025-12-12T09:09:11.841Z"
   },
   "practical-techniques/lesson-8-tests-as-guardrails.md": {
     "scriptPath": "practical-techniques/lesson-8-tests-as-guardrails.md",
-    "size": 13441,
-    "tokenCount": 3281,
-    "generatedAt": "2025-11-08T09:34:38.785Z"
+    "size": 11613,
+    "tokenCount": 2823,
+    "generatedAt": "2025-12-12T09:29:08.344Z"
   },
   "practical-techniques/lesson-9-reviewing-code.md": {
     "scriptPath": "practical-techniques/lesson-9-reviewing-code.md",
-    "size": 14682,
-    "tokenCount": 3594,
-    "generatedAt": "2025-11-10T08:50:52.364Z"
+    "size": 9083,
+    "tokenCount": 2191,
+    "generatedAt": "2025-12-12T09:53:56.197Z"
   },
   "understanding-the-tools/lesson-2-understanding-agents.md": {
     "scriptPath": "understanding-the-tools/lesson-2-understanding-agents.md",
-    "size": 7828,
-    "tokenCount": 1889,
-    "generatedAt": "2025-11-08T09:57:51.535Z"
+    "size": 9621,
+    "tokenCount": 2337,
+    "generatedAt": "2025-12-12T10:17:17.452Z"
   },
   "understanding-the-tools/lesson-1-intro.md": {
     "scriptPath": "understanding-the-tools/lesson-1-intro.md",
-    "size": 10095,
-    "tokenCount": 2459,
-    "generatedAt": "2025-11-08T09:49:49.970Z"
+    "size": 6820,
+    "tokenCount": 1641,
+    "generatedAt": "2025-12-12T10:10:28.138Z"
   },
   "intro.md": {
     "scriptPath": "intro.md",
-    "size": 7306,
-    "tokenCount": 1763,
-    "generatedAt": "2025-11-08T08:16:32.275Z"
+    "size": 6579,
+    "tokenCount": 1581,
+    "generatedAt": "2025-12-12T07:57:45.739Z"
   },
   "practical-techniques/lesson-11-agent-friendly-code.md": {
     "scriptPath": "practical-techniques/lesson-11-agent-friendly-code.md",
-    "size": 8251,
-    "tokenCount": 1983,
-    "generatedAt": "2025-12-09T09:53:20.989Z"
+    "size": 8141,
+    "tokenCount": 1958,
+    "generatedAt": "2025-12-12T08:55:23.116Z"
   }
 }

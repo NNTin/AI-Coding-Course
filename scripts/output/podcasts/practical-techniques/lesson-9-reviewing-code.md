@@ -7,191 +7,105 @@ speakers:
   - name: Sam
     role: Senior Engineer
     voice: Charon
-generatedAt: 2025-11-10T08:50:52.363Z
-model: claude-haiku-4.5
-tokenCount: 3594
+generatedAt: 2025-12-12T09:53:56.197Z
+model: claude-opus-4.5
+tokenCount: 2191
 ---
 
-Alex: Welcome back. We've talked about planning, execution, and tests. You've shipped features. Tests pass. Everything looks good. But there's a question you have to answer before you commit that code: is it actually correct?
+Alex: We've covered implementation, testing, the whole execution phase. But there's a critical step that separates production-quality code from "it compiles and tests pass." That's the validate phase—code review. And with AI-generated code, this becomes even more important.
 
-Sam: That's the validation phase from the four-phase workflow we covered in Lesson 3, right? The quality gate before shipping.
+Sam: Because agents make probabilistic errors, right? The code might pass tests but still have subtle issues—logic bugs, architectural mismatches, edge cases that aren't quite handled correctly.
 
-Alex: Exactly. And here's the thing—code review catches something your tests won't. Tests verify that code does what you asked it to do. Code review catches what you *should* have asked but didn't. Subtle logic bugs. Architectural mismatches. Edge cases handled incorrectly. Patterns that don't quite fit your codebase.
+Alex: Exactly. And here's the key insight that changes how you approach AI code review: you need to review in a fresh context, completely separate from where the code was written.
 
-Sam: But agents wrote the code. They can usually explain what they did and why.
+Sam: Why does that matter? Can't I just ask the same agent to review what it wrote?
 
-Alex: That's the trap. An agent reviewing its own work in the same conversation will defend its decisions. It has context, momentum, attachment to what it built. What you need is fresh context. A completely separate agent analyzing the code without knowing the conversation where it was written.
+Alex: You can, but you'll get biased results. Remember from our earlier discussions—agents are stateless but within a conversation, they build up context. An agent reviewing its own work in the same conversation will defend its decisions. It has this implicit attachment to the choices it made. Start a fresh context, and you get objective analysis without that baggage.
 
-Sam: So you're using the stateless nature of agents—which we learned about in Lessons 1 and 2—as a feature for review?
+Sam: That's a subtle but important distinction. The agent isn't remembering between sessions, but within a session it's essentially invested in its prior outputs.
 
-Alex: Precisely. The same statelessness that makes agents unpredictable when you need continuity becomes an advantage here. A fresh agent looks at the code cold, analyzes it objectively, without prior commitment to explain why choices were made.
+Alex: Right. Now, before we dive into review techniques, there's a critical distinction I want to make about codebases. Are you working in an agent-only codebase or a mixed codebase?
 
-Sam: That's a useful inversion. What does the actual review process look like?
+Sam: What's the difference in practice?
 
-Alex: There's a template. It integrates everything we covered in Lesson 4 on prompting. You start by establishing a persona for the reviewer—this is important because it shapes how carefully they analyze.
-
-Sam: What kind of persona?
-
-Alex: Something like "You are a senior architect doing code review before this code ships to production." That sets the bar. Then you give explicit constraints: be specific, cite line numbers, focus on substance not style.
-
-Sam: So you're not just saying "review this," you're structuring the request with the same techniques from Lesson 4.
-
-Alex: Right. You provide the code, you specify what you're reviewing for—correctness, architecture fit, edge cases—and you ask for structured output. No free-form rambling. Something like: Summary, Strengths, Issues by severity, and a Decision.
-
-Sam: Issues by severity. Does the agent actually differentiate between major problems and nitpicking?
-
-Alex: When you tell it explicitly to categorize by Critical, Major, and Minor, and you provide file:line references for each—yes. The specificity forces grounding. The agent can't say "this feels wrong." It has to point to actual code.
-
-Sam: Okay, so you get your review. What happens next?
-
-Alex: This is where operator judgment matters. You look at three things. First: tests passing plus review green. That's ship. Second: tests passing but review is nitpicking—trivial style preferences. That's also ship. Third: tests passing but the review suggests a "fix" and you try it, and suddenly tests fail. That's a hallucination. Reject it.
-
-Sam: So you're using tests as an objective arbiter.
-
-Alex: Tests are the contract. If a review suggestion breaks tests, the review was wrong. You stop iterating there.
-
-Sam: How many times do you typically iterate?
-
-Alex: Until you reach a green light or diminishing returns. Green light is no substantive issues, tests pass, ship. Diminishing returns manifest as nitpicking, hallucinations, or review-induced test failures. After that, further AI review costs more than it provides. You've done the work. Ship the code.
-
-Sam: What's diminishing returns in practice? Like, how many iterations?
-
-Alex: If you're still finding substantive issues in iteration 3 or 4, maybe you iterate. If you're in iteration 4 and the agent is inventing non-existent issues or suggesting renames, stop. You've hit diminishing returns.
-
-Sam: You mentioned there's a distinction between agent-only and mixed codebases.
-
-Alex: Critical distinction, actually. Same engineering standards apply everywhere—DRY, YAGNI, architecture, maintainability. What differs is coding style optimization and the review process.
-
-Sam: What's the difference?
-
-Alex: Agent-only codebases are maintained exclusively by AI with minimal human intervention at the code level. You optimize coding style slightly toward AI clarity: more explicit type annotations, more verbose documentation, detailed architectural context files. Your review question becomes "Will an agent understand this in six months?"
+Alex: Agent-only codebases are maintained exclusively by AI—minimal human intervention at the code level. You can optimize the coding style slightly toward AI clarity: more explicit type annotations, more verbose documentation, detailed architectural context files. Your review question becomes "will an agent understand this six months from now?"
 
 Sam: And mixed codebases?
 
-Alex: Most production codebases are mixed—humans and AI collaborating, both touching code directly. You optimize for human brevity while maintaining AI navigability. But here's what's critical: you add a manual review step. You fully read and audit AI-generated code before committing.
+Alex: That's most production codebases—humans and AI both work directly with the code. You optimize for human brevity while maintaining AI navigability. But here's what's non-negotiable in mixed codebases: you need a manual review step where you fully read and audit AI-generated code before committing.
 
-Sam: Why is that non-negotiable?
+Sam: Because without explicit project rules guiding style, agents generate code following patterns from their training data that might not match your team's standards.
 
-Alex: Without explicit project rules guiding style, agents generate code following patterns from their training data that may not match your team's readability standards. You can tune your project rules—Lesson 6 covers this—to guide agents toward the writing style humans expect. But you have to verify the output actually meets those expectations. That's the manual step.
+Alex: Exactly. You tune your project rules to guide agents toward the writing style humans expect, then verify the output meets those expectations. The engineering standards—DRY, YAGNI, architecture, maintainability—those apply equally to both. It's the style optimization and review process that differs.
 
-Sam: So project rules are the guard rails, but humans are still the final arbiter for style in mixed codebases.
+Sam: So let's talk about the actual review process. How do you structure an effective review prompt?
 
-Alex: Exactly. Rules guide the agent toward your expected style. Human review verifies it worked.
+Alex: The review template integrates everything from prompting fundamentals. You give it persona—a senior engineer with domain expertise. You use chain of thought to structure the analysis. You ground it with specific constraints: provide file paths and line numbers, categorize findings by severity. The prompt forces evidence-based review rather than statistical guesses.
 
-Sam: You mentioned pull requests serve two audiences—humans and AI reviewers. They process information differently.
+Sam: And this runs after implementation and testing are complete?
 
-Alex: Fundamentally differently. Humans scan quickly, infer meaning from context, value concise summaries. One to three paragraphs max. They want the "why" and business value at a glance.
+Alex: Right. After implementing, writing tests, making everything pass—this review catches what the iterative development process left behind. It's the final quality gate before committing.
 
-Sam: AI review assistants are different.
+Sam: Is it typically one pass, or do you iterate?
 
-Alex: Completely. They parse chunk by chunk, struggle with vague pronouns and semantic drift. They need explicit structure. They need detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
+Alex: Code review is rarely one-pass. First review finds issues, you fix them, re-run tests to catch regressions, then review again in a fresh context. Not the same conversation where the agent will defend its prior decisions.
 
-Sam: So a traditional PR description optimizes for one audience or the other.
+Sam: But the review itself is also an LLM making predictions. It can be wrong too.
 
-Alex: Right. Too verbose for humans, too vague for AI agents. The solution is dual-optimized descriptions generated in a coordinated workflow using sub-agents.
+Alex: This is where operator judgment becomes essential—the art of the process. Here's my decision matrix: tests passing plus review green equals ship. Tests passing plus review nitpicking equals ship. Tests failing after review "fixes"—the review was probably wrong, reject the suggestion.
 
-Sam: How does that work?
+Sam: That last one is interesting. The tests become the objective arbiter.
 
-Alex: You have a sub-agent that explores git history, finds changed files, learns the architecture, synthesizes findings. It returns only what matters: commit messages, file paths, patterns. That sub-agent prevents your main context from filling with 40K tokens of commit diffs.
+Alex: Exactly. Stop iterating when you reach either a green light—no substantive issues, tests pass—or diminishing returns. And diminishing returns shows up in specific ways: trivial nitpicking like "rename this variable," hallucinations where the agent invents non-existent issues, review-induced test failures where the "fix" broke working code, or excessive cost—four-plus iterations for minor remaining issues.
 
-Sam: So the sub-agent isolates the information gathering.
+Sam: At that point you trust the tests and ship.
 
-Alex: And that isolation is crucial. If you try to explore 20, 30 changed files in the main conversation, you push critical constraints into the U-shaped attention curve's ignored middle. You lose precision. With sub-agents, the orchestrator stays focused on synthesis.
+Alex: Right. Further AI review costs more than it provides and risks degrading quality.
 
-Sam: Is that unique to Claude Code?
+Sam: Let's shift to pull requests. You mentioned they serve two audiences now—human reviewers and AI review assistants.
 
-Alex: Largely, yes. Other tools require splitting this into sequential prompts: explore first, then draft. Claude Code CLI lets you spawn sub-agents that work in parallel, synthesize findings, and return only what the main agent needs.
+Alex: And these audiences process information fundamentally differently. Human reviewers scan quickly, infer meaning from context, value concise summaries—one to three paragraphs max. They want to understand the "why" and business value at a glance.
 
-Sam: What goes in the AI-optimized description?
+Sam: And AI assistants?
 
-Alex: Comprehensive technical context. Explicit terminology, file paths, architectural patterns. Everything the AI needs to analyze accurately without hallucinating. Include breaking changes enumerated clearly. Specific patterns that changed. References to relevant previous code.
+Alex: They parse content chunk by chunk, struggle with vague pronouns and semantic drift, need explicit structure. They require detailed technical context: specific file changes, architectural patterns, breaking changes enumerated clearly.
 
-Sam: And the human description.
+Sam: So traditional PR descriptions that optimize for one audience fail the other.
 
-Alex: Concise. One sentence verdict, maybe one paragraph of business context. Key files affected so a human can scan and decide if they need to dive deeper. Breaking changes called out explicitly.
+Alex: Exactly. Too verbose for humans, too vague for AI agents. The solution is generating both in a coordinated workflow using sub-agents.
 
-Sam: You mentioned Chain of Draft as an alternative to Chain of Thought.
+Sam: How does that work in practice?
 
-Alex: CoD is an optimization that maintains reasoning benefits without the token cost. Instead of generating verbose step-by-step explanations, you instruct the LLM to think through each step but keep the draft minimal—five words maximum per step. Then return the final assessment after a separator.
+Alex: The prompt spawns a sub-agent for git history exploration. This is critical for context conservation. Without it, exploring twenty to thirty changed files consumes over forty thousand tokens, pushing critical constraints into that U-shaped attention curve's ignored middle.
 
-Sam: Five words is extremely compressed.
+Sam: The sub-agent returns only synthesized findings, keeping the main orchestrator's context clean.
 
-Alex: Exactly. But it provides the same reasoning benefits as CoT. Breaking down complex analysis into logical steps. The difference is reduced token consumption and faster response.
+Alex: Right. And this sub-agent capability is specific to Claude Code CLI. Other tools—Codex, GitHub Copilot—require splitting this into multiple sequential prompts: explore first, then draft based on findings.
 
-Sam: When would you use CoD instead of CoT?
+Sam: What else does the dual PR prompt use?
 
-Alex: For reviews specifically. CoD forces concise intermediate reasoning without losing the analytical structure. You get the benefits of step-by-step thinking without verbose output that wastes tokens and slows response time.
+Alex: Multi-source grounding—research tools for PR best practices while codebase search grounds descriptions in your actual architecture and coding style. Structured prompting with persona, communication constraints, format boundaries. And evidence requirements that force the agent to explore actual changes before drafting—it cannot generate accurate descriptions without reading commits and code.
 
-Sam: So when you're reviewing code, you might ask the agent to think through each file, keep its draft to five words, then deliver the full assessment.
+Sam: So you get two outputs: a human-optimized description for the PR itself, and an AI-optimized context file.
 
-Alex: Exactly. The agent thinks through the logic—structure, naming, correctness, fit—keeps notes compressed, then synthesizes a structured review output.
+Alex: Exactly. When you're reviewing a PR with dual descriptions, you read the human version first to understand the "why" and business value, scan for breaking changes and key files. Then you feed the AI-optimized description to your review assistant—it provides the comprehensive technical context needed for accurate analysis.
 
-Sam: What does "iterate until green light or diminishing returns" actually mean operationally?
+Sam: There's also a specific technique you mentioned for the review prompt itself—Chain of Draft?
 
-Alex: You fix issues the review finds. Then re-review in a fresh context. Not the same conversation where the agent will defend its prior decisions. Fresh agent, cold eyes. Continue that cycle: review in fresh context, fix issues, validate with tests, repeat.
+Alex: Chain of Draft is an optimization of Chain of Thought prompting. Instead of generating verbose step-by-step explanations, you instruct the LLM to think through each step but keep the draft concise—five words max per step—then return the final assessment after a separator.
 
-Sam: Until what?
+Sam: So you get the reasoning benefits of Chain of Thought with reduced token consumption.
 
-Alex: Until either you have no substantive issues and tests pass—that's ship. Or you reach a point where further iteration provides diminishing returns. That's when the agent is nitpicking style, inventing non-existent issues, or suggesting "fixes" that break tests.
+Alex: And faster response times. The prompt reads: "Think step by step, but only keep a minimum draft for each thinking step, with five words at most. Return the assessment at the end of the response after a separator." It's particularly effective for reviews where you want structured analysis without the token overhead.
 
-Sam: How many fresh contexts would you typically go through?
+Sam: Let me summarize the key points. Review in fresh context to prevent confirmation bias. Apply the same four-phase methodology—research the intent, plan the review structure, execute the analysis, validate the decision to ship or fix.
 
-Alex: Depends on the code complexity. One simple feature? Maybe one or two rounds. Complex architectural change? Three rounds of fresh context review is reasonable. Four rounds, you're probably in diminishing returns territory.
+Alex: Use structured review prompts with Chain of Thought or Chain of Draft. Iterate until green light or diminishing returns—fix issues, re-review in fresh context, stop when findings become trivial or hallucinated.
 
-Sam: You keep emphasizing evidence requirements. Why does that matter for review?
+Sam: Evidence requirements force grounding—file paths and line numbers ensure findings are based on actual code.
 
-Alex: Because evidence requirements force grounding. If you ask for "issues with file paths and line numbers," the agent can't make vague claims. It has to point to specific code. It can't say "this approach feels fragile." It has to cite actual patterns and explain why they're fragile with reference to your specific code.
+Alex: And generate dual-optimized PR descriptions for both audiences. When reviewing PRs with dual descriptions, leverage that AI-optimized context—it provides the grounding needed for accurate analysis and reduces hallucinations.
 
-Sam: That's the same principle as in Lesson 7 with planning and execution.
+Sam: The tests remain the objective arbiter throughout.
 
-Alex: Same principle everywhere. Evidence-based reasoning. Concrete references. No hallucinations, or at least much fewer.
-
-Sam: What happens when you're on the receiving end of a PR with dual descriptions?
-
-Alex: You read the human summary first. That's your initial mental model of what changed and why. Then you feed the AI-optimized description to your review assistant—whether that's GitHub Copilot, Claude, whatever you use.
-
-Sam: Why feed the AI description separately?
-
-Alex: Because it contains context the AI needs for accurate analysis. Explicit terminology, file paths, architectural patterns the human description compressed for brevity. The AI uses that grounding to avoid hallucinating problems that don't exist.
-
-Sam: And then you review the review.
-
-Alex: Right. You get a structured output: Summary, Strengths, Issues by severity, Decision. You read it with the same critical eye you'd give the code itself. Is the reviewer finding actual problems or inventing issues? Are there false negatives—obvious problems it missed?
-
-Sam: How do you catch false negatives from an AI reviewer?
-
-Alex: Domain knowledge. You know your architecture. You know what patterns matter. If the reviewer misses something important, you'll know because you understand the context. That's why having humans in the loop remains critical.
-
-Sam: So humans and AI review are complementary.
-
-Alex: Completely. AI catches things humans miss because humans tire and miss subtle patterns. Humans catch things AI invents because humans understand intent and context. Together they're stronger than either alone.
-
-Sam: What about the case where code compiles, tests pass, but you have an intuition something isn't right?
-
-Alex: That's domain expertise. Trust that intuition. Request a deeper review focused on that specific area. The review template is flexible—you can ask for security-focused review, performance-focused review, architectural alignment review. Reuse the pattern for different concerns.
-
-Sam: So the four-phase workflow applies to review too. Research intent, plan the review, execute analysis, validate the decision to ship.
-
-Alex: Exactly. That's the methodology. It applies to development, testing, and review. It scales from implementing a function to validating a massive architectural change.
-
-Sam: One last thing—when you reach diminishing returns and you decide to ship despite some outstanding concerns, how do you document that?
-
-Alex: Good practice: document the decision. A note in your commit message or PR notes. "Review flagged potential edge case X. Added issue #123 for future investigation. Test coverage is sufficient for current use cases." That's transparent. It's not pretending the code is perfect. It's acknowledging you made a judgment call based on test coverage, iteration cost, and risk tolerance.
-
-Sam: That transparency matters.
-
-Alex: It does. Future maintainers understand the code wasn't perfect when it shipped. They know what to watch. They know why iteration stopped. That's better than silent technical debt.
-
-Alex: So to summarize: review in fresh context to prevent confirmation bias. Use structured prompts with the same techniques from Lesson 4. Iterate until you reach a green light or diminishing returns. Generate dual-optimized PR descriptions for human and AI reviewers. Let tests be your objective arbiter of correctness.
-
-Sam: And understand the difference between agent-only and mixed codebases so you know whether AI-optimized style is appropriate or if human readability needs to be the priority.
-
-Alex: Right. Most codebases are mixed. Most teams have humans writing code. Make sure your review process accounts for that.
-
-Sam: Next we're looking at debugging.
-
-Alex: Debugging with AI. Where code compiles and tests pass, but the behavior is wrong. How you work with an agent to find and fix the root cause.
-
-Sam: That should be practical.
-
-Alex: It will be. Debugging requires a different methodology than development. You'll see why in Lesson 10.
+Alex: Always. When in doubt, trust the tests.
