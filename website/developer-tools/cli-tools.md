@@ -92,9 +92,39 @@ go install github.com/zyedidia/micro/cmd/micro@latest
 
 Requirements: None (static binary). Optional: clipboard support via xclip/xsel on Linux.
 
+### Fresh
+
+![Fresh terminal editor showing command palette for feature discovery](https://sinelaw.github.io/fresh/docs/assets/palette.png)
+
+[**Fresh**](https://sinelaw.github.io/fresh/) is a Rust-based terminal editor designed for discovery and speed. Brings GUI-like usability (standard keybindings, mouse support, command palette) to the terminal with LSP integration.
+
+**Key differentiators:** Non-modal editing with familiar keybindings (Ctrl+S, Ctrl+Z, Ctrl+F)—no Vim learning curve required. Full mouse support with menu bar and command palette for feature discovery. LSP integration provides go-to-definition, inline diagnostics, hover documentation, and code actions. Handles 10GB+ files instantly via lazy-loading piece tree (~36MB memory for 2GB file vs ~2GB for Neovim). TypeScript/Deno plugin system runs in a sandboxed environment for secure, modern extensibility. Built-in file explorer and integrated terminal.
+
+**Best suited for:** Developers wanting IDE-like terminal editing without modal editing overhead. Engineers working with large log files or data files where other editors struggle or crash. Users wanting micro's approachability combined with LSP-powered code intelligence. Teams needing extensibility via familiar TypeScript ecosystem rather than Lua or Vimscript.
+
+**Trade-offs:** Newer project still maturing—smaller community and plugin ecosystem than established editors. Requires Deno runtime for plugin development. Less battle-tested than micro for simple editing tasks. Some advanced Vim/Neovim workflows (complex macros, extensive plugin chains) not yet replicated.
+
+**Installation:**
+
+```bash
+# macOS
+brew tap sinelaw/fresh && brew install fresh-editor
+
+# Cargo (Rust)
+cargo install fresh-editor
+
+# npm (cross-platform)
+npm install -g @fresh-editor/fresh-editor
+
+# Linux package managers
+yay -S fresh-editor          # Arch (AUR)
+```
+
+Requirements: None (static binary). Optional: Deno for plugin development.
+
 ### bat
 
-![bat displaying code with syntax highlighting, line numbers, and git integration](https://imgur.com/rGsdnDe.png)
+![bat displaying code with syntax highlighting, line numbers, and git integration](https://camo.githubusercontent.com/46b1d63d8c4a647bcfc34eef014232fce5125c03f0aa94b2a06d6765a2f1c6bb/68747470733a2f2f692e696d6775722e636f6d2f326c53573452452e706e67)
 
 [**bat**](https://github.com/sharkdp/bat) is a Rust-based cat replacement with built-in syntax highlighting and git integration. Single binary, cross-platform, actively maintained.
 
