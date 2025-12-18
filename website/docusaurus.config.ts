@@ -176,14 +176,14 @@ const config: Config = {
           type: 'doc',
           docId: 'index',
           position: 'left',
-          label: 'Prompts',
+          label: 'Prompt Library',
           docsPluginId: 'prompts',
         },
         {
           type: 'doc',
           docId: 'cli-coding-agents',
           position: 'left',
-          label: 'Developer Tools',
+          label: 'Toolbox',
           docsPluginId: 'developer-tools',
         },
         {

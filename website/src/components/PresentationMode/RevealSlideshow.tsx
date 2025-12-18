@@ -67,7 +67,7 @@ interface Slide {
   speakerNotes?: SpeakerNotes;
 }
 
-interface PresentationData {
+export interface PresentationData {
   metadata: {
     title: string;
     lessonId: string;

@@ -137,7 +137,7 @@ export interface ScalableVisualProps extends PresentationAwareProps {
  * ```
  */
 export function isPresentationAware(
-  props: any
+  props: unknown
 ): props is PresentationAwareProps {
   return props !== null && typeof props === 'object';
 }

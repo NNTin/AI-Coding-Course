@@ -49,7 +49,7 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
         }
 
         setIsLoading(false);
-      } catch (error) {
+      } catch {
         setIsLoading(false);
       }
     }

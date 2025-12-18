@@ -161,7 +161,7 @@ export default function UShapeAttentionCurve({
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [curvePath]);
+  }, [curvePath, endX, middleX]);
 
   // Area fill path (curve + bottom edge for filled area)
   // Use animatedEndX to keep the right edge synchronized during transitions

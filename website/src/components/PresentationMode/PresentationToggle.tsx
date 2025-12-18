@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './PresentationToggle.module.css';
+import type { PresentationData } from './RevealSlideshow';
 
 // Lazy load RevealSlideshow to avoid bundling Reveal.js for all users
 const RevealSlideshow = lazy(() => import('./RevealSlideshow'));
@@ -9,9 +10,13 @@ interface PresentationToggleProps {
   lessonPath: string;
 }
 
-export default function PresentationToggle({ lessonPath }: PresentationToggleProps) {
+export default function PresentationToggle({
+  lessonPath,
+}: PresentationToggleProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [presentation, setPresentation] = useState<any>(null);
+  const [presentation, setPresentation] = useState<PresentationData | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasPresentation, setHasPresentation] = useState(false);
@@ -27,7 +32,7 @@ export default function PresentationToggle({ lessonPath }: PresentationTogglePro
           // Check if this lesson has a presentation
           setHasPresentation(!!manifest[lessonPath]);
         }
-      } catch (err) {
+      } catch {
         // Manifest doesn't exist yet, hide button
         setHasPresentation(false);
       }
@@ -42,7 +47,9 @@ export default function PresentationToggle({ lessonPath }: PresentationTogglePro
 
     try {
       // Load manifest to get presentation URL
-      const manifestResponse = await fetch(`${baseUrl}presentations/manifest.json`);
+      const manifestResponse = await fetch(
+        `${baseUrl}presentations/manifest.json`
+      );
       if (!manifestResponse.ok) {
         throw new Error('Presentation manifest not found');
       }
@@ -55,7 +62,9 @@ export default function PresentationToggle({ lessonPath }: PresentationTogglePro
       }
 
       // Load presentation data
-      const presentationResponse = await fetch(`${baseUrl.replace(/\/$/, '')}${lessonData.presentationUrl}`);
+      const presentationResponse = await fetch(
+        `${baseUrl.replace(/\/$/, '')}${lessonData.presentationUrl}`
+      );
       if (!presentationResponse.ok) {
         throw new Error('Failed to load presentation');
       }
@@ -126,7 +135,11 @@ export default function PresentationToggle({ lessonPath }: PresentationTogglePro
       )}
 
       {isOpen && presentation && (
-        <Suspense fallback={<div className={styles.loadingOverlay}>Loading presentation...</div>}>
+        <Suspense
+          fallback={
+            <div className={styles.loadingOverlay}>Loading presentation...</div>
+          }
+        >
           <RevealSlideshow
             presentation={presentation}
             onClose={() => {
