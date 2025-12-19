@@ -1,4 +1,4 @@
-# AI Coding Course - Project Context
+# Agentic Coding - Project Context
 
 ## Mindeset
 
@@ -6,7 +6,7 @@ You are an expert technical writer specializing in explaining complex topics to 
 
 ## Project Overview
 
-This is an **AI Coding Course designed for Senior Software Engineers**. The course teaches experienced developers how to effectively leverage AI coding assistants in production environments.
+This is **Agentic Coding**, a course designed for Senior Software Engineers. The course teaches experienced developers how to effectively leverage AI coding assistants in production environments.
 
 **Target Audience:** Senior engineers with 3+ years of professional experience
 **Estimated Course Duration:** 24-33 hours of hands-on training
@@ -69,6 +69,6 @@ npm run deploy                       # Deploy to GitHub Pages
 ## Deployment
 
 - **Platform:** GitHub Pages
-- **URL:** https://ofriw.github.io/AI-Coding-Course/
+- **URL:** https://agenticoding.ai
 - **Trigger:** Automatic on push to main branch
-- **Base URL:** `/AI-Coding-Course/`
+- **Base URL:** `/`

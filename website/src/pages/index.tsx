@@ -76,7 +76,7 @@ function TerminalWindow() {
 }
 
 function HomepageHeader() {
-  const stars = useGitHubStars('ofriw/AI-Coding-Course');
+  const stars = useGitHubStars('agenticoding/agenticoding.github.io');
 
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
@@ -84,7 +84,7 @@ function HomepageHeader() {
         <div className={styles.heroContent}>
           <div className={styles.heroText}>
             <a
-              href="https://github.com/ofriw/AI-Coding-Course"
+              href="https://github.com/agenticoding/agenticoding.github.io"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.heroBadge}
@@ -280,7 +280,7 @@ function useGitHubStars(repo: string): number | null {
 
 // Social Proof Bar with GitHub stars and testimonial
 function SocialProofBar() {
-  const courseStars = useGitHubStars('ofriw/AI-Coding-Course');
+  const courseStars = useGitHubStars('agenticoding/agenticoding.github.io');
   const chunkHoundStars = useGitHubStars('chunkhound/chunkhound');
   const arguSeekStars = useGitHubStars('ArguSeek/arguseek');
 
@@ -305,7 +305,7 @@ function SocialProofBar() {
           {hasStars && (
             <div className={styles.starsRow}>
               <a
-                href="https://github.com/ofriw/AI-Coding-Course"
+                href="https://github.com/agenticoding/agenticoding.github.io"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.repoLink}

@@ -213,9 +213,9 @@ npm run deploy                       # Deploy to GitHub Pages
 ## Deployment
 
 - **Platform:** GitHub Pages
-- **URL:** https://ofriw.github.io/AI-Coding-Course/
+- **URL:** https://agenticoding.ai
 - **Trigger:** Automatic on push to main branch
-- **Base URL:** `/AI-Coding-Course/`
+- **Base URL:** `/`
 ````
 
 ## Automated Generation: Bootstrap with AI

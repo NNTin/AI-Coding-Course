@@ -1,4 +1,4 @@
-# AI Coding Course
+# Agentic Coding
 
 A comprehensive online course for experienced software engineers to master AI-assisted development.
 
@@ -6,7 +6,7 @@ A comprehensive online course for experienced software engineers to master AI-as
 
 This course teaches systematic approaches to using AI coding assistants effectively in professional software development. Built with [Docusaurus](https://docusaurus.io/), it includes interactive code examples, hands-on exercises, and production-ready patterns.
 
-**Live Course:** [https://ofriw.github.io/AI-Coding-Course/](https://ofriw.github.io/AI-Coding-Course/)
+**Live Course:** [https://agenticoding.ai](https://agenticoding.ai)
 
 ## Course Structure
 

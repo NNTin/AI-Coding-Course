@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDoc } from '@docusaurus/plugin-content-docs/client';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './LessonAudioPlayer.module.css';
 
 interface AudioManifest {
@@ -13,6 +14,7 @@ interface AudioManifest {
 
 export default function LessonAudioPlayer(): React.ReactElement | null {
   const { metadata } = useDoc();
+  const { siteConfig } = useDocusaurusContext();
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -26,7 +28,8 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
   useEffect(() => {
     async function loadAudio() {
       try {
-        const manifestUrl = '/AI-Coding-Course/audio/manifest.json';
+        const baseUrl = siteConfig.baseUrl;
+        const manifestUrl = `${baseUrl}audio/manifest.json`;
         const response = await fetch(manifestUrl);
 
         if (!response.ok) {
@@ -43,8 +46,8 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
         const audioEntry = manifest[sourcePath];
 
         if (audioEntry) {
-          // Prepend base URL for Docusaurus
-          const fullAudioUrl = `/AI-Coding-Course${audioEntry.audioUrl}`;
+          // Prepend base URL for Docusaurus (audioUrl starts with /)
+          const fullAudioUrl = `${baseUrl}${audioEntry.audioUrl.substring(1)}`;
           setAudioUrl(fullAudioUrl);
         }
 
@@ -55,7 +58,7 @@ export default function LessonAudioPlayer(): React.ReactElement | null {
     }
 
     loadAudio();
-  }, [metadata.source]);
+  }, [metadata.source, siteConfig.baseUrl]);
 
   // Update time display
   useEffect(() => {

@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'AI Coding Course',
+  title: 'Agentic Coding',
   tagline: 'Master AI-assisted software engineering for experienced developers',
   favicon: 'img/favicon.ico',
 
@@ -15,10 +15,10 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://ofriw.github.io',
+  url: 'https://agenticoding.ai',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/AI-Coding-Course/',
+  baseUrl: '/',
 
   // Modern favicon setup (SVG + Apple touch icon)
   headTags: [
@@ -26,7 +26,7 @@ const config: Config = {
       tagName: 'link',
       attributes: {
         rel: 'icon',
-        href: '/AI-Coding-Course/img/icon.svg',
+        href: '/img/icon.svg',
         type: 'image/svg+xml',
       },
     },
@@ -34,7 +34,7 @@ const config: Config = {
       tagName: 'link',
       attributes: {
         rel: 'apple-touch-icon',
-        href: '/AI-Coding-Course/img/apple-touch-icon.png',
+        href: '/img/apple-touch-icon.png',
       },
     },
   ],
@@ -50,8 +50,8 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'ofriw', // Usually your GitHub org/user name.
-  projectName: 'AI-Coding-Course', // Usually your repo name.
+  organizationName: 'agenticoding', // Usually your GitHub org/user name.
+  projectName: 'agenticoding.github.io', // Usually your repo name.
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
@@ -93,7 +93,7 @@ const config: Config = {
             '**/CLAUDE.md', // Exclude AI agent instructions from build
           ],
           editUrl:
-            'https://github.com/ofriw/AI-Coding-Course/tree/main/website/',
+            'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/',
           showLastUpdateTime: false,
           showLastUpdateAuthor: false,
         },
@@ -115,7 +115,8 @@ const config: Config = {
         path: 'prompts',
         routeBasePath: 'prompts',
         sidebarPath: './sidebarsPrompts.ts',
-        editUrl: 'https://github.com/ofriw/AI-Coding-Course/tree/main/website/',
+        editUrl:
+          'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/',
         showLastUpdateTime: false,
         showLastUpdateAuthor: false,
       },
@@ -127,7 +128,8 @@ const config: Config = {
         path: 'developer-tools',
         routeBasePath: 'developer-tools',
         sidebarPath: './sidebarsDeveloperTools.ts',
-        editUrl: 'https://github.com/ofriw/AI-Coding-Course/tree/main/website/',
+        editUrl:
+          'https://github.com/agenticoding/agenticoding.github.io/tree/main/website/',
         showLastUpdateTime: false,
         showLastUpdateAuthor: false,
       },
@@ -160,9 +162,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'AI Coding Course',
+      title: 'Agentic Coding',
       logo: {
-        alt: 'AI Coding Course Logo',
+        alt: 'Agentic Coding Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -192,7 +194,7 @@ const config: Config = {
           dropdownActiveClassDisabled: true,
         },
         {
-          href: 'https://github.com/ofriw/AI-Coding-Course',
+          href: 'https://github.com/agenticoding/agenticoding.github.io',
           label: 'GitHub',
           position: 'right',
         },
@@ -219,11 +221,11 @@ const config: Config = {
           items: [
             {
               label: 'GitHub Discussions',
-              href: 'https://github.com/ofriw/AI-Coding-Course/discussions',
+              href: 'https://github.com/agenticoding/agenticoding.github.io/discussions',
             },
             {
               label: 'Report Issues',
-              href: 'https://github.com/ofriw/AI-Coding-Course/issues',
+              href: 'https://github.com/agenticoding/agenticoding.github.io/issues',
             },
           ],
         },
@@ -232,12 +234,12 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/ofriw/AI-Coding-Course',
+              href: 'https://github.com/agenticoding/agenticoding.github.io',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} AI Coding Course. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Agentic Coding. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
