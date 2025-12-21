@@ -36,7 +36,7 @@ node scripts/generate-presentation.js
 node scripts/generate-presentation.js --file intro.md
 
 # Generate for all files in a module
-node scripts/generate-presentation.js --module understanding-the-tools
+node scripts/generate-presentation.js --module fundamentals
 
 # Generate for all lessons
 node scripts/generate-presentation.js --all

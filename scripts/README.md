@@ -93,9 +93,9 @@ Runs the original single-stage script (generates dialog inline without saving)
 output/podcasts/
 ├── manifest.json
 ├── intro.md
-├── understanding-the-tools/
-│   ├── lesson-1-intro.md
-│   └── lesson-2-understanding-agents.md
+├── fundamentals/
+│   ├── lesson-1-how-llms-work.md
+│   └── lesson-2-how-agents-work.md
 └── methodology/
     └── lesson-3-high-level-methodology.md
 ```
@@ -103,7 +103,7 @@ output/podcasts/
 **Script Format:**
 ```markdown
 ---
-source: understanding-the-tools/lesson-1-intro.md
+source: fundamentals/lesson-1-how-llms-work.md
 speakers:
   - name: Alex
     role: Instructor
@@ -129,13 +129,13 @@ Sam: I've been using them for a few months now...
 **Manifest:** `website/static/audio/manifest.json`
 ```json
 {
-  "understanding-the-tools/lesson-1-intro.md": {
-    "audioUrl": "/audio/understanding-the-tools/lesson-1-intro.wav",
+  "fundamentals/lesson-1-how-llms-work.md": {
+    "audioUrl": "/audio/fundamentals/lesson-1-how-llms-work.wav",
     "size": 1234567,
     "format": "audio/wav",
     "tokenCount": 5234,
     "generatedAt": "2025-11-01T12:34:56.789Z",
-    "scriptSource": "understanding-the-tools/lesson-1-intro.md"
+    "scriptSource": "fundamentals/lesson-1-how-llms-work.md"
   }
 }
 ```

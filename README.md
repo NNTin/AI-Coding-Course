@@ -12,7 +12,7 @@ This course teaches systematic approaches to using AI coding assistants effectiv
 
 The course is organized into three modules with 10 hands-on lessons:
 
-1. **[Understanding the Tools](website/docs/understanding-the-tools)** - Mental models and architecture (Lessons 1-2)
+1. **[Fundamentals](website/docs/fundamentals)** - Mental models and architecture (Lessons 1-2)
 2. **[Methodology](website/docs/methodology)** - Prompting, grounding, workflow design (Lessons 3-5)
 3. **[Practical Techniques](website/docs/practical-techniques)** - Onboarding, planning, testing, reviewing, debugging (Lessons 6-10)
 
@@ -90,9 +90,9 @@ Serves the production build locally for testing.
 website/
 ├── docs/                              # Course modules and lessons
 │   ├── intro.md                       # Course introduction
-│   ├── understanding-the-tools/       # Module 1: Mental models
-│   │   ├── lesson-1-intro.md
-│   │   └── lesson-2-understanding-agents.md
+│   ├── fundamentals/                  # Module 1: Mental models
+│   │   ├── lesson-1-how-llms-work.md  # Lesson 1: LLMs Demystified
+│   │   └── lesson-2-how-agents-work.md # Lesson 2: Agents Demystified
 │   ├── methodology/                   # Module 2: Core techniques
 │   │   ├── lesson-3-high-level-methodology.md
 │   │   ├── lesson-4-prompting-101.md

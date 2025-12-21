@@ -161,8 +161,8 @@ function main() {
     'practical-techniques/lesson-8-tests-as-guardrails.json',
     'practical-techniques/lesson-9-reviewing-code.json',
     'practical-techniques/lesson-10-debugging.json',
-    'understanding-the-tools/lesson-1-intro.json',
-    'understanding-the-tools/lesson-2-understanding-agents.json'
+    'fundamentals/lesson-1-how-llms-work.json',
+    'fundamentals/lesson-2-how-agents-work.json'
   ];
 
   console.log('📊 Auditing presentations for violations\n');

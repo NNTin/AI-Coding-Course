@@ -207,7 +207,7 @@ Each lesson should reference prerequisites when needed:
 ```markdown
 **Prerequisites:**
 
-- Completed [Understanding the Tools](../understanding-the-tools/index.md) (all lessons)
+- Completed [Fundamentals](../fundamentals/lesson-1-how-llms-work.md) (all lessons)
 - Understanding of REST API design
 ```
 
@@ -215,4 +215,4 @@ Each lesson should reference prerequisites when needed:
 
 - Build on previous concepts
 - Reference earlier examples when relevant
-- Link to related lessons: `[See Lesson 2](../understanding-the-tools/lesson-2-understanding-agents.md)`
+- Link to related lessons: `[See Lesson 2: Agents Demystified](../fundamentals/lesson-2-how-agents-work.md)`

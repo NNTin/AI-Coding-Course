@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 slug: /
-title: 'AI Coding for Senior Engineers'
+title: 'Introduction'
 ---
 
 ## The Reality
@@ -43,7 +43,7 @@ You're the target audience if you:
 
 **Sequential consumption recommended.** Each module builds on previous concepts:
 
-1. Module 1: Understanding the Tools - Mental models and architecture
+1. Module 1: Fundamentals - Mental models and architecture
 2. Module 2: Methodology - Prompting, grounding, workflow design
 3. Module 3: Practical Techniques - Onboarding, planning, testing, reviewing, debugging
 
@@ -79,4 +79,4 @@ This isn't marketing. It's validation. If these techniques can produce productio
 
 ---
 
-**Ready to start?** Begin with [Understanding the Tools](/docs/understanding-the-tools/lesson-1-intro).
+**Ready to start?** Begin with [Lesson 1: LLMs Demystified](/docs/fundamentals/lesson-1-how-llms-work).
