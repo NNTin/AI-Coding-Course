@@ -189,9 +189,10 @@ const config: Config = {
           docsPluginId: 'developer-tools',
         },
         {
-          type: 'docsVersionDropdown',
-          position: 'right',
-          dropdownActiveClassDisabled: true,
+          type: 'doc',
+          docId: 'faq',
+          position: 'left',
+          label: 'FAQ',
         },
         {
           href: 'https://github.com/agenticoding/agenticoding.github.io',
@@ -207,12 +208,16 @@ const config: Config = {
           title: 'Course',
           items: [
             {
+              label: 'FAQ',
+              to: '/docs/faq',
+            },
+            {
               label: 'Getting Started',
               to: '/docs',
             },
             {
               label: 'Course Modules',
-              to: '/docs/understanding-the-tools/lesson-1-intro',
+              to: '/docs/fundamentals/lesson-1-how-llms-work',
             },
           ],
         },
