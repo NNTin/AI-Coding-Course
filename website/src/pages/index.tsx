@@ -120,6 +120,13 @@ function HomepageHeader() {
               </Link>
             </div>
             <div className={styles.heroStats}>
+              <Link
+                to="/docs/faq"
+                className={styles.heroStatLink}
+              >
+                FAQ
+              </Link>
+              <span className={styles.statsSeparator}>|</span>
               <Link to="/docs" className={styles.heroStatLink}>
                 {LESSON_COUNT} Lessons
               </Link>
@@ -127,10 +134,6 @@ function HomepageHeader() {
               <Link to="/prompts" className={styles.heroStatLink}>
                 {PROMPT_COUNT} Production Prompts
               </Link>
-              <span className={styles.statsSeparator}>|</span>
-              <a href="#ecosystem" className={styles.heroStatLink}>
-                Research Tools
-              </a>
             </div>
           </div>
           <TerminalWindow />
@@ -310,7 +313,7 @@ function SocialProofBar() {
                 rel="noopener noreferrer"
                 className={styles.repoLink}
               >
-                <GitHubIcon /> Course
+                <GitHubIcon /> Agentic Coding
                 {courseStars !== null && (
                   <>
                     {' '}
@@ -589,13 +592,13 @@ function CourseModules() {
   const modules = [
     {
       number: 1,
-      title: 'Understanding the Tools',
+      title: 'Fundamentals',
       topics: [
         'LLM internals: context, attention, token limits',
         'What breaks: hallucinations, code drift, refactoring',
         'Context management and RAG integration',
       ],
-      link: '/docs/understanding-the-tools/lesson-1-intro',
+      link: '/docs/fundamentals/lesson-1-how-llms-work',
     },
     {
       number: 2,
