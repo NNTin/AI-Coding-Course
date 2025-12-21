@@ -61,14 +61,20 @@
   },
   "intro.md": {
     "scriptPath": "intro.md",
-    "size": 6579,
-    "tokenCount": 1581,
-    "generatedAt": "2025-12-12T07:57:45.739Z"
+    "size": 6262,
+    "tokenCount": 1504,
+    "generatedAt": "2025-12-21T12:23:17.141Z"
   },
   "practical-techniques/lesson-11-agent-friendly-code.md": {
     "scriptPath": "practical-techniques/lesson-11-agent-friendly-code.md",
     "size": 8141,
     "tokenCount": 1958,
     "generatedAt": "2025-12-12T08:55:23.116Z"
+  },
+  "fundamentals/lesson-2-how-agents-work.md": {
+    "scriptPath": "fundamentals/lesson-2-how-agents-work.md",
+    "size": 7968,
+    "tokenCount": 1928,
+    "generatedAt": "2025-12-21T11:49:58.809Z"
   }
 }

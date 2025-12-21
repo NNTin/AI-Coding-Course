@@ -1,11 +1,11 @@
 {
   "intro.md": {
     "audioUrl": "/audio/intro.wav",
-    "size": 18939976,
+    "size": 18294856,
     "format": "audio/wav",
-    "tokenCount": 1365,
+    "tokenCount": 1309,
     "chunks": 2,
-    "generatedAt": "2025-12-12T08:02:24.574Z",
+    "generatedAt": "2025-12-21T12:27:48.513Z",
     "scriptSource": "intro.md"
   },
   "practical-techniques/lesson-10-debugging.md": {
@@ -53,23 +53,23 @@
     "generatedAt": "2025-12-12T10:00:53.927Z",
     "scriptSource": "practical-techniques/lesson-9-reviewing-code.md"
   },
-  "understanding-the-tools/lesson-1-intro.md": {
-    "audioUrl": "/audio/understanding-the-tools/lesson-1-intro.wav",
+  "fundamentals/lesson-1-how-llms-work.md": {
+    "audioUrl": "/audio/fundamentals/lesson-1-how-llms-work.wav",
     "size": 20391496,
     "format": "audio/wav",
     "tokenCount": 1423,
     "chunks": 2,
     "generatedAt": "2025-12-12T10:16:17.082Z",
-    "scriptSource": "understanding-the-tools/lesson-1-intro.md"
+    "scriptSource": "fundamentals/lesson-1-how-llms-work.md"
   },
-  "understanding-the-tools/lesson-2-understanding-agents.md": {
-    "audioUrl": "/audio/understanding-the-tools/lesson-2-understanding-agents.wav",
-    "size": 29460182,
+  "fundamentals/lesson-2-how-agents-work.md": {
+    "audioUrl": "/audio/fundamentals/lesson-2-how-agents-work.wav",
+    "size": 24362056,
     "format": "audio/wav",
-    "tokenCount": 1960,
-    "chunks": 3,
-    "generatedAt": "2025-12-12T10:31:33.706Z",
-    "scriptSource": "understanding-the-tools/lesson-2-understanding-agents.md"
+    "tokenCount": 1611,
+    "chunks": 2,
+    "generatedAt": "2025-12-21T11:56:43.115Z",
+    "scriptSource": "fundamentals/lesson-2-how-agents-work.md"
   },
   "methodology/lesson-3-high-level-methodology.md": {
     "audioUrl": "/audio/methodology/lesson-3-high-level-methodology.wav",
