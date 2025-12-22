@@ -146,6 +146,17 @@ const config: Config = {
         docsRouteBasePath: '/docs',
       },
     ],
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        createRedirects(existingPath) {
+          // For all paths, create redirect from old /AI-Coding-Course/ prefixed version
+          // Example: /docs/intro gets redirect from /AI-Coding-Course/docs/intro
+          // For root: / gets redirect from /AI-Coding-Course/
+          return `/AI-Coding-Course${existingPath}`;
+        },
+      },
+    ],
   ],
 
   themeConfig: {
